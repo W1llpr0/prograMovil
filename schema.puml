@@ -15,6 +15,7 @@ entity "users" {
   * id : int
   --
   * sex_id : int <<FK>>
+  * role : varchar
   * email : varchar
   * password : varchar
   * first_name : varchar
@@ -79,6 +80,7 @@ entity "consultations" {
   --
   * pet_id : int <<FK>>
   * veterinarian_id : int <<FK>>
+  * status : varchar
   * consultation_date : date
   * consultation_time : time
   * reason : text
