@@ -1,0 +1,123 @@
+@startuml
+' Ocultar el ícono de clase para estilo DER
+hide circle
+
+' Líneas ortogonales para mayor orden
+skinparam linetype ortho
+
+entity "sexes" {
+  * id : int
+  --
+  * name : varchar
+}
+
+entity "users" {
+  * id : int
+  --
+  * sex_id : int <<FK>>
+  * email : varchar
+  * password : varchar
+  * first_name : varchar
+  * last_name : varchar
+  phone : varchar
+  photo_url : varchar
+}
+
+entity "clients" {
+  * id : int
+  --
+  * user_id : int <<FK>>
+  address : text
+  * identity_document : varchar
+}
+
+entity "veterinarians" {
+  * id : int
+  --
+  * user_id : int <<FK>>
+  * license_number : varchar
+  years_experience : int
+}
+
+entity "species" {
+  * id : int
+  --
+  * name : varchar
+}
+
+entity "breeds" {
+  * id : int
+  --
+  * species_id : int <<FK>>
+  * name : varchar
+  description : text
+  reference_image_url : varchar
+}
+
+entity "pets" {
+  * id : int
+  --
+  * client_id : int <<FK>>
+  * breed_id : int <<FK>>
+  * sex_id : int <<FK>>
+  * name : varchar
+  birth_date : date
+  current_weight : decimal
+  photo_url : varchar
+}
+
+entity "specialties" {
+  * id : int
+  --
+  * name : varchar
+  description : text
+  icon_url : varchar
+}
+
+entity "consultations" {
+  * id : int
+  --
+  * pet_id : int <<FK>>
+  * veterinarian_id : int <<FK>>
+  * consultation_date : date
+  * consultation_time : time
+  * reason : text
+  diagnosis : text
+  prescribed_treatment : text
+  rating : int
+  review_comment : text
+  review_datetime : datetime
+}
+
+entity "consultation_documents" {
+  * id : int
+  --
+  * consultation_id : int <<FK>>
+  * file_url : varchar
+  document_type : varchar
+}
+
+entity "consultation_specialties" {
+  * consultation_id : int <<FK>>
+  * specialty_id : int <<FK>>
+}
+
+' Relaciones de Autenticación y Perfil Único
+sexes ||--o{ users
+sexes ||--o{ pets
+users ||--o| clients
+users ||--o| veterinarians
+
+' Relaciones del Catálogo de Animales
+species ||--o{ breeds
+breeds ||--o{ pets
+clients ||--o{ pets
+
+' Relaciones de Consultas Médicas
+pets ||--o{ consultations
+veterinarians ||--o{ consultations
+consultations ||--o{ consultation_documents
+consultations ||--o{ consultation_specialties
+specialties ||--o{ consultation_specialties
+
+@enduml
