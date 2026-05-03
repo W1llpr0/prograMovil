@@ -14,39 +14,42 @@ vet -up-|> user
 ' Sistema / Aplicación
 rectangle "Aplicación Móvil Veterinaria" {
   
-  ' Casos de Uso Comunes (RF01, RF02, RF03)
+  ' Casos de Uso Comunes (Usuario general)
   usecase "CU01: Registrarse en la app" as UC1
-  usecase "CU08: Iniciar Sesión" as UC8
-  usecase "CU09: Editar Perfil" as UC9
+  usecase "CU02: Iniciar Sesión" as UC2
+  usecase "CU03: Editar Perfil" as UC3
   
   ' Casos de Uso del Cliente
-  usecase "CU02: Gestionar Mascotas" as UC2
-  usecase "CU03: Agendar Consulta Médica" as UC3
-  usecase "CU04: Evaluar Atención" as UC4
-  usecase "CU10: Visualizar Historial Clínico" as UC10
+  usecase "CU04: Gestionar Mascotas" as UC4
+  usecase "CU05: Agendar Consulta Médica" as UC5
+  usecase "CU06: Visualizar Historial Clínico" as UC6
+  usecase "CU07: Evaluar Atención" as UC7
   
   ' Casos de Uso del Veterinario
-  usecase "CU05: Gestionar Agenda Médica" as UC5
-  usecase "CU06: Registrar Historial Clínico" as UC6
-  usecase "CU07: Adjuntar Resultados Médicos" as UC7
+  usecase "CU08: Gestionar Agenda Médica" as UC8
+  usecase "CU09: Registrar Datos Médicos" as UC9
+  usecase "CU10: Adjuntar Resultados Médicos" as UC10
 }
 
 ' Relaciones entre Actores y Casos de Uso
 user --> UC1
-user --> UC8
-user --> UC9
+user --> UC2
+user --> UC3
 
-client --> UC2
-client --> UC3
 client --> UC4
-client --> UC10
+client --> UC5
+client --> UC6
+client --> UC7
 
-vet --> UC5
-vet --> UC6
-vet --> UC7
+vet --> UC8
+vet --> UC9
+vet --> UC10
 
-' Notas
-note right of UC10 : Cubre RF13\n(Ver recetas y documentos)
-note bottom of UC6 : El Veterinario registra,\n el Cliente (UC10) visualiza.
+' Notas de relación con los Requerimientos Funcionales
+note right of UC4 : Cubre RF04 y RF05\n(Catálogo de razas)
+note right of UC5 : Cubre RF06 y RF07\n(Estado inicial Pendiente)
+note right of UC6 : Cubre RF12\n(Ver recetas y documentos)
+note right of UC7 : Cubre RF13\n(Solo para citas completadas)
+note bottom of UC9 : Cubre RF10\n(El Veterinario registra,\n el Cliente visualiza en CU06)
 
 @enduml

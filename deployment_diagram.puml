@@ -2,11 +2,11 @@
 left to right direction
 skinparam DefaultTextAlignment center
 
-node "Dispositivo Móvil (Smartphone/Tablet)\n<<RNF06: Interfaz Responsive>>" as Mobile {
+node "Dispositivo Móvil (Smartphone/Tablet)\n<<RNF07: Interfaz Responsive>>\n<<RNF04: Rendimiento>>" as Mobile {
     
     component "Aplicación Veterinaria\n(Flutter)" as AppFlutter
     
-    component "Módulo de Compresión\nde Imágenes\n<<RNF04>>" as Compressor
+    component "Módulo de Compresión\nde Imágenes\n<<RNF05: Optimización>>" as Compressor
     
     storage "Keychain / Keystore\n<<RNF03: Autenticación>>" as Keystore {
         artifact "Token JWT" as JWT
@@ -16,7 +16,7 @@ node "Dispositivo Móvil (Smartphone/Tablet)\n<<RNF06: Interfaz Responsive>>" as
     AppFlutter ..> Keystore : "Lee / Guarda"
 }
 
-node "Infraestructura Cloud\n<<RNF05: Alta Disponibilidad 99.9%>>" as Cloud {
+node "Infraestructura Cloud\n<<RNF06: Alta Disponibilidad 99.9%>>" as Cloud {
     
     node "Servidor Backend" as Server {
         component "API REST\n(Ruby)" as API
