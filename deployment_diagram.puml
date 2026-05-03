@@ -1,0 +1,35 @@
+@startuml
+left to right direction
+skinparam DefaultTextAlignment center
+
+node "Dispositivo Móvil (Smartphone/Tablet)\n<<RNF06: Interfaz Responsive>>" as Mobile {
+    
+    component "Aplicación Veterinaria\n(Flutter)" as AppFlutter
+    
+    component "Módulo de Compresión\nde Imágenes\n<<RNF04>>" as Compressor
+    
+    storage "Keychain / Keystore\n<<RNF03: Autenticación>>" as Keystore {
+        artifact "Token JWT" as JWT
+    }
+
+    AppFlutter ..> Compressor : "Comprime antes\nde subir"
+    AppFlutter ..> Keystore : "Lee / Guarda"
+}
+
+node "Infraestructura Cloud\n<<RNF05: Alta Disponibilidad 99.9%>>" as Cloud {
+    
+    node "Servidor Backend" as Server {
+        component "API REST\n(Ruby)" as API
+        
+        component "Módulo de Seguridad\n(Bcrypt / JWT)\n<<RNF01, RNF02>>" as Security
+        
+        database "Base de Datos\n(SQLite Embebida)" as DB
+        
+        API ..> Security : "Encripta claves y\nvalida roles"
+        API --> DB : "Persistencia"
+    }
+}
+
+AppFlutter ====> API : " Protocolo HTTPS / REST \n (Header: Authorization Bearer JWT)"
+
+@enduml

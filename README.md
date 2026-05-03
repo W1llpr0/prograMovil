@@ -57,7 +57,7 @@ Para la construcción de este proyecto, se ha seleccionado un stack tecnológico
 ### 5. Android Studio
 * Para mayor comidad para el entorno de desarrollo móvil (Front-end) y no depender de extensiones en VS Code, instalar Android Studio es la mejor opción (incluyendo SDKs de Android).
 
-## Requerimientos y casos de uso
+## Requerimientos
 
 ### 1. Requerimientos Funcionales:
 Lo que el sistema debe hacer (acciones y funcionalidades específicas)
@@ -68,19 +68,20 @@ Lo que el sistema debe hacer (acciones y funcionalidades específicas)
     3. **RF03:** El sistema debe permitir a los usuarios (clientes y veterinarios) editar la información de su perfil (teléfono, foto de perfil, etc.) según los campos permitidos para su rol.
 
 * Gestión de Mascotas y Catálogo:
-    4. **RF04:** El sistema debe permitir a los clientes registrar, editar y visualizar el perfil de sus mascotas (nombre, fecha de nacimiento, sexo, peso actual y foto).
-    5. **RF05:** El sistema debe mostrar un catálogo predefinido de especies y razas al momento de registrar una mascota, mostrando la descripción y foto referencial de la raza.
+    1. **RF04:** El sistema debe permitir a los clientes registrar, editar y visualizar el perfil de sus mascotas (nombre, fecha de nacimiento, sexo, peso actual y foto).
+    2. **RF05:** El sistema debe mostrar un catálogo predefinido de especies y razas al momento de registrar una mascota, mostrando la descripción y foto referencial de la raza.
 
 * Gestión de Consultas (Agendamiento y Atención):
-    6. **RF06:** El sistema debe permitir al cliente agendar una consulta médica, seleccionando a la mascota, el veterinario, la fecha, la hora y redactando el motivo de la visita.
-    7. **RF07:** El sistema debe asignar automáticamente el estado "Pendiente" a toda nueva consulta generada por un cliente.
-    8. **RF08:** El sistema debe permitir al veterinario visualizar una lista de las consultas que tiene agendadas.
-    9. **RF09:** El sistema debe permitir al veterinario cambiar el estado de la consulta (ej. Confirmada, En curso, Completada, Cancelada).
-    10. **RF10:** El sistema debe permitir al veterinario registrar los datos médicos de una consulta en curso o completada, incluyendo diagnóstico, tratamiento recetado y las especialidades aplicadas.
-    11. **RF11:** El sistema debe permitir al veterinario subir y visualizar documentos adjuntos (archivos o imágenes como radiografías) vinculados a la consulta.
+    1. **RF06:** El sistema debe permitir al cliente agendar una consulta médica, seleccionando a la mascota, el veterinario, la fecha, la hora y redactando el motivo de la visita.
+    2. **RF07:** El sistema debe asignar automáticamente el estado "Pendiente" a toda nueva consulta generada por un cliente.
+    3. **RF08:** El sistema debe permitir al veterinario visualizar una lista de las consultas que tiene agendadas.
+    4. **RF09:** El sistema debe permitir al veterinario cambiar el estado de la consulta (ej. Confirmada, En curso, Completada, Cancelada).
+    5. **RF10:** El sistema debe permitir al veterinario registrar los datos médicos de una consulta en curso o completada, incluyendo diagnóstico, tratamiento recetado y las especialidades aplicadas.
+    6. **RF11:** El sistema debe permitir al veterinario subir y visualizar documentos adjuntos (archivos o imágenes como radiografías) vinculados a la consulta.
+    7. **RF13:** El sistema debe permitir al cliente visualizar el historial completo de consultas médicas de sus mascotas, incluyendo el detalle de diagnósticos, tratamientos recetados y documentos adjuntos (archivos o imágenes) proporcionados por el veterinario, una vez que la consulta tenga el estado "Completada".
 
 * Sistema de Evaluación:
-    12. **RF12:** El sistema debe permitir al cliente otorgar una calificación (del 1 al 5) y escribir una reseña únicamente a las consultas que tengan el estado "Completada".
+    1. **RF12:** El sistema debe permitir al cliente otorgar una calificación (del 1 al 5) y escribir una reseña únicamente a las consultas que tengan el estado "Completada".
 
 ### 2. Requerimientos No Funcionales:
 * Cómo debe comportarse el sistema (atributos de calidad, restricciones y rendimiento).
@@ -91,3 +92,31 @@ Lo que el sistema debe hacer (acciones y funcionalidades específicas)
     5. **RNF04 (Almacenamiento):** Las imágenes (fotos de perfil, mascotas, documentos médicos) deben ser comprimidas antes de subirse al servidor para optimizar el espacio y los tiempos de carga.
     6. **RNF05 (Disponibilidad):** La API y la base de datos deben estar alojadas en la nube, garantizando una alta disponibilidad (uptime del 99.9%).
     7. **RNF06 (Usabilidad):** La interfaz debe ser intuitiva y adaptable (Responsive) a diferentes tamaños de pantalla en dispositivos móviles (smartphones y tablets).
+
+## Diagrama de Despliegue
+Puedes encontrar el diagrama de despliegue en el archivo:
+- `deployment_diagram.puml` (ubicado en la raíz del repositorio)
+
+## Casos de Uso
+Los casos de uso representan las interacciones principales de los actores (Cliente y Veterinario) con el sistema.
+* Actor: Cliente
+    1. **CU01 - Registrarse en la app:** El cliente completa el formulario para crear su cuenta de usuario.
+    2. **CU02 - Gestionar Mascotas:** El cliente crea, actualiza o visualiza el historial básico de sus mascotas.
+    3. **CU03 - Agendar Consulta Médica:** El cliente elige a su mascota, selecciona a un médico de la clínica, escoge un horario y envía la solicitud.
+    4. **CU04 - Evaluar Atención:** Tras finalizar una consulta, el cliente selecciona las estrellas (1-5) y deja un comentario sobre el servicio recibido.
+    5. **CU10 - Visualizar Historial Clínico:** El cliente ingresa al perfil de su mascota y consulta los registros médicos pasados, pudiendo leer las recetas y descargar las radiografías o análisis adjuntos.
+* Actor: Veterinario
+    1. **CU05 - Gestionar Agenda Médica:** El veterinario visualiza su calendario de citas y actualiza el estado de las consultas solicitadas.
+    2. **CU06 - Registrar Historial Clínico:** El veterinario ingresa el diagnóstico y el tratamiento de una mascota durante o después de su cita.
+    3. **CU07 - Adjuntar Resultados Médicos:** El veterinario sube archivos PDF o imágenes (como análisis de sangre o radiografías) a la consulta específica.
+* Actor común: Cliente y Veterinario
+    1. **CU08 - Iniciar Sesión:** El actor ingresa sus credenciales para acceder a sus funciones habilitadas.
+    2. **CU09 - Editar Perfil:** El actor modifica sus datos personales de contacto o actualiza su foto de perfil.
+
+Puedes encontrar el diagrama de casos de uso en el archivo:
+- `use_cases_schema.puml` (ubicado en la raíz del repositorio)
+
+## Descripción de casos de uso
+* Para realizar lo previamente dicho, se siguió y planteó el **diagrama de Bases de Datos (Schema)**: `schema.puml` (ubicado en la raíz del repositorio).
+* La descripción de los casos de uso se encuentran en el punto anterior.
+* A continuación se presentan los Mockups propuestos para la solución.
