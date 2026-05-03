@@ -2,36 +2,68 @@
 left to right direction
 skinparam packageStyle rectangle
 
-' Definición de Actores
 actor "Usuario" as user
 actor "Cliente" as client
 actor "Veterinario" as vet
 
-' Herencia de Actores (Cliente y Veterinario son Usuarios)
 client -up-|> user
 vet -up-|> user
 
-' Sistema / Aplicación
 rectangle "Aplicación Móvil Veterinaria" {
   
-  ' Casos de Uso Comunes (Usuario general)
   usecase "CU01: Registrarse en la app" as UC1
   usecase "CU02: Iniciar Sesión" as UC2
   usecase "CU03: Editar Perfil" as UC3
   
-  ' Casos de Uso del Cliente
   usecase "CU04: Gestionar Mascotas" as UC4
   usecase "CU05: Agendar Consulta Médica" as UC5
   usecase "CU06: Visualizar Historial Clínico" as UC6
   usecase "CU07: Evaluar Atención" as UC7
   
-  ' Casos de Uso del Veterinario
   usecase "CU08: Gestionar Agenda Médica" as UC8
   usecase "CU09: Registrar Datos Médicos" as UC9
   usecase "CU10: Adjuntar Resultados Médicos" as UC10
+
+  ' ===== Subprocesos =====
+
+  usecase "Ingresar datos de registro" as F1
+  usecase "Seleccionar rol de usuario" as F2
+  usecase "Confirmar registro" as F3
+
+  usecase "Ingresar credenciales" as L1
+  usecase "Autenticar usuario" as L2
+
+  usecase "Actualizar datos personales" as E1
+  usecase "Actualizar imagen de perfil" as E2
+
+  usecase "Registrar mascota" as M1
+  usecase "Actualizar mascota" as M2
+  usecase "Consultar mascotas" as M3
+
+  usecase "Seleccionar mascota" as SM
+  usecase "Seleccionar veterinario" as SV
+  usecase "Seleccionar horario" as SH
+  usecase "Confirmar cita médica" as SC
+
+  usecase "Consultar historial clínico" as H1
+  usecase "Consultar recetas médicas" as VR
+  usecase "Descargar documentos clínicos" as DD
+
+  usecase "Registrar calificación" as C1
+  usecase "Registrar comentario" as C2
+
+  usecase "Consultar agenda médica" as A1
+  usecase "Actualizar estado de consulta" as A2
+
+  usecase "Registrar diagnóstico" as D1
+  usecase "Registrar tratamiento" as D2
+
+  usecase "Cargar archivo clínico" as R1
+  usecase "Asociar archivo a consulta" as R2
 }
 
-' Relaciones entre Actores y Casos de Uso
+' ===== Actores =====
+
 user --> UC1
 user --> UC2
 user --> UC3
@@ -45,11 +77,69 @@ vet --> UC8
 vet --> UC9
 vet --> UC10
 
-' Notas de relación con los Requerimientos Funcionales
-note right of UC4 : Cubre RF04 y RF05\n(Catálogo de razas)
-note right of UC5 : Cubre RF06 y RF07\n(Estado inicial Pendiente)
-note right of UC6 : Cubre RF12\n(Ver recetas y documentos)
-note right of UC7 : Cubre RF13\n(Solo para citas completadas)
-note bottom of UC9 : Cubre RF10\n(El Veterinario registra,\n el Cliente visualiza en CU06)
+' ===== RELACIONES =====
+
+UC1 --> F1 : <<include>>
+UC1 --> F2 : <<include>>
+UC1 --> F3 : <<include>>
+
+UC2 --> L1 : <<include>>
+UC2 --> L2 : <<include>>
+
+UC3 --> E1 : <<include>>
+UC3 ..> E2 : <<extend>>
+
+UC4 --> M1 : <<include>>
+UC4 --> M2 : <<include>>
+UC4 --> M3 : <<include>>
+
+UC5 --> SM : <<include>>
+UC5 --> SV : <<include>>
+UC5 --> SH : <<include>>
+UC5 --> SC : <<include>>
+
+UC6 --> H1 : <<include>>
+UC6 --> VR : <<include>>
+UC6 --> DD : <<include>>
+
+UC7 --> C1 : <<include>>
+UC7 ..> C2 : <<extend>>
+
+UC8 --> A1 : <<include>>
+UC8 --> A2 : <<include>>
+
+UC9 --> D1 : <<include>>
+UC9 --> D2 : <<include>>
+
+UC10 --> R1 : <<include>>
+UC10 --> R2 : <<include>>
+
+' ===== NOTAS RF =====
+
+note left of UC4
+Cubre RF04 y RF05
+(Catálogo de razas)
+end note
+
+note left of UC5
+Cubre RF06 y RF07
+(Estado inicial Pendiente)
+end note
+
+note left of UC6
+Cubre RF12
+(Ver recetas y documentos)
+end note
+
+note left of UC7
+Cubre RF13
+(Solo para citas completadas)
+end note
+
+note left of UC9
+Cubre RF10
+(El Veterinario registra,
+el Cliente visualiza en CU06)
+end note
 
 @enduml
