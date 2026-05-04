@@ -208,9 +208,12 @@ El siguiente diagrama de clases muestra los modelos de dominio propuestos deriva
 - Propósito: documentar las entidades del dominio, sus atributos principales y las relaciones entre ellas.
 - Uso recomendado: servir como guía para crear clases de dominio y migraciones; los métodos y la lógica de negocio deben añadirse en el código fuente, no en este diagrama.
 - Notas de mapeo: cada clase corresponde a una tabla del esquema; los atributos primarios son los campos persistidos; las asociaciones 1..* y 0..* indican claves foráneas y colecciones.
-- Limitaciones: el diagrama no incluye operaciones (métodos) ni visibilidad; tampoco modela validaciones ni reglas de negocio.
+ - Propósito: documentar las entidades del dominio, sus atributos principales, las relaciones entre ellas y operaciones representativas que apoyan los casos de uso.
+ - Uso recomendado: servir como guía para crear clases de dominio y migraciones; los métodos incluidos son orientativos y deben implementarse en el código fuente junto con validaciones y reglas de negocio.
+ - Notas de mapeo: cada clase corresponde a una tabla del esquema; los atributos primarios son los campos persistidos; las asociaciones 1..* y 0..* indican claves foráneas y colecciones.
+ - Observación: el diagrama ahora incluye métodos públicos representativos y operaciones de dominio alineadas con los casos de uso (CU01–CU10). Estas operaciones son orientativas; las validaciones, autorizaciones y reglas de negocio se implementan en el backend.
 
-![Diagrama de Clases](Docs/diagrams/class_diagram.png)
+![Diagrama de Clases (actualizado con métodos)](Docs/diagrams/class_diagram.png)
 
 ---
 
