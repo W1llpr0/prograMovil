@@ -20,7 +20,7 @@ class User {
   +photo_url: varchar
   --
   +register(params: Map): User
-  +login(email: varchar, password: varchar): Token    ' POST /api/v1/sessions
+  +login(email: varchar, password: varchar): Token
   +updateProfile(params: Map): boolean
   +changePassword(oldPassword: varchar, newPassword: varchar): boolean
   +findById(id: int): User
@@ -32,10 +32,10 @@ class Client {
   +address: text
   +identity_document: varchar
   --
-  +listPets(): List<Pet>                               ' GET /api/v1/clients/:id/pets
-  +createPet(params: Map): Pet                         ' POST /api/v1/clients/:id/pets
-  +updateProfile(params: Map): boolean                 ' PUT /api/v1/clients/:id
-  +findById(id: int): Client                           ' GET /api/v1/clients/:id
+  +listPets(): List<Pet>
+  +createPet(params: Map): Pet
+  +updateProfile(params: Map): boolean
+  +findById(id: int): Client
 }
 
 class Veterinarian {
@@ -45,11 +45,11 @@ class Veterinarian {
   +years_experience: int
   +default_appointment_duration_minutes: int
   --
-  +listConsultations(status?: varchar): List<Consultation>  ' GET /api/v1/veterinarians/:id/consultations
-  +updateConsultationStatus(consultationId: int, status: varchar): boolean ' PUT /api/v1/consultations/:id/status
-  +listAvailability(dayOfWeek?: int): List<VeterinarianAvailability> ' GET /api/v1/veterinarians/:id/availability
-  +getAvailableSlots(date: date): List<time>              ' GET /api/v1/veterinarians/:id/availability?date=YYYY-MM-DD
-  +findById(id: int): Veterinarian                        ' GET /api/v1/veterinarians/:id
+  +listConsultations(status?: varchar): List<Consultation>
+  +updateConsultationStatus(consultationId: int, status: varchar): boolean
+  +listAvailability(dayOfWeek?: int): List<VeterinarianAvailability>
+  +getAvailableSlots(date: date): List<time>
+  +findById(id: int): Veterinarian
 }
 
 class Species {
@@ -70,7 +70,6 @@ class Breed {
   +getSpecies(): Species
   +listBySpecies(speciesId: int): List<Breed>
   +findById(id: int): Breed
-  ' Endpoints: GET /api/v1/species, GET /api/v1/species/:id, GET /api/v1/species/:id/breeds
 }
 
 class Pet {
@@ -84,7 +83,7 @@ class Pet {
   +photo_url: varchar
   --
   +getAge(): int
-  +updateProfile(params: Map): boolean                 ' PUT /api/v1/pets/:id
+  +updateProfile(params: Map): boolean
   +findById(id: int): Pet
 }
 
@@ -96,7 +95,6 @@ class Specialty {
   --
   +listAll(): List<Specialty>
   +findById(id: int): Specialty
-  ' Endpoints: GET /api/v1/specialties, GET /api/v1/specialties/:id
 }
 
 class Consultation {
@@ -113,11 +111,11 @@ class Consultation {
   +review_comment: text
   +review_datetime: datetime
   --
-  +create(params: Map): Consultation        ' POST /api/v1/consultations (CU05)
-  +confirm(): boolean                      ' PUT /api/v1/consultations/:id/confirm (CU08)
-  +cancel(reason: varchar): boolean        ' PUT /api/v1/consultations/:id/cancel (CU08)
-  +complete(diagnosis: text, treatment: text): boolean ' PUT /api/v1/consultations/:id/complete (CU09)
-  +attachDocument(doc: ConsultationDocument): boolean  ' POST /api/v1/consultations/:id/documents (CU10)
+  +create(params: Map): Consultation
+  +confirm(): boolean
+  +cancel(reason: varchar): boolean
+  +complete(diagnosis: text, treatment: text): boolean
+  +attachDocument(doc: ConsultationDocument): boolean
   +addSpecialty(specialtyId: int): boolean
   +rate(rating: int, comment: varchar): boolean        ' POST /api/v1/consultations/:id/rate (CU07)
   +findById(id: int): Consultation
@@ -129,7 +127,7 @@ class ConsultationDocument {
   +file_url: varchar
   +document_type: varchar
   --
-  +upload(file: File): ConsultationDocument  ' POST /api/v1/consultations/:id/documents
+  +upload(file: File): ConsultationDocument
   +delete(): boolean
   +findById(id: int): ConsultationDocument
 }
@@ -152,9 +150,9 @@ class VeterinarianAvailability {
   +is_active: boolean
   --
   +listForVeterinarian(vetId: int): List<VeterinarianAvailability>
-  +activate(): boolean                              ' PUT /api/v1/veterinarians/:id/availability/:id/activate
-  +deactivate(): boolean                            ' PUT /api/v1/veterinarians/:id/availability/:id/deactivate
-  +findById(id: int): VeterinarianAvailability     ' GET /api/v1/veterinarians/:id/availability/:id
+  +activate(): boolean
+  +deactivate(): boolean
+  +findById(id: int): VeterinarianAvailability
 }
 
 ' Relaciones
