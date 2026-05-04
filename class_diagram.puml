@@ -7,6 +7,7 @@ class Sex {
   +name: varchar
 }
 
+
 class User {
   +id: int
   +sex_id: int
@@ -17,6 +18,12 @@ class User {
   +last_name: varchar
   +phone: varchar
   +photo_url: varchar
+  --
+  +authenticate(email: varchar, password: varchar): boolean
+  +updateProfile(data: Map): boolean
+  +changePassword(oldPassword: varchar, newPassword: varchar): boolean
+  +findById(id: int): User
+  +list(offset: int, limit: int): List<User>
 }
 
 class Client {
@@ -24,6 +31,11 @@ class Client {
   +user_id: int
   +address: text
   +identity_document: varchar
+  --
+  +getPets(): List<Pet>
+  +createPet(data: Map): Pet
+  +update(data: Map): boolean
+  +findById(id: int): Client
 }
 
 class Veterinarian {
@@ -32,11 +44,20 @@ class Veterinarian {
   +license_number: varchar
   +years_experience: int
   +default_appointment_duration_minutes: int
+  --
+  +getAvailability(dayOfWeek: int): List<VeterinarianAvailability>
+  +setAvailability(av: VeterinarianAvailability): boolean
+  +getAvailableSlots(date: date): List<time>
+  +scheduleConsultation(consultation: Consultation): boolean
+  +findById(id: int): Veterinarian
 }
 
 class Species {
   +id: int
   +name: varchar
+  --
+  +listAll(): List<Species>
+  +findById(id: int): Species
 }
 
 class Breed {
@@ -45,6 +66,10 @@ class Breed {
   +name: varchar
   +description: text
   +reference_image_url: varchar
+  --
+  +getSpecies(): Species
+  +listBySpecies(speciesId: int): List<Breed>
+  +findById(id: int): Breed
 }
 
 class Pet {
@@ -56,6 +81,10 @@ class Pet {
   +birth_date: date
   +current_weight: decimal
   +photo_url: varchar
+  --
+  +getAge(): int
+  +updateProfile(data: Map): boolean
+  +findById(id: int): Pet
 }
 
 class Specialty {
@@ -63,6 +92,9 @@ class Specialty {
   +name: varchar
   +description: text
   +icon_url: varchar
+  --
+  +listAll(): List<Specialty>
+  +findById(id: int): Specialty
 }
 
 class Consultation {
@@ -78,6 +110,15 @@ class Consultation {
   +rating: int
   +review_comment: text
   +review_datetime: datetime
+  --
+  +schedule(clientId: int, petId: int, vetId: int, date: date, time: time): Consultation
+  +confirm(): boolean
+  +cancel(reason: varchar): boolean
+  +recordDiagnosis(text: text): boolean
+  +attachDocument(doc: ConsultationDocument): boolean
+  +addSpecialty(specialtyId: int): boolean
+  +rate(rating: int, comment: varchar): boolean
+  +findById(id: int): Consultation
 }
 
 class ConsultationDocument {
@@ -85,11 +126,17 @@ class ConsultationDocument {
   +consultation_id: int
   +file_url: varchar
   +document_type: varchar
+  --
+  +upload(file: File): ConsultationDocument
+  +findById(id: int): ConsultationDocument
 }
 
 class ConsultationSpecialty {
   +consultation_id: int
   +specialty_id: int
+  --
+  +add(consultationId: int, specialtyId: int): ConsultationSpecialty
+  +remove(consultationId: int, specialtyId: int): boolean
 }
 
 class VeterinarianAvailability {
@@ -100,6 +147,11 @@ class VeterinarianAvailability {
   +end_time: time
   +slot_duration_minutes: int
   +is_active: boolean
+  --
+  +listForVeterinarian(vetId: int): List<VeterinarianAvailability>
+  +activate(): boolean
+  +deactivate(): boolean
+  +findById(id: int): VeterinarianAvailability
 }
 
 ' Relaciones
