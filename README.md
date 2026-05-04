@@ -223,6 +223,35 @@ Métodos clave:
 - Ejemplos: registro e inicio de sesión en `User`, gestión de mascotas en `Client` y `Pet`, control del ciclo de atención en `Consultation`, adjuntos en `ConsultationDocument` y horarios en `VeterinarianAvailability`.
 - El objetivo es mostrar qué responsabilidades tiene cada clase dentro del dominio, no detallar la implementación completa.
 
+Explicación más detallada de los métodos:
+- `User.register()` crea una cuenta nueva con los datos base del usuario y su rol.
+- `User.login()` valida credenciales y permite el acceso al sistema.
+- `User.updateProfile()` actualiza datos de contacto o foto de perfil.
+- `User.changePassword()` modifica la contraseña actual por una nueva.
+- `Client.listPets()` devuelve las mascotas registradas por ese cliente.
+- `Client.createPet()` agrega una nueva mascota asociada al cliente.
+- `Veterinarian.listConsultations()` muestra las consultas asignadas al veterinario.
+- `Veterinarian.updateConsultationStatus()` cambia el estado de una consulta en curso o pendiente.
+- `Veterinarian.listAvailability()` recupera los bloques de horario disponibles.
+- `Veterinarian.getAvailableSlots()` calcula los espacios libres según fecha y configuración.
+- `Pet.getAge()` calcula la edad de la mascota a partir de su fecha de nacimiento.
+- `Pet.updateProfile()` actualiza nombre, peso, foto u otros datos básicos de la mascota.
+- `Consultation.create()` inicia una nueva consulta con mascota, veterinario, fecha, hora y motivo.
+- `Consultation.confirm()` marca la consulta como confirmada.
+- `Consultation.cancel()` cancela la consulta y guarda la razón.
+- `Consultation.complete()` cierra la atención registrando diagnóstico y tratamiento.
+- `Consultation.attachDocument()` asocia un documento médico a la consulta.
+- `Consultation.addSpecialty()` relaciona la consulta con una especialidad clínica.
+- `Consultation.rate()` guarda la calificación y comentario del cliente.
+- `ConsultationDocument.upload()` representa la carga de un archivo médico.
+- `ConsultationDocument.delete()` elimina un documento adjunto.
+- `ConsultationSpecialty.add()` crea la relación entre una consulta y una especialidad.
+- `ConsultationSpecialty.remove()` elimina esa relación.
+- `VeterinarianAvailability.listForVeterinarian()` obtiene la agenda disponible de un veterinario.
+- `VeterinarianAvailability.activate()` habilita un bloque de disponibilidad.
+- `VeterinarianAvailability.deactivate()` deshabilita un bloque de disponibilidad.
+- `Species.listAll()`, `Breed.listBySpecies()` y `Specialty.listAll()` recuperan catálogos del sistema para usarse en formularios y consultas.
+
 ![Diagrama de Clases (métodos representativos)](Docs/diagrams/class_diagram_v2.png)
 
 ---
