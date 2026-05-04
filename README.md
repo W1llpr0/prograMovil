@@ -5,11 +5,22 @@ Proyecto del curso de Programación Móvil de la Universidad de Lima.
 
 Pulsa cualquiera de los subtítulos para ir directamente a la sección:
 
-1. [Casos de Uso](#casos-de-uso)
-2. [Diagrama de Base de Datos](#diagrama-de-base-de-datos-schema)
-3. [Diagrama de Clases](#diagrama-de-clases)
-4. [Diagrama de Despliegue](#diagrama-de-despliegue)
-5. [Mockups](#mockups-prototipos-de-interfaz)
+1. [Integrantes](#integrantes)
+2. [Enunciado del Programa](#enunciado-del-programa-aplicación-móvil-veterinaria)
+3. [Explicación del entorno de desarrollo](#explicación-del-entorno-de-desarrollo-requisitos-previos)
+4. [Requerimientos](#requerimientos)
+5. [Diagrama de Despliegue](#diagrama-de-despliegue)
+6. [Casos de Uso](#casos-de-uso)
+7. [Descripción de Casos de Uso](#descripción-de-casos-de-uso)
+8. [Diagrama de Base de Datos](#diagrama-de-base-de-datos-schema)
+9. [Diagrama de Clases](#diagrama-de-clases)
+10. [Mapeo de Requerimientos No Funcionales al Diagrama de Despliegue](#mapeo-de-requerimientos-no-funcionales-al-diagrama-de-despliegue)
+11. [Mockups](#mockups-prototipos-de-interfaz)
+12. [Flutter y Dart](#1-flutter-y-dart-front-end)
+13. [Ruby](#2-ruby-backend--api)
+14. [SQLite](#3-sqlite-base-de-datos)
+15. [Visual Studio Code](#4-visual-studio-code-ide)
+16. [Android Studio](#5-android-studio)
 
 
 ## 👥 Integrantes
