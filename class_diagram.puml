@@ -1,0 +1,120 @@
+@startuml
+' Diagrama de clases derivado del schema
+skinparam classAttributeIconSize 0
+
+class Sex {
+  +id: int
+  +name: varchar
+}
+
+class User {
+  +id: int
+  +sex_id: int
+  +role: varchar
+  +email: varchar
+  +password: varchar
+  +first_name: varchar
+  +last_name: varchar
+  +phone: varchar
+  +photo_url: varchar
+}
+
+class Client {
+  +id: int
+  +user_id: int
+  +address: text
+  +identity_document: varchar
+}
+
+class Veterinarian {
+  +id: int
+  +user_id: int
+  +license_number: varchar
+  +years_experience: int
+  +default_appointment_duration_minutes: int
+}
+
+class Species {
+  +id: int
+  +name: varchar
+}
+
+class Breed {
+  +id: int
+  +species_id: int
+  +name: varchar
+  +description: text
+  +reference_image_url: varchar
+}
+
+class Pet {
+  +id: int
+  +client_id: int
+  +breed_id: int
+  +sex_id: int
+  +name: varchar
+  +birth_date: date
+  +current_weight: decimal
+  +photo_url: varchar
+}
+
+class Specialty {
+  +id: int
+  +name: varchar
+  +description: text
+  +icon_url: varchar
+}
+
+class Consultation {
+  +id: int
+  +pet_id: int
+  +veterinarian_id: int
+  +status: varchar
+  +consultation_date: date
+  +consultation_time: time
+  +reason: text
+  +diagnosis: text
+  +prescribed_treatment: text
+  +rating: int
+  +review_comment: text
+  +review_datetime: datetime
+}
+
+class ConsultationDocument {
+  +id: int
+  +consultation_id: int
+  +file_url: varchar
+  +document_type: varchar
+}
+
+class ConsultationSpecialty {
+  +consultation_id: int
+  +specialty_id: int
+}
+
+class VeterinarianAvailability {
+  +id: int
+  +veterinarian_id: int
+  +day_of_week: int
+  +start_time: time
+  +end_time: time
+  +slot_duration_minutes: int
+  +is_active: boolean
+}
+
+' Relaciones
+User "1" -- "0..*" Client : has
+User "1" -- "0..1" Veterinarian : has
+Sex "1" -- "0..*" User : relates
+Sex "1" -- "0..*" Pet : relates
+Species "1" -- "0..*" Breed : contains
+Breed "1" -- "0..*" Pet : contains
+Client "1" -- "0..*" Pet : owns
+Pet "1" -- "0..*" Consultation : has
+Veterinarian "1" -- "0..*" Consultation : attends
+Consultation "1" -- "0..*" ConsultationDocument : attaches
+Consultation "1" -- "0..*" ConsultationSpecialty : classifies
+Specialty "1" -- "0..*" ConsultationSpecialty : referenced
+Veterinarian "1" -- "0..*" VeterinarianAvailability : defines
+
+@enduml
