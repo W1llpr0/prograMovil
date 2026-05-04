@@ -16,11 +16,6 @@ Pulsa cualquiera de los subtítulos para ir directamente a la sección:
 9. [Diagrama de Clases](#diagrama-de-clases)
 10. [Mapeo de Requerimientos No Funcionales al Diagrama de Despliegue](#mapeo-de-requerimientos-no-funcionales-al-diagrama-de-despliegue)
 11. [Mockups](#mockups-prototipos-de-interfaz)
-12. [Flutter y Dart](#1-flutter-y-dart-front-end)
-13. [Ruby](#2-ruby-backend--api)
-14. [SQLite](#3-sqlite-base-de-datos)
-15. [Visual Studio Code](#4-visual-studio-code-ide)
-16. [Android Studio](#5-android-studio)
 
 
 ## 👥 Integrantes
