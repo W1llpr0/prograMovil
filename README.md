@@ -202,24 +202,13 @@ El diagrama completo se encuentra en: `schema.puml` (ubicado en la raíz del rep
 ---
 
 ## Diagrama de Clases
+El diagrama de clases muestra las entidades del dominio, sus atributos principales, las relaciones entre ellas y métodos orientativos de negocio.
 
-El siguiente diagrama de clases muestra los modelos de dominio propuestos derivados del esquema de base de datos. Está pensado para orientar la implementación de los `models` en el backend y su mapeo a tablas mediante un ORM (por ejemplo ActiveRecord en Ruby).
+- Propósito: documentar las entidades del dominio y orientar la implementación de los `models` y las migraciones.
+- Uso recomendado: usar el diagrama como guía; las validaciones, autorizaciones y la lógica completa deben implementarse en el código. Los métodos incluidos son orientativos y no deben contener detalles de la API (rutas/verbos HTTP).
+- Notas de mapeo: cada clase corresponde a una tabla del esquema; las asociaciones `1..*` y `0..*` indican claves foráneas y colecciones.
 
-- Propósito: documentar las entidades del dominio, sus atributos principales y las relaciones entre ellas.
-- Uso recomendado: servir como guía para crear clases de dominio y migraciones; los métodos y la lógica de negocio deben añadirse en el código fuente, no en este diagrama.
-- Notas de mapeo: cada clase corresponde a una tabla del esquema; los atributos primarios son los campos persistidos; las asociaciones 1..* y 0..* indican claves foráneas y colecciones.
- - Propósito: documentar las entidades del dominio, sus atributos principales, las relaciones entre ellas y operaciones representativas que apoyan los casos de uso.
- - Uso recomendado: servir como guía para crear clases de dominio y migraciones; los métodos incluidos son orientativos y deben implementarse en el código fuente junto con validaciones y reglas de negocio.
- - Notas de mapeo: cada clase corresponde a una tabla del esquema; los atributos primarios son los campos persistidos; las asociaciones 1..* y 0..* indican claves foráneas y colecciones.
- - Observación: el diagrama ahora incluye métodos públicos representativos y operaciones de dominio alineadas con los casos de uso (CU01–CU10). Estas operaciones son orientativas; las validaciones, autorizaciones y reglas de negocio se implementan en el backend.
- - Observación: el diagrama ahora incluye métodos públicos representativos y operaciones de dominio alineadas con los casos de uso (CU01–CU10). Estas operaciones son orientativas; las validaciones, autorizaciones y reglas de negocio se implementan en el backend.
- - Observación: el diagrama ahora incluye métodos públicos representativos y operaciones de dominio alineadas con los casos de uso (CU01–CU10). Estas operaciones son orientativas; las validaciones, autorizaciones y reglas de negocio se implementan en el backend.
-
-Nota: el diagrama de clases contiene operaciones representativas para orientar el modelado del dominio y su lógica. No es necesario que el diagrama incluya rutas o verbos HTTP; el diseño de la API (endpoints, controladores y rutas) debe documentarse por separado según la convención del framework elegido.
-
-Nota: los endpoints son ejemplos orientativos para guiar la implementación del backend. Ajusta rutas y verbos HTTP según convenciones del framework elegido.
-
-![Diagrama de Clases (actualizado con métodos)](Docs/diagrams/class_diagram.png)
+![Diagrama de Clases (métodos representativos)](Docs/diagrams/class_diagram.png)
 
 ---
 
