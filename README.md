@@ -1,4 +1,4 @@
-# 📱 PrograMovil
+# 📱 Programacion Movil
 Proyecto del curso de Programación Móvil de la Universidad de Lima.
 
 ## 👥 Integrantes
