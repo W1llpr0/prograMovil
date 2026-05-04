@@ -135,6 +135,14 @@ El diagrama completo se encuentra en: `schema.puml` (ubicado en la raíz del rep
 
 ---
 
+## Diagrama de Clases
+
+El siguiente diagrama de clases muestra los modelos de dominio propuestos derivados del esquema de base de datos.
+
+![Diagrama de Clases](Docs/diagrams/class_diagram.png)
+
+---
+
 ## Diagrama de Despliegue
 
 La arquitectura del sistema está compuesta por:
