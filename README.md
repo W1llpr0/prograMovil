@@ -131,6 +131,8 @@ Para soportar todos los requisitos funcionales, se diseñó un modelo de entidad
 
 El diagrama completo se encuentra en: `schema.puml` (ubicado en la raíz del repositorio)
 
+![Diagrama de Base de Datos](Docs/diagrams/schema.png)
+
 ---
 
 ## Diagrama de Despliegue
