@@ -1,15 +1,15 @@
 # 📱 Programacion Movil
 Proyecto del curso de Programación Móvil de la Universidad de Lima.
 
-## Navegación rápida
+## Índice
 
 Pulsa cualquiera de los subtítulos para ir directamente a la sección:
 
-- [Casos de Uso](#casos-de-uso)
-- [Diagrama de Base de Datos](#diagrama-de-base-de-datos-schema)
-- [Diagrama de Clases](#diagrama-de-clases)
-- [Diagrama de Despliegue](#diagrama-de-despliegue)
-- [Mockups](#mockups-prototipos-de-interfaz)
+1. [Casos de Uso](#casos-de-uso)
+2. [Diagrama de Base de Datos](#diagrama-de-base-de-datos-schema)
+3. [Diagrama de Clases](#diagrama-de-clases)
+4. [Diagrama de Despliegue](#diagrama-de-despliegue)
+5. [Mockups](#mockups-prototipos-de-interfaz)
 
 
 ## 👥 Integrantes
