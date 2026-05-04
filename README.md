@@ -212,6 +212,31 @@ El siguiente diagrama de clases muestra los modelos de dominio propuestos deriva
  - Uso recomendado: servir como guía para crear clases de dominio y migraciones; los métodos incluidos son orientativos y deben implementarse en el código fuente junto con validaciones y reglas de negocio.
  - Notas de mapeo: cada clase corresponde a una tabla del esquema; los atributos primarios son los campos persistidos; las asociaciones 1..* y 0..* indican claves foráneas y colecciones.
  - Observación: el diagrama ahora incluye métodos públicos representativos y operaciones de dominio alineadas con los casos de uso (CU01–CU10). Estas operaciones son orientativas; las validaciones, autorizaciones y reglas de negocio se implementan en el backend.
+ - Observación: el diagrama ahora incluye métodos públicos representativos y operaciones de dominio alineadas con los casos de uso (CU01–CU10). Estas operaciones son orientativas; las validaciones, autorizaciones y reglas de negocio se implementan en el backend.
+
+### Mapeo rápido: métodos del diagrama → endpoints sugeridos
+
+| Clase | Método (diagrama) | Endpoint REST sugerido | Caso de Uso |
+|---|---:|---|---|
+| `User` | `login(email,password)` | `POST /api/v1/sessions` | CU02 |
+| `User` | `register(params)` | `POST /api/v1/users` | CU01 |
+| `Client` | `createPet(params)` | `POST /api/v1/clients/:id/pets` | CU04 |
+| `Pet` | `getAge()` | (cliente-local) | CU04 |
+| `Consultation` | `create(params)` | `POST /api/v1/consultations` | CU05 |
+| `Consultation` | `confirm()` / `cancel()` / `complete()` | `PUT /api/v1/consultations/:id/confirm|cancel|complete` | CU08/CU09 |
+| `Consultation` | `attachDocument(doc)` | `POST /api/v1/consultations/:id/documents` | CU10 |
+| `VeterinarianAvailability` | `listForVeterinarian(vetId)` / `getAvailableSlots(date)` | `GET /api/v1/veterinarians/:id/availability` | CU08 |
+
+| `Veterinarian` | `listConsultations(status?)` | `GET /api/v1/veterinarians/:id/consultations` | CU08 |
+| `Veterinarian` | `updateConsultationStatus(consultationId,status)` | `PUT /api/v1/consultations/:id/status` | CU08 |
+| `Pet` | `updateProfile(params)` | `PUT /api/v1/pets/:id` | CU04 |
+| `ConsultationDocument` | `upload(file)` / `delete()` | `POST /api/v1/consultations/:id/documents` / `DELETE /api/v1/consultations/:id/documents/:doc_id` | CU10 |
+| `Species` / `Breed` | `listAll()` / `listBySpecies()` | `GET /api/v1/species`, `GET /api/v1/species/:id/breeds` | CU04 |
+| `Specialty` | `listAll()` | `GET /api/v1/specialties` | CU09 |
+
+Actualicé el diagrama de clases (`Docs/diagrams/class_diagram.png`) para incluir métodos y comentarios con endpoints sugeridos. Estos endpoints son convenciones orientativas; adapta nombres y rutas según tu API y convenciones REST.
+
+Nota: los endpoints son ejemplos orientativos para guiar la implementación del backend. Ajusta rutas y verbos HTTP según convenciones del framework elegido.
 
 ![Diagrama de Clases (actualizado con métodos)](Docs/diagrams/class_diagram.png)
 
