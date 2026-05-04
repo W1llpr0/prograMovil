@@ -119,4 +119,44 @@ Puedes encontrar el diagrama de casos de uso en el archivo:
 ## Descripción de casos de uso
 * Para realizar lo previamente dicho, se siguió y planteó el **diagrama de Bases de Datos (Schema)**: `schema.puml` (ubicado en la raíz del repositorio).
 * La descripción de los casos de uso se encuentran en el punto anterior.
+
+### Diagramas Detallados de Casos de Uso
+
+#### Casos de Uso Comunes (Cliente y Veterinario)
+
+**CU01 - Registrarse en la app**
+![CU01 Registrarse](Docs/casos_de_uso/CU_01.jpg)
+
+**CU02 - Iniciar Sesión**
+![CU02 Iniciar Sesión](Docs/casos_de_uso/CU_02.jpg)
+
+**CU03 - Editar Perfil**
+![CU03 Editar Perfil](Docs/casos_de_uso/CU_03.jpg)
+
+#### Casos de Uso - Cliente
+
+**CU04 - Gestionar Mascotas**
+![CU04 Gestionar Mascotas](Docs/casos_de_uso/CU_04.jpg)
+
+**CU05 - Agendar Consulta Médica**
+![CU05 Agendar Consulta](Docs/casos_de_uso/CU_05.jpg)
+
+**CU06 - Visualizar Historial Clínico**
+![CU06 Historial Clínico](Docs/casos_de_uso/CU_06.jpg)
+
+**CU07 - Evaluar Atención**
+![CU07 Evaluar Atención](Docs/casos_de_uso/CU_07.jpg)
+
+#### Casos de Uso - Veterinario
+
+**CU08 - Gestionar Agenda Médica**
+![CU08 Gestionar Agenda](Docs/casos_de_uso/CU_08.jpg)
+
+**CU09 - Registrar Datos Médicos**
+![CU09 Registrar Datos Médicos](Docs/casos_de_uso/CU_09.jpg)
+
+**CU10 - Adjuntar Resultados Médicos**
+![CU10 Adjuntar Resultados](Docs/casos_de_uso/CU_10.jpg)
+
+## Mockups
 * A continuación se presentan los Mockups propuestos para la solución.
