@@ -125,38 +125,42 @@ Puedes encontrar el diagrama de casos de uso en el archivo:
 #### Casos de Uso Comunes (Cliente y Veterinario)
 
 **CU01 - Registrarse en la app**
-![CU01 Registrarse](Docs/casos_de_uso/CU_01.jpg)
+<img src="Docs/casos_de_uso/CU_01.jpg" width="800" alt="CU01 Registrarse"/>
 
 **CU02 - Iniciar Sesión**
-![CU02 Iniciar Sesión](Docs/casos_de_uso/CU_02.jpg)
+<img src="Docs/casos_de_uso/CU_02.jpg" width="800" alt="CU02 Iniciar Sesión"/>
 
 **CU03 - Editar Perfil**
-![CU03 Editar Perfil](Docs/casos_de_uso/CU_03.jpg)
+<img src="Docs/casos_de_uso/CU_03.jpg" width="800" alt="CU03 Editar Perfil"/>
+
+---
 
 #### Casos de Uso - Cliente
 
 **CU04 - Gestionar Mascotas**
-![CU04 Gestionar Mascotas](Docs/casos_de_uso/CU_04.jpg)
+<img src="Docs/casos_de_uso/CU_04.jpg" width="800" alt="CU04 Gestionar Mascotas"/>
 
 **CU05 - Agendar Consulta Médica**
-![CU05 Agendar Consulta](Docs/casos_de_uso/CU_05.jpg)
+<img src="Docs/casos_de_uso/CU_05.jpg" width="800" alt="CU05 Agendar Consulta"/>
 
 **CU06 - Visualizar Historial Clínico**
-![CU06 Historial Clínico](Docs/casos_de_uso/CU_06.jpg)
+<img src="Docs/casos_de_uso/CU_06.jpg" width="800" alt="CU06 Historial Clínico"/>
 
 **CU07 - Evaluar Atención**
-![CU07 Evaluar Atención](Docs/casos_de_uso/CU_07.jpg)
+<img src="Docs/casos_de_uso/CU_07.jpg" width="800" alt="CU07 Evaluar Atención"/>
+
+---
 
 #### Casos de Uso - Veterinario
 
 **CU08 - Gestionar Agenda Médica**
-![CU08 Gestionar Agenda](Docs/casos_de_uso/CU_08.jpg)
+<img src="Docs/casos_de_uso/CU_08.jpg" width="800" alt="CU08 Gestionar Agenda"/>
 
 **CU09 - Registrar Datos Médicos**
-![CU09 Registrar Datos Médicos](Docs/casos_de_uso/CU_09.jpg)
+<img src="Docs/casos_de_uso/CU_09.jpg" width="800" alt="CU09 Registrar Datos Médicos"/>
 
 **CU10 - Adjuntar Resultados Médicos**
-![CU10 Adjuntar Resultados](Docs/casos_de_uso/CU_10.jpg)
+<img src="Docs/casos_de_uso/CU_10.jpg" width="800" alt="CU10 Adjuntar Resultados"/>
 
 ## Mockups
 * A continuación se presentan los Mockups propuestos para la solución.
