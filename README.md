@@ -116,6 +116,14 @@ Los casos de uso representan las interacciones principales de los actores (Clien
 Puedes encontrar el diagrama de casos de uso en el archivo:
 - `use_cases_schema.puml` (ubicado en la raíz del repositorio)
 
+### Diagramas Completos de Casos de Uso
+
+Las siguientes imágenes contienen los diagramas completos de los casos de uso (cada imagen representa la mitad del diagrama completo). Se muestran apiladas una debajo de la otra para facilitar su lectura e impresión.
+
+<img src="Docs/caso_de_uso/CASO_DE_USO_COMPLETO_1.jpg" width="800" alt="Caso de Uso Completo 1"/>
+
+<img src="Docs/caso_de_uso/CASO_DE_USO_COMPLETO_2.jpg" width="800" alt="Caso de Uso Completo 2"/>
+
 ## Diagrama de Base de Datos (Schema)
 
 Para soportar todos los requisitos funcionales, se diseñó un modelo de entidades relacional que incluye:
@@ -137,7 +145,12 @@ El diagrama completo se encuentra en: `schema.puml` (ubicado en la raíz del rep
 
 ## Diagrama de Clases
 
-El siguiente diagrama de clases muestra los modelos de dominio propuestos derivados del esquema de base de datos.
+El siguiente diagrama de clases muestra los modelos de dominio propuestos derivados del esquema de base de datos. Está pensado para orientar la implementación de los `models` en el backend y su mapeo a tablas mediante un ORM (por ejemplo ActiveRecord en Ruby).
+
+- Propósito: documentar las entidades del dominio, sus atributos principales y las relaciones entre ellas.
+- Uso recomendado: servir como guía para crear clases de dominio y migraciones; los métodos y la lógica de negocio deben añadirse en el código fuente, no en este diagrama.
+- Notas de mapeo: cada clase corresponde a una tabla del esquema; los atributos primarios son los campos persistidos; las asociaciones 1..* y 0..* indican claves foráneas y colecciones.
+- Limitaciones: el diagrama no incluye operaciones (métodos) ni visibilidad; tampoco modela validaciones ni reglas de negocio.
 
 ![Diagrama de Clases](Docs/diagrams/class_diagram.png)
 
