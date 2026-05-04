@@ -303,3 +303,190 @@ Los mockups representan las pantallas principales de la aplicación, diseñadas 
 - Interfaz: Listado de consultas completadas con diagnóstico y tratamiento
 - Componentes: Datos de mascota, historial de consultas, recetas, documentos adjuntos
 - Requisitos cubiertos: RF12
+
+## Descripción Detallada de Casos de Uso (con Prototipos Visuales)
+
+A continuación, se detallan las interacciones principales del sistema, ordenadas por Caso de Uso. Cada sección incluye su diagrama de flujo funcional, los prototipos de interfaz (mockups) que ilustran la experiencia del usuario y los **requerimientos funcionales que satisfacen**.
+
+---
+
+### Casos de Uso Comunes (Cliente y Veterinario)
+
+#### **CU01 - Registrarse en la app**
+*   **Actor principal:** Usuario no registrado
+*   **Descripción:** El usuario se registra en la aplicación eligiendo un rol (Cliente o Veterinario) y proporcionando su información básica.
+*   **Requisitos Satisfechos:**
+    *   **RF01:** Registro de nuevos usuarios asignándoles un rol.
+*   **Flujo principal:**
+    1. El usuario selecciona "Regístrate" en la pantalla de inicio.
+    2. El sistema muestra un selector de rol.
+    3. El usuario ingresa la información requerida (nombres, teléfono, dirección, etc.).
+    4. El sistema valida que el correo no exista y crea la cuenta en la base de datos.
+    5. El sistema inicia la sesión automáticamente.
+
+<p align="center">
+  <img src="Docs/mockups/m_2.jpg" width="300" alt="Mockup Registro"/>
+</p>
+
+---
+
+#### **CU02 - Iniciar Sesión**
+*   **Actor principal:** Usuario (Cliente / Veterinario)
+*   **Descripción:** El usuario accede a su cuenta existente en la aplicación mediante sus credenciales.
+*   **Requisitos Satisfechos:**
+    *   **RF02:** Inicio de sesión utilizando correo electrónico y contraseña.
+    *   *RNF02:* El sistema carga el Dashboard correspondiente al rol (Autorización).
+*   **Flujo principal:**
+    1. El usuario abre la aplicación y visualiza la pantalla de bienvenida.
+    2. Ingresa su correo electrónico y contraseña.
+    3. Toca el botón "Iniciar Sesión".
+    4. El sistema valida las credenciales encriptadas en la base de datos.
+    5. El sistema redirige al usuario a su respectivo Dashboard.
+
+<p align="center">
+  <img src="Docs/mockups/m_1.jpg" width="300" alt="Mockup Login"/>
+</p>
+
+---
+
+#### **CU03 - Editar Perfil**
+*   **Actor principal:** Usuario (Cliente / Veterinario)
+*   **Descripción:** El usuario administra los datos de su cuenta. Los clientes actualizan datos de contacto; los veterinarios gestionan su experiencia y especialidades.
+*   **Requisitos Satisfechos:**
+    *   **RF03:** Editar información del perfil según los campos permitidos para su rol.
+*   **Flujo principal:**
+    1. El usuario navega a la pestaña "Perfil".
+    2. El sistema muestra su información personal y avatar.
+    3. El usuario puede modificar sus datos editables según su rol.
+    4. El sistema guarda los cambios en la base de datos.
+
+<p align="center">
+  <img src="Docs/mockups/m_8.jpg" width="300" alt="Mockup Perfil Cliente"/>
+  <img src="Docs/mockups/m_14.jpg" width="300" alt="Mockup Perfil Veterinario"/>
+</p>
+
+---
+
+### Casos de Uso - Cliente
+
+#### **CU04 - Gestionar Mascotas**
+*   **Actor principal:** Cliente
+*   **Descripción:** El cliente visualiza la lista de sus animales registrados, accede a sus perfiles o inscribe nuevos pacientes.
+*   **Requisitos Satisfechos:**
+    *   **RF04:** Registrar, editar y visualizar el perfil de mascotas.
+    *   **RF05:** (Al crear mascota) Mostrar catálogo de especies y razas.
+*   **Flujo principal:**
+    1. El cliente selecciona la pestaña "Mascotas" en la navegación inferior.
+    2. El sistema recupera de la tabla `pets` las mascotas asociadas a su ID.
+    3. El usuario visualiza la lista con foto, nombre, raza, edad y sexo.
+    4. El cliente puede seleccionar una mascota específica o pulsar el botón flotante (+) para registrar una nueva.
+
+<p align="center">
+  <img src="Docs/mockups/m_3.jpg" width="300" alt="Mockup Dashboard Cliente con Mascotas"/>
+  <img src="Docs/mockups/m_4.jpg" width="300" alt="Mockup Lista de Mascotas"/>
+</p>
+
+---
+
+#### **CU05 - Agendar Consulta Médica**
+*   **Actor principal:** Cliente
+*   **Descripción:** El cliente reserva un turno seleccionando a la mascota paciente, el servicio, el médico y el horario.
+*   **Requisitos Satisfechos:**
+    *   **RF06:** Agendar consulta seleccionando mascota, veterinario, horario y motivo.
+    *   **RF07:** Asignar estado "Pendiente" automáticamente a la nueva consulta.
+*   **Flujo principal:**
+    1. El cliente presiona el botón "Agendar Cita".
+    2. El cliente escoge qué mascota necesita atención y la especialidad requerida.
+    3. El sistema lista a los veterinarios disponibles filtrados por la especialidad.
+    4. El cliente escoge un día y un intervalo de tiempo disponible en la agenda del doctor elegido.
+    5. El cliente confirma la reservación y el sistema guarda la consulta con estado "Pendiente".
+
+<p align="center">
+  <img src="Docs/mockups/m_6.jpg" width="300" alt="Mockup Agendar Paso 1"/>
+  <img src="Docs/mockups/m_7.jpg" width="300" alt="Mockup Agendar Paso 2"/>
+</p>
+
+---
+
+#### **CU06 - Visualizar Historial Clínico**
+*   **Actor principal:** Cliente / Veterinario
+*   **Descripción:** Permite consultar el registro médico pasado de una mascota. El cliente lo ve como historial; el veterinario lo ve como pre-consulta.
+*   **Requisitos Satisfechos:**
+    *   **RF12:** Visualizar el historial completo de consultas médicas de sus mascotas.
+*   **Flujo principal:**
+    1. El usuario selecciona una mascota desde su lista (Cliente) o agenda (Veterinario).
+    2. El sistema muestra la ficha técnica estática (peso, sexo, raza).
+    3. Se despliega una línea de tiempo (timeline) ordenando las consultas con estado "Completada".
+    4. Se visualiza el diagnóstico de cada cita y los motivos de la misma.
+
+<p align="center">
+  <img src="Docs/mockups/m_5.jpg" width="300" alt="Mockup Historial Timeline (Cliente)"/>
+  <img src="Docs/mockups/m_11.jpg" width="300" alt="Mockup Pre-Consulta (Veterinario)"/>
+</p>
+
+---
+
+#### **CU07 - Evaluar Atención**
+*   **Actor principal:** Cliente
+*   **Descripción:** Tras finalizar una consulta (estado "Completada"), el cliente otorga estrellas (1-5) y deja un comentario sobre el servicio.
+*   **Requisitos Satisfechos:**
+    *   **RF13:** Otorgar calificación y reseña únicamente a consultas con estado "Completada".
+
+<p align="center">
+  <img src="Docs/mockups/m_15.jpg" width="300" alt="Evaluacion (Cliente)"/>
+</p>
+
+---
+
+### Casos de Uso - Veterinario
+
+#### **CU08 - Gestionar Agenda Médica**
+*   **Actor principal:** Veterinario
+*   **Descripción:** El doctor visualiza sus métricas diarias y todos sus turnos ordenados cronológicamente con sus respectivos estados.
+*   **Requisitos Satisfechos:**
+    *   **RF08:** Visualizar lista de consultas agendadas.
+    *   **RF09:** Cambiar el estado de la consulta (ej. En curso, Completada).
+*   **Flujo principal:**
+    1. El veterinario ingresa a la aplicación (Dashboard) o a la pestaña "Agenda".
+    2. El sistema carga las consultas asociadas a su ID desde la tabla `consultations`.
+    3. El veterinario navega entre las pestañas "Hoy", "Mañana" o "Semana".
+    4. Visualiza la lista de pacientes con indicadores visuales de estado (Completada, En espera, Pendiente).
+
+<p align="center">
+  <img src="Docs/mockups/m_9.jpg" width="300" alt="Mockup Dashboard Vet"/>
+  <img src="Docs/mockups/m_10.jpg" width="300" alt="Mockup Agenda Diaria"/>
+</p>
+
+---
+
+#### **CU09 - Registrar Datos Médicos**
+*   **Actor principal:** Veterinario
+*   **Descripción:** El médico documenta los hallazgos clínicos y el tratamiento a seguir durante la atención de una consulta en estado "En curso".
+*   **Requisitos Satisfechos:**
+    *   **RF10:** Registrar datos médicos de una consulta en curso o completada (diagnóstico, tratamiento, especialidades).
+*   **Flujo principal:**
+    1. El veterinario inicia la consulta médica desde la agenda.
+    2. Ingresa el texto correspondiente al "Diagnóstico Clínico".
+    3. Ingresa las medicinas, dosis y recomendaciones en "Tratamiento prescrito".
+    4. Puede guardar un borrador o avanzar al paso de adjuntos.
+
+<p align="center">
+  <img src="Docs/mockups/m_12.jpg" width="300" alt="Mockup Registrar Diagnóstico"/>
+</p>
+
+---
+
+#### **CU10 - Adjuntar Resultados Médicos**
+*   **Actor principal:** Veterinario
+*   **Descripción:** El veterinario anexa documentos digitales al registro médico de la mascota y cierra el ciclo de atención.
+*   **Requisitos Satisfechos:**
+    *   **RF11:** Subir y visualizar documentos adjuntos vinculados a la consulta.
+*   **Flujo principal:**
+    1. El veterinario accede a la zona de subida (Dropzone) en la consulta activa.
+    2. Selecciona archivos desde el almacenamiento del dispositivo (Recetas en PDF, radiografías, análisis de sangre).
+    3. El sistema procesa, comprime y vincula los archivos a la tabla `consultation_documents`.
+    4. El veterinario presiona "Guardar y Finalizar Cita", pasando la consulta al estado "Completada".
+
+<p align="center">
+  <img src="Docs/mockups/m_13.jpg" width="300" alt="Mockup Subir Archivos Médicos"/>
+</p>
