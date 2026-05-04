@@ -117,7 +117,7 @@ class Consultation {
   +complete(diagnosis: text, treatment: text): boolean
   +attachDocument(doc: ConsultationDocument): boolean
   +addSpecialty(specialtyId: int): boolean
-  +rate(rating: int, comment: varchar): boolean        ' POST /api/v1/consultations/:id/rate (CU07)
+  +rate(rating: int, comment: varchar): boolean
   +findById(id: int): Consultation
 }
 

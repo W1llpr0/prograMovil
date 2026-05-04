@@ -202,11 +202,11 @@ El diagrama completo se encuentra en: `schema.puml` (ubicado en la raíz del rep
 ---
 
 ## Diagrama de Clases
-El diagrama de clases muestra las entidades del dominio, sus atributos principales, las relaciones entre ellas y métodos orientativos de negocio.
+El diagrama de clases muestra las entidades del dominio, sus atributos principales, las relaciones entre ellas y los métodos representativos de negocio.
 
-- Propósito: documentar las entidades del dominio y orientar la implementación de los `models` y las migraciones.
-- Uso recomendado: usar el diagrama como guía; las validaciones, autorizaciones y la lógica completa deben implementarse en el código. Los métodos incluidos son orientativos y no deben contener detalles de la API (rutas/verbos HTTP).
-- Notas de mapeo: cada clase corresponde a una tabla del esquema; las asociaciones `1..*` y `0..*` indican claves foráneas y colecciones.
+- Propósito: documentar el dominio y servir como referencia para implementar los `models` y las migraciones.
+- Uso recomendado: usarlo como guía; las validaciones, autorizaciones y la lógica completa van en el código fuente.
+- Contenido: cada clase representa una entidad del esquema y sus asociaciones muestran cómo se relacionan los datos entre sí.
 
 ![Diagrama de Clases (métodos representativos)](Docs/diagrams/class_diagram.png)
 
