@@ -116,9 +116,53 @@ Los casos de uso representan las interacciones principales de los actores (Clien
 Puedes encontrar el diagrama de casos de uso en el archivo:
 - `use_cases_schema.puml` (ubicado en la raíz del repositorio)
 
-## Descripción de casos de uso
-* Para realizar lo previamente dicho, se siguió y planteó el **diagrama de Bases de Datos (Schema)**: `schema.puml` (ubicado en la raíz del repositorio).
-* La descripción de los casos de uso se encuentran en el punto anterior.
+## Diagrama de Base de Datos (Schema)
+
+Para soportar todos los requisitos funcionales, se diseñó un modelo de entidades relacional que incluye:
+
+- **users y roles**: Gestión de usuarios con autenticación (clientes y veterinarios)
+- **clients y veterinarians**: Datos específicos por tipo de usuario
+- **species y breeds**: Catálogo predefinido de especies y razas
+- **pets**: Registro de mascotas con sus atributos (nombre, fecha de nacimiento, sexo, peso, foto)
+- **veterinarian_availability**: Disponibilidad semanal de veterinarios con intervalos de tiempo
+- **consultations**: Registro de consultas médicas con estado, diagnóstico, tratamiento
+- **consultation_documents**: Adjuntos de radiografías y análisis
+- **consultation_specialties**: Clasificación de especialidades por consulta
+
+El diagrama completo se encuentra en: `schema.puml` (ubicado en la raíz del repositorio)
+
+---
+
+## Diagrama de Despliegue
+
+La arquitectura del sistema está compuesta por:
+
+1. **Dispositivo Móvil**: Aplicación Flutter con módulo de compresión de imágenes y almacenamiento seguro de JWT
+2. **Servidor Backend**: API REST en Ruby con módulo de seguridad (Bcrypt + JWT)
+3. **Base de Datos**: SQLite embebida en el servidor
+4. **Infraestructura Cloud**: Alojamiento con alta disponibilidad (99.9%)
+
+El diagrama de despliegue con mapeo de requisitos no funcionales se encuentra en: `deployment_diagram.puml` (ubicado en la raíz del repositorio)
+
+---
+
+## Mapeo de Requerimientos No Funcionales al Diagrama de Despliegue
+
+| RNF | Descripción | Componente en Diagrama |
+|-----|-----------|----------------------|
+| **RNF01** | Encriptación de contraseñas (bcrypt) | Módulo de Seguridad en Backend |
+| **RNF02** | Control de acceso por rol | Módulo de Seguridad en Backend |
+| **RNF03** | Autenticación JWT guardada en Keychain | Keystore en Dispositivo Móvil |
+| **RNF04** | Rendimiento < 3 segundos | Optimización en API REST + Red HTTPS |
+| **RNF05** | Compresión de imágenes antes de subir | Módulo de Compresión en Dispositivo Móvil |
+| **RNF06** | Alta disponibilidad 99.9% | Infraestructura Cloud con redundancia |
+| **RNF07** | Interfaz responsive | Aplicación Flutter (multiplaforma) |
+
+---
+
+## Descripción de Casos de Uso
+
+Los casos de uso documentados a continuación corresponden a los requisitos funcionales (RF01-RF13) y están relacionados directamente con el diagrama de base de datos y los mockups de interfaz.
 
 ### Diagramas Detallados de Casos de Uso
 
@@ -162,5 +206,23 @@ Puedes encontrar el diagrama de casos de uso en el archivo:
 **CU10 - Adjuntar Resultados Médicos**
 <img src="Docs/casos_de_uso/CU_10.jpg" width="800" alt="CU10 Adjuntar Resultados"/>
 
-## Mockups
-* A continuación se presentan los Mockups propuestos para la solución.
+## Mockups (Prototipos de Interfaz)
+
+Los mockups representan las pantallas principales de la aplicación, diseñadas de acuerdo a los requisitos funcionales y casos de uso documentados:
+
+- **VISTA 7 - Agendar Cita P2**: Selección de fecha y hora disponibles (CU05 - RF06, RF07)
+- **VISTA 8 - Home Veterinario (CU08)**: Visualización de agenda médica del veterinario
+- **VISTA 9 - Consulta en Curso (CU09)**: Registro de diagnóstico y tratamiento durante la consulta
+- **VISTA 10 - Perfil Usuario (CU03)**: Edición de datos personales del usuario
+
+### Mockups Funcionales de Casos de Uso Cliente
+
+**Selección de Horarios y Agendamiento (CU05)**
+- Interfaz: Calendario con intervalos de tiempo disponibles
+- Componentes: Selector de mascota, veterinario, horario, motivo
+- Requisitos cubiertos: RF06, RF07
+
+**Historial Clínico de la Mascota (CU06)**
+- Interfaz: Listado de consultas completadas con diagnóstico y tratamiento
+- Componentes: Datos de mascota, historial de consultas, recetas, documentos adjuntos
+- Requisitos cubiertos: RF12
