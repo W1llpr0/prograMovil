@@ -233,6 +233,18 @@ El diagrama de despliegue con mapeo de requisitos no funcionales se encuentra en
 
 ---
 
+## Mapeo de Requerimientos No Funcionales al Diagrama de Despliegue
+
+| RNF | Descripción | Componente en Diagrama |
+|-----|-----------|----------------------|
+| **RNF01** | Encriptación de contraseñas (bcrypt) | Módulo de Seguridad en Backend |
+| **RNF02** | Control de acceso por rol | Módulo de Seguridad en Backend |
+| **RNF03** | Autenticación JWT guardada en Keychain | Keystore en Dispositivo Móvil |
+| **RNF04** | Rendimiento < 3 segundos | Optimización en API REST + Red HTTPS |
+| **RNF05** | Compresión de imágenes antes de subir | Módulo de Compresión en Dispositivo Móvil |
+| **RNF06** | Alta disponibilidad 99.9% | Infraestructura Cloud con redundancia |
+| **RNF07** | Interfaz responsive | Aplicación Flutter (multiplaforma) |
+
 ## Mockups (Prototipos de Interfaz)
 
 Los mockups representan las pantallas principales de la aplicación, diseñadas de acuerdo a los requisitos funcionales y casos de uso documentados:
