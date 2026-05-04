@@ -38,6 +38,7 @@ entity "veterinarians" {
   * user_id : int <<FK>>
   * license_number : varchar
   years_experience : int
+  default_appointment_duration_minutes : int
 }
 
 entity "species" {
@@ -91,6 +92,17 @@ entity "consultations" {
   review_datetime : datetime
 }
 
+entity "veterinarian_availability" {
+  * id : int
+  --
+  * veterinarian_id : int <<FK>>
+  * day_of_week : int
+  * start_time : time
+  * end_time : time
+  slot_duration_minutes : int
+  is_active : boolean
+}
+
 entity "consultation_documents" {
   * id : int
   --
@@ -118,6 +130,7 @@ clients ||--o{ pets
 ' Relaciones de Consultas Médicas
 pets ||--o{ consultations
 veterinarians ||--o{ consultations
+veterinarians ||--o{ veterinarian_availability
 consultations ||--o{ consultation_documents
 consultations ||--o{ consultation_specialties
 specialties ||--o{ consultation_specialties
