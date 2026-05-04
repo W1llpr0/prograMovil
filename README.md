@@ -209,15 +209,19 @@ El diagrama de clases muestra las entidades del dominio, sus atributos principal
 - Contenido: cada clase representa una entidad del esquema y sus asociaciones muestran cómo se relacionan los datos entre sí.
 
 Clases clave:
-- `User`: concentra los datos comunes de autenticación y perfil, con operaciones como registro, inicio de sesión y cambio de contraseña.
-- `Client` y `Veterinarian`: especializan el usuario según su rol; el cliente gestiona mascotas y el veterinario gestiona consultas y disponibilidad.
-- `Pet`: representa cada mascota registrada, con su raza, sexo, edad y datos de actualización.
-- `Consultation`: concentra el flujo principal de atención médica, desde la creación y confirmación hasta el diagnóstico, tratamiento, adjuntos y calificación.
-- `ConsultationDocument`, `ConsultationSpecialty` y `VeterinarianAvailability`: modelan los documentos médicos, la clasificación por especialidades y los intervalos disponibles del veterinario.
+- `User`: concentra los datos comunes de autenticación y perfil. Sus métodos representan acciones como registrar una cuenta, iniciar sesión, actualizar datos y cambiar la contraseña.
+- `Client` y `Veterinarian`: especializan el usuario según su rol. El cliente puede listar y crear mascotas; el veterinario puede revisar sus consultas, cambiar estados y consultar su disponibilidad.
+- `Pet`: representa cada mascota registrada. Sus métodos permiten calcular la edad, buscarla por identificador y actualizar su información básica.
+- `Consultation`: concentra el flujo principal de atención médica. Sus métodos modelan la creación de la consulta, su confirmación o cancelación, el cierre con diagnóstico y tratamiento, el agregado de especialidades y la calificación final.
+- `ConsultationDocument`: modela los archivos adjuntos asociados a una consulta, como radiografías o informes médicos.
+- `ConsultationSpecialty`: vincula cada consulta con una o varias especialidades, por ejemplo medicina general o dermatología.
+- `VeterinarianAvailability`: representa los intervalos de disponibilidad de cada veterinario, con métodos para listar, activar o desactivar franjas horarias.
+- `Species`, `Breed` y `Specialty`: representan catálogos del sistema. Sus métodos permiten listar registros y obtener elementos específicos para alimentar formularios y consultas del backend.
 
 Métodos clave:
-- Los métodos del diagrama representan acciones de dominio, no endpoints HTTP.
-- Incluyen operaciones de registro, consulta, actualización, cierre de atención, carga de documentos y gestión de disponibilidad.
+- Los métodos del diagrama representan acciones de dominio y reglas de negocio.
+- Ejemplos: registro e inicio de sesión en `User`, gestión de mascotas en `Client` y `Pet`, control del ciclo de atención en `Consultation`, adjuntos en `ConsultationDocument` y horarios en `VeterinarianAvailability`.
+- El objetivo es mostrar qué responsabilidades tiene cada clase dentro del dominio, no detallar la implementación completa.
 
 ![Diagrama de Clases (métodos representativos)](Docs/diagrams/class_diagram_v2.png)
 
