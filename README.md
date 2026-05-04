@@ -1,6 +1,17 @@
 # 📱 Programacion Movil
 Proyecto del curso de Programación Móvil de la Universidad de Lima.
 
+## Navegación rápida
+
+Pulsa cualquiera de los subtítulos para ir directamente a la sección:
+
+- [Casos de Uso](#casos-de-uso)
+- [Diagrama de Base de Datos](#diagrama-de-base-de-datos-schema)
+- [Diagrama de Clases](#diagrama-de-clases)
+- [Diagrama de Despliegue](#diagrama-de-despliegue)
+- [Mockups](#mockups-prototipos-de-interfaz)
+
+
 ## 👥 Integrantes
 - Juan Zavalaga
 - Franco Melchor  
@@ -124,6 +135,52 @@ Las siguientes imágenes contienen los diagramas completos de los casos de uso (
 
 <img src="Docs/caso_de_uso/CASO_DE_USO_COMPLETO_2.jpg" width="800" alt="Caso de Uso Completo 2"/>
 
+## Descripción de Casos de Uso
+
+Los casos de uso documentados a continuación corresponden a los requisitos funcionales (RF01-RF13) y están relacionados directamente con el diagrama de base de datos y los mockups de interfaz.
+
+### Diagramas Detallados de Casos de Uso
+
+#### Casos de Uso Comunes (Cliente y Veterinario)
+
+**CU01 - Registrarse en la app**
+<img src="Docs/casos_de_uso/CU_01.jpg" width="800" alt="CU01 Registrarse"/>
+
+**CU02 - Iniciar Sesión**
+<img src="Docs/casos_de_uso/CU_02.jpg" width="800" alt="CU02 Iniciar Sesión"/>
+
+**CU03 - Editar Perfil**
+<img src="Docs/casos_de_uso/CU_03.jpg" width="800" alt="CU03 Editar Perfil"/>
+
+---
+
+#### Casos de Uso - Cliente
+
+**CU04 - Gestionar Mascotas**
+<img src="Docs/casos_de_uso/CU_04.jpg" width="800" alt="CU04 Gestionar Mascotas"/>
+
+**CU05 - Agendar Consulta Médica**
+<img src="Docs/casos_de_uso/CU_05.jpg" width="800" alt="CU05 Agendar Consulta"/>
+
+**CU06 - Visualizar Historial Clínico**
+<img src="Docs/casos_de_uso/CU_06.jpg" width="800" alt="CU06 Historial Clínico"/>
+
+**CU07 - Evaluar Atención**
+<img src="Docs/casos_de_uso/CU_07.jpg" width="800" alt="CU07 Evaluar Atención"/>
+
+---
+
+#### Casos de Uso - Veterinario
+
+**CU08 - Gestionar Agenda Médica**
+<img src="Docs/casos_de_uso/CU_08.jpg" width="800" alt="CU08 Gestionar Agenda"/>
+
+**CU09 - Registrar Datos Médicos**
+<img src="Docs/casos_de_uso/CU_09.jpg" width="800" alt="CU09 Registrar Datos Médicos"/>
+
+**CU10 - Adjuntar Resultados Médicos**
+<img src="Docs/casos_de_uso/CU_10.jpg" width="800" alt="CU10 Adjuntar Resultados"/>
+
 ## Diagrama de Base de Datos (Schema)
 
 Para soportar todos los requisitos funcionales, se diseñó un modelo de entidades relacional que incluye:
@@ -182,54 +239,6 @@ El diagrama de despliegue con mapeo de requisitos no funcionales se encuentra en
 | **RNF05** | Compresión de imágenes antes de subir | Módulo de Compresión en Dispositivo Móvil |
 | **RNF06** | Alta disponibilidad 99.9% | Infraestructura Cloud con redundancia |
 | **RNF07** | Interfaz responsive | Aplicación Flutter (multiplaforma) |
-
----
-
-## Descripción de Casos de Uso
-
-Los casos de uso documentados a continuación corresponden a los requisitos funcionales (RF01-RF13) y están relacionados directamente con el diagrama de base de datos y los mockups de interfaz.
-
-### Diagramas Detallados de Casos de Uso
-
-#### Casos de Uso Comunes (Cliente y Veterinario)
-
-**CU01 - Registrarse en la app**
-<img src="Docs/casos_de_uso/CU_01.jpg" width="800" alt="CU01 Registrarse"/>
-
-**CU02 - Iniciar Sesión**
-<img src="Docs/casos_de_uso/CU_02.jpg" width="800" alt="CU02 Iniciar Sesión"/>
-
-**CU03 - Editar Perfil**
-<img src="Docs/casos_de_uso/CU_03.jpg" width="800" alt="CU03 Editar Perfil"/>
-
----
-
-#### Casos de Uso - Cliente
-
-**CU04 - Gestionar Mascotas**
-<img src="Docs/casos_de_uso/CU_04.jpg" width="800" alt="CU04 Gestionar Mascotas"/>
-
-**CU05 - Agendar Consulta Médica**
-<img src="Docs/casos_de_uso/CU_05.jpg" width="800" alt="CU05 Agendar Consulta"/>
-
-**CU06 - Visualizar Historial Clínico**
-<img src="Docs/casos_de_uso/CU_06.jpg" width="800" alt="CU06 Historial Clínico"/>
-
-**CU07 - Evaluar Atención**
-<img src="Docs/casos_de_uso/CU_07.jpg" width="800" alt="CU07 Evaluar Atención"/>
-
----
-
-#### Casos de Uso - Veterinario
-
-**CU08 - Gestionar Agenda Médica**
-<img src="Docs/casos_de_uso/CU_08.jpg" width="800" alt="CU08 Gestionar Agenda"/>
-
-**CU09 - Registrar Datos Médicos**
-<img src="Docs/casos_de_uso/CU_09.jpg" width="800" alt="CU09 Registrar Datos Médicos"/>
-
-**CU10 - Adjuntar Resultados Médicos**
-<img src="Docs/casos_de_uso/CU_10.jpg" width="800" alt="CU10 Adjuntar Resultados"/>
 
 ## Mockups (Prototipos de Interfaz)
 
