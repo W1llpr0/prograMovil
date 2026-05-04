@@ -144,6 +144,8 @@ La arquitectura del sistema está compuesta por:
 
 El diagrama de despliegue con mapeo de requisitos no funcionales se encuentra en: `deployment_diagram.puml` (ubicado en la raíz del repositorio)
 
+![Diagrama de Despliegue](Docs/diagrams/deployment_diagram.png)
+
 ---
 
 ## Mapeo de Requerimientos No Funcionales al Diagrama de Despliegue
