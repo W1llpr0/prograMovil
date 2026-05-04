@@ -14,8 +14,7 @@ Pulsa cualquiera de los subtítulos para ir directamente a la sección:
 7. [Descripción de Casos de Uso](#descripción-de-casos-de-uso)
 8. [Diagrama de Base de Datos](#diagrama-de-base-de-datos-schema)
 9. [Diagrama de Clases](#diagrama-de-clases)
-10. [Mapeo de Requerimientos No Funcionales al Diagrama de Despliegue](#mapeo-de-requerimientos-no-funcionales-al-diagrama-de-despliegue)
-11. [Mockups](#mockups-prototipos-de-interfaz)
+10. [Mockups](#mockups-prototipos-de-interfaz)
 
 
 ## 👥 Integrantes
@@ -233,18 +232,6 @@ El diagrama de despliegue con mapeo de requisitos no funcionales se encuentra en
 ![Diagrama de Despliegue](Docs/diagrams/deployment_diagram.png)
 
 ---
-
-## Mapeo de Requerimientos No Funcionales al Diagrama de Despliegue
-
-| RNF | Descripción | Componente en Diagrama |
-|-----|-----------|----------------------|
-| **RNF01** | Encriptación de contraseñas (bcrypt) | Módulo de Seguridad en Backend |
-| **RNF02** | Control de acceso por rol | Módulo de Seguridad en Backend |
-| **RNF03** | Autenticación JWT guardada en Keychain | Keystore en Dispositivo Móvil |
-| **RNF04** | Rendimiento < 3 segundos | Optimización en API REST + Red HTTPS |
-| **RNF05** | Compresión de imágenes antes de subir | Módulo de Compresión en Dispositivo Móvil |
-| **RNF06** | Alta disponibilidad 99.9% | Infraestructura Cloud con redundancia |
-| **RNF07** | Interfaz responsive | Aplicación Flutter (multiplaforma) |
 
 ## Mockups (Prototipos de Interfaz)
 
