@@ -285,32 +285,7 @@ El diagrama de despliegue con mapeo de requisitos no funcionales se encuentra en
 
 ## Mockups (Prototipos de Interfaz)
 
-Los mockups representan las pantallas principales de la aplicación, diseñadas de acuerdo a los requisitos funcionales y casos de uso documentados:
-
-- **VISTA 7 - Agendar Cita P2**: Selección de fecha y hora disponibles (CU05 - RF06, RF07)
-- **VISTA 8 - Home Veterinario (CU08)**: Visualización de agenda médica del veterinario
-- **VISTA 9 - Consulta en Curso (CU09)**: Registro de diagnóstico y tratamiento durante la consulta
-- **VISTA 10 - Perfil Usuario (CU03)**: Edición de datos personales del usuario
-
-### Mockups Funcionales de Casos de Uso Cliente
-
-**Selección de Horarios y Agendamiento (CU05)**
-- Interfaz: Calendario con intervalos de tiempo disponibles
-- Componentes: Selector de mascota, veterinario, horario, motivo
-- Requisitos cubiertos: RF06, RF07
-
-**Historial Clínico de la Mascota (CU06)**
-- Interfaz: Listado de consultas completadas con diagnóstico y tratamiento
-- Componentes: Datos de mascota, historial de consultas, recetas, documentos adjuntos
-- Requisitos cubiertos: RF12
-
-## Descripción Detallada de Casos de Uso (con Prototipos Visuales)
-
 A continuación, se detallan las interacciones principales del sistema, ordenadas por Caso de Uso. Cada sección incluye su diagrama de flujo funcional, los prototipos de interfaz (mockups) que ilustran la experiencia del usuario y los **requerimientos funcionales que satisfacen**.
-
----
-
-### Casos de Uso Comunes (Cliente y Veterinario)
 
 #### **CU01 - Registrarse en la app**
 *   **Actor principal:** Usuario no registrado
