@@ -109,10 +109,6 @@ Lo que el sistema debe hacer (acciones y funcionalidades específicas)
     6. **RNF06 (Disponibilidad):** La API y la base de datos deben estar alojadas en la nube, garantizando una alta disponibilidad (uptime del 99.9%).
     7. **RNF07 (Usabilidad):** La interfaz debe ser intuitiva y adaptable (Responsive) a diferentes tamaños de pantalla en dispositivos móviles (smartphones y tablets).
 
-## Diagrama de Despliegue
-Puedes encontrar el diagrama de despliegue en el archivo:
-- `deployment_diagram.puml` (ubicado en la raíz del repositorio)
-
 ## Casos de Uso
 Los casos de uso representan las interacciones principales de los actores (Cliente y Veterinario) con el sistema.
 * Actor Común: Cliente y Veterinario
