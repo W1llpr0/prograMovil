@@ -208,7 +208,18 @@ El diagrama de clases muestra las entidades del dominio, sus atributos principal
 - Uso recomendado: usarlo como guía; las validaciones, autorizaciones y la lógica completa van en el código fuente.
 - Contenido: cada clase representa una entidad del esquema y sus asociaciones muestran cómo se relacionan los datos entre sí.
 
-![Diagrama de Clases (métodos representativos)](Docs/diagrams/class_diagram.png)
+Clases clave:
+- `User`: concentra los datos comunes de autenticación y perfil, con operaciones como registro, inicio de sesión y cambio de contraseña.
+- `Client` y `Veterinarian`: especializan el usuario según su rol; el cliente gestiona mascotas y el veterinario gestiona consultas y disponibilidad.
+- `Pet`: representa cada mascota registrada, con su raza, sexo, edad y datos de actualización.
+- `Consultation`: concentra el flujo principal de atención médica, desde la creación y confirmación hasta el diagnóstico, tratamiento, adjuntos y calificación.
+- `ConsultationDocument`, `ConsultationSpecialty` y `VeterinarianAvailability`: modelan los documentos médicos, la clasificación por especialidades y los intervalos disponibles del veterinario.
+
+Métodos clave:
+- Los métodos del diagrama representan acciones de dominio, no endpoints HTTP.
+- Incluyen operaciones de registro, consulta, actualización, cierre de atención, carga de documentos y gestión de disponibilidad.
+
+![Diagrama de Clases (métodos representativos)](Docs/diagrams/class_diagram_v2.png)
 
 ---
 
