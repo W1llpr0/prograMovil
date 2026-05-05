@@ -145,6 +145,7 @@ Lo que el sistema debe hacer (acciones y funcionalidades específicas)
 * Sistema de Evaluación:
     * **RF13:** El sistema debe permitir al cliente otorgar una calificación (del 1 al 5) y escribir una reseña únicamente a las consultas que tengan el estado "Completada".
 
+
 ### 2. Requerimientos No Funcionales:
 * Cómo debe comportarse el sistema (atributos de calidad, restricciones y rendimiento).
     1. **RNF01 (Seguridad):** Las contraseñas de los usuarios deben estar encriptadas en la base de datos (por ejemplo, mediante algoritmos como RSA).
@@ -152,7 +153,7 @@ Lo que el sistema debe hacer (acciones y funcionalidades específicas)
     3. **RNF03 (Autenticación):** El sistema debe usar JWT para la autenticación del usuario antes de ejecutar servicios, este token debe ser guardado en "Keychain/Keystore" del móvil y ser enviado en la cabecera (Authorization) en cada petición.
     4. **RNF04 (Rendimiento):** La aplicación móvil debe cargar las vistas principales en menos de 3 segundos bajo una conexión de red estándar (4G/WIFI).
     5. **RNF05 (Optimización de almacenamiento):** Las imágenes (fotos de perfil, mascotas, documentos médicos) deben ser comprimidas antes de subirse al servidor para optimizar el espacio y los tiempos de carga.
-    6. **RNF06 (Disponibilidad):** La API y la base de datos deben estar alojadas en la nube, garantizando una alta disponibilidad (uptime del 99.9%).
+    6. **RNF06 (Disponibilidad):** La API y la base de datos deben estar alojadas en la nube y offline, garantizando una alta disponibilidad (uptime del 99.9%).
     7. **RNF07 (Usabilidad):** La interfaz debe ser intuitiva y adaptable (Responsive) a diferentes tamaños de pantalla en dispositivos móviles (smartphones y tablets).
 
 
