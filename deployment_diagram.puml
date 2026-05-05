@@ -10,11 +10,10 @@ node "Dispositivo Móvil (Smartphone/Tablet)" as Mobile {
     
     component "Módulo de Compresión\nde Imágenes\n" as Compressor
     
-    database "Almacenamiento local encriptado con RSA (SQLite)" as database1
-    
-    I -->AppFlutter: "Muestra segun rol"
-    AppFlutter --> Compressor : "Optimizador de almacenamiento"
-    Compressor -->database1: "Datos locales"
+    component "Keychain" as Keychain
+    I -- AppFlutter: "Muestra segun rol"
+    AppFlutter -- Compressor : "Optimizador de almacenamiento"
+    AppFlutter -- Keychain : "Almacena los tokens"
 }
 
 cloud "Despliegue en Railway del Backend" as Cloud1 {
@@ -27,7 +26,6 @@ cloud "Base de datos en Supabase" as Cloud2 {
 
 }
 
-AppFlutter ====> API : " Protocolo HTTPS / REST \n (Header: Authorization Bearer JWT)"
-API ====> database2 : "Protocolo HTTPS / REST \n (Header: User id)"
-
+AppFlutter ==== API : " Protocolo HTTPS / REST \n (Header: Authorization Bearer JWT)"
+API ==== database2 : "Protocolo HTTPS / REST \n (Header: User id)"
 @enduml

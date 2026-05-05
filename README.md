@@ -55,25 +55,13 @@ Para la construcción de este proyecto, se ha seleccionado un stack tecnológico
     gem install bundler
     ```
 
-### 3. SQLite (Base de Datos Local)
-* **Descripción:** SQLite es un sistema de base de datos relacional ligero y embebido. Se caracterisa por no requerir de un servidor independiente, lo que facilita la portabilidad y agiliza el desarrollo. Por esta razón se usará para el almacenamiento de datos locales de los usuarios.
-* **Instalación:**
-    1.  Añadimos las dependencias a nuestro proyecto en flutter dentro de `pubspec.yaml`.
-     ```YAML
-    dependencies:
-        drift: ^latest
-        sqlite3_flutter_libs: ^latest
-        path_provider: ^latest
-        dio: ^latest
-    ```
-
-### 4. Supabase (Base de Datos en la Nube)
+### 3. Supabase (Base de Datos en la Nube)
 * **Descripción**: Supabase es una plataforma Backend-as-a-Service que ofrece base de datos PostgreSQL, autenticación y APIs automáticas. Se usará para el almacenaje centralizado de los datos de la aplicación.
 * **Instalación:**
     1. Crear un proyecto en [supabase](https://supabase.com/).
     2.  Obtener las credenciales `SUPABASE_URL`, `ANON_KEY` y `SERVICE_ROLE_KEY`. El primero identificará la ubicación de nuestra base de datos, el segundo permitirá al fron end visualizar los datos y el tercero modificarlos en el backend.
 
-### 5. Railway (Despliegue del Backend)
+### 4. Railway (Despliegue del Backend)
 * **Descripción**: Railway es una plataforma de despliegue en la nube que permite alojar el backend de aplicaciones con costo bajo. Se usará para ejecutar la lógica del negocio y comunicar la app con la base de datos en Supabase
 * **Instalación:**
 1. Crear una cuenta en [railway](https://railway.app).
@@ -107,8 +95,8 @@ Para la construcción de este proyecto, se ha seleccionado un stack tecnológico
 
 La arquitectura del sistema está compuesta por:
 
-1. **Dispositivo Móvil**: Aplicación Flutter con módulo de compresión de imágenes y almacenamiento seguro de JWT
-2. **Despliegue del Backend en Railway**: API REST en Ruby con módulo de seguridad (Bcrypt + JWT)
+1. **Dispositivo Móvil**: Aplicación Flutter con interfaz, módulo de compresión de imágenes y almacenamiento seguro de JWT
+2. **Despliegue del Backend en Railway**: API REST en Ruby con módulo de seguridad (RSA + JWT)
 4. **Base de datos en Supabase**: Alojamiento con alta disponibilidad (99.9%)
 
 El diagrama de despliegue con mapeo de requisitos no funcionales se encuentra en: `deployment_diagram.puml` (ubicado en la raíz del repositorio)
@@ -127,7 +115,7 @@ Lo que el sistema debe hacer (acciones y funcionalidades específicas)
 * Gestión de Usuarios y Autenticación:
     * **RF01:** El sistema debe permitir el registro de nuevos usuarios asignándoles un rol específico (Cliente o Veterinario).
     * **RF02:** El sistema debe permitir a los usuarios iniciar sesión utilizando su correo electrónico y contraseña.
-    * **RF03:** El sistema debe permitir a los usuarios (clientes y veterinarios) editar la información de su perfil (teléfono, foto de perfil, et*) según los campos permitidos para su ro*
+    * **RF03:** El sistema debe permitir a los usuarios (clientes y veterinarios) editar la información de su perfil (teléfono, foto de perfil, etc) según los campos permitidos para su rol.
 
 * Gestión de Mascotas y Catálogo:
     * **RF04:** El sistema debe permitir a los clientes registrar, editar y visualizar el perfil de sus mascotas (nombre, fecha de nacimiento*sexo, peso actual y foto).
@@ -162,8 +150,8 @@ Lo que el sistema debe hacer (acciones y funcionalidades específicas)
 | RNF | Descripción | Componente en Diagrama |
 |-----|-----------|----------------------|
 | **RNF01** | Encriptación de contraseñas (RSA) | Módulo de Seguridad en bases de datos |
-| **RNF02** | Control de acceso por rol  | Obtención de rol en base de datos local |
-| **RNF03** | Autenticación JWT guardada en Keychain | Keystore en almacenamiento local (SQLite) |
+| **RNF02** | Control de acceso por rol  | Obtención de rol según la base de datos |
+| **RNF03** | Autenticación JWT guardada en Keychain | keychain|
 | **RNF04** | Rendimiento < 3 segundos | Optimización en API REST + Red HTTPS |
 | **RNF05** | Compresión de imágenes antes de subir | Módulo de Compresión en Dispositivo Móvil |
 | **RNF06** | Alta disponibilidad 99.9% | Base de datos en Supabase |
