@@ -1,4 +1,5 @@
 # 📱 Programacion Movil
+
 Proyecto del curso de Programación Móvil de la Universidad de Lima.
 
 ## Índice
@@ -18,24 +19,15 @@ Pulsa cualquiera de los subtítulos para ir directamente a la sección:
 
 
 ## 👥 Integrantes
-- Juan Zavalaga
+
+- Matías Alarcón
+- Nicolás Champa  
 - Franco Melchor  
-- Matias  Alarcon
-- Nicolas Champa  
+- Juan Zavalaga
 
 ## 📝 Enunciado del Programa (Aplicación Móvil Veterinaria)
 
-Una clínica veterinaria requiere el desarrollo de una aplicación móvil para la gestión de sus servicios de salud animal y el historial médico de sus pacientes. El sistema debe centralizar la información de todos sus usuarios (clientes -dueño de la mascota- y veterinarios), quienes deben registrar sus nombres, apellidos, correo electrónico, contraseña, teléfono de contacto, una foto de perfil y su sexo.
-
-Existen dos tipos de perfiles de usuario:
-- Clientes: Son los dueños de las mascotas, de quienes se debe registrar además su dirección y documento de identidad.
-- Veterinarios: Profesionales de la clínica de los cuales se requiere el número de colegiatura y sus años de experiencia.
-
-Para facilitar el seguimiento de sus animales, los clientes pueden registrar múltiples mascotas, identificando para cada una su nombre, fecha de nacimiento, sexo, peso actual y una fotografía. Cada mascota pertenece a una raza específica, la cual está asociada a una especie (como canino, felino o exótico). El registro de la raza incluye su nombre, una descripción y una imagen referencial.
-
-A través de la app, los clientes pueden agendar consultas médicas para sus mascotas seleccionando a un veterinario. Al agendar, el cliente elige uno de los horarios disponibles definidos por intervalos en la agenda del veterinario, junto con el motivo de la visita, creando la consulta con un estado inicial (por ejemplo: pendiente). Durante la atención, el veterinario actualiza el estado y registra el diagnóstico, tratamiento recetado y documentos adjuntos.
-
-Además, las atenciones pueden clasificarse en múltiples especialidades o servicios (como medicina general, dermatología, traumatología o peluquería), de las cuales se registra su nombre, descripción y un ícono representativo. Finalmente, para medir la calidad del servicio, los clientes pueden calificar (1, 2, 3, 4 o 5) y dejar reseñas sobre las consultas que han finalizado (completadas), indicando su opinión detallada y la fecha y hora en que publicaron su comentario.
+Debido a la transformación tecnológica que varias empresas están llevando en la actualidad, una clínica veterinaria requiere del desarrollo de una aplicación móvil para la gestión de sus servicios médicos, veterinarios, pacientes y dueños de mascotas. Esta se dirije a dos tipos de usuarios: veterinarios y dueños de mascotas. Debido a que cada uno tendrá información pública y privada, el sistema centraliza la información de todos sus usuarios para su acceso inmediato y remoto. Los dueños y veterinarios poseen información pública para su contacto y privada para la gestión de sus actividades en entornos propios. Cada dueño podrá tener varios pacientes y cada uno puede acceder al servicio médico ofrecido por los veterinarios en sus horarios disponibles. Por parte de los veterinarios, ellos pueden gestionar sus citas médicas, modificar la información médica de sus pacientes y contactarse con los dueños. Finalmennte, para medir la calidad del servicio, se posee la capacidad de valorar a los veterinarios.
 
 ## Explicación del entorno de desarrollo (Requisitos Previos)
 
@@ -44,34 +36,88 @@ Para la construcción de este proyecto, se ha seleccionado un stack tecnológico
 ### 1. Flutter y Dart (Front-end)
 * **Descripción:** Flutter es el SDK de Google para crear aplicaciones compiladas nativamente para móvil desde una única base de código. Utiliza **Dart**, un lenguaje optimizado para interfaces de usuario rápidas y reactivas.
 * **Instalación:**
-    1.  Descarga el SDK de Flutter desde [flutter.dev](https://docs.flutter.dev/get-started/install) según tu sistema operativo.
-    2.  Extrae el archivo en una ruta sin espacios (ej: `C:\src\flutter`).
-    3.  Agrega la carpeta `bin` de Flutter a las variables de entorno de tu sistema (**PATH**).
-    4.  Ejecuta `flutter doctor` en la terminal para verificar dependencias de Android/iOS pendientes.
+    1. Descarga el SDK de Flutter desde [flutter](https://docs.flutter.dev/get-started/install) según tu sistema operativo.
+    2.   Extrae el archivo en una ruta sin espacios (ej: `C:\src\flutter`).
+    3.   Agrega la carpeta `bin` de Flutter a las variables de entorno de tu sistema (**PATH**).
+    4.   Ejecuta `flutter doctor` en la terminal para verificar dependencias de Android/iOS pendientes.
 
-### 2. Ruby (Backend / API)
-* **Descripción:** Ruby es un lenguaje dinámico y orientado a objetos, elegido por su agilidad en el desarrollo de la lógica de negocio y la gestión de servicios RESTful que consumirá la app móvil.
+### 2. Ruby (Backend)
+* **Descripción:** Ruby es un lenguaje dinámico y orientado a objetos. En este proyecto se utiliza para implementar la lógica de negocio y el sistema de sincronización (API REST) entre el almacenamiento local del dispositivo y la base de datos central.
 * **Instalación:**
-    * **Windows:** Usa [RubyInstaller](https://rubyinstaller.org/) (versión con Devkit). Al instalar, marca la opción "Add Ruby executables to your PATH".
-    * **macOS/Linux:** Se recomienda usar un gestor como `rbenv` o `rvm`. Ejemplo: `brew install rbenv` seguido de `rbenv install 3.x.x`.
-    * Verifica con el comando: `ruby -v`.
+    1. **Windows:** Usa [RubyInstaller](https://rubyinstaller.org/) (versión con Devkit). 
+    2. Al instalar, marcaremos la opción "Add Ruby executables to your PATH".
+    3. Luego de la instalación, se verifica en el cmd:
+    ```bash
+    ruby -v
+    ```
+    4. Luego se instala blunder para gestionar dependencias
+    ```bash
+    gem install bundler
+    ```
 
-### 3. SQLite (Base de Datos)
-* **Descripción:** Un motor de base de datos relacional ligero y embebido en el servidor backend. No requiere un proceso de servidor separado, facilitando la portabilidad y el desarrollo rápido.
+### 3. SQLite (Base de Datos Local)
+* **Descripción:** SQLite es un sistema de base de datos relacional ligero y embebido. Se caracterisa por no requerir de un servidor independiente, lo que facilita la portabilidad y agiliza el desarrollo. Por esta razón se usará para el almacenamiento de datos locales de los usuarios.
 * **Instalación:**
-    * **Sistemas Unix (Mac/Linux):** Generalmente ya está preinstalado.
-    * **Windows:** Descarga los "Precompiled Binaries for Windows" de [sqlite.org](https://www.sqlite.org/download.html), extrae el archivo `sqlite3.exe` y colócalo en una carpeta incluida en tu **PATH**.
-    * **Gem de Ruby:** Instala el adaptador ejecutando `gem install sqlite3` en tu terminal.
+    1.  Añadimos las dependencias a nuestro proyecto en flutter dentro de `pubspec.yaml`.
+     ```YAML
+    dependencies:
+        drift: ^latest
+        sqlite3_flutter_libs: ^latest
+        path_provider: ^latest
+        dio: ^latest
+    ```
 
-### 4. Visual Studio Code (IDE)
+### 4. Supabase (Base de Datos en la Nube)
+* **Descripción**: Supabase es una plataforma Backend-as-a-Service que ofrece base de datos PostgreSQL, autenticación y APIs automáticas. Se usará para el almacenaje centralizado de los datos de la aplicación.
+* **Instalación:**
+    1. Crear un proyecto en [supabase](https://supabase.com/).
+    2.  Obtener las credenciales `SUPABASE_URL`, `ANON_KEY` y `SERVICE_ROLE_KEY`. El primero identificará la ubicación de nuestra base de datos, el segundo permitirá al fron end visualizar los datos y el tercero modificarlos en el backend.
+
+### 5. Railway (Despliegue del Backend)
+* **Descripción**: Railway es una plataforma de despliegue en la nube que permite alojar el backend de aplicaciones con costo bajo. Se usará para ejecutar la lógica del negocio y comunicar la app con la base de datos en Supabase
+* **Instalación:**
+1. Crear una cuenta en [railway](https://railway.app).
+2. Conectar el repositorio del backend (GitHub o Git).
+3. Crear un nuevo proyecto seleccionando “Deploy from GitHub Repo”.
+4. Obtener la URL pública para la comunicación del frontend con el backend.
+
+### 5. Visual Studio Code (IDE)
 * **Descripción:** Editor de código fuente versátil que sirve como estación de trabajo principal para el desarrollo de todas las capas de la aplicación.
-* **Configuración:**
+* **Instalación:**
     1.  Descarga e instala [VS Code](https://code.visualstudio.com/).
-    2.  Instala la extensión oficial de **Flutter** (esto instalará automáticamente Dart).
-    3.  Instala la extensión **Ruby LSP** para obtener soporte de sintaxis y depuración en el backend.
+    2.  Instala las siguientes extensiones: 
+        * Flutter (incluye Dart)
+        * Ruby LSP
 
-### 5. Android Studio
-* Para mayor comidad para el entorno de desarrollo móvil (Front-end) y no depender de extensiones en VS Code, instalar Android Studio es la mejor opción (incluyendo SDKs de Android).
+### 6. Android Studio
+* **Descripción:**  Android Studio servirá para la emulación de equipos android en Windows, se escogió porque ya posee integración nativa con Flutter.
+* **Instalación:**
+    1. Descargar [Android Studio](https://developer.android.com/studio)
+    2. Instalar el **SDK de Android** y **Android Virtual Device** durante la configuración inicial.
+    3. Configurar variables de entorno a nuestro usuario: 
+    ```BASH
+    ANDROID_SDK_ROOT = C:\Users\TU_USUARIO\AppData\Local\Android\Sdk
+    ```
+    4. Aceptar las licencias dentro de flutter
+    ```BASH
+    flutter doctor --android-licenses
+    ```
+
+## Diagrama de Despliegue
+
+La arquitectura del sistema está compuesta por:
+
+1. **Dispositivo Móvil**: Aplicación Flutter con módulo de compresión de imágenes y almacenamiento seguro de JWT
+2. **Despliegue del Backend en Railway**: API REST en Ruby con módulo de seguridad (Bcrypt + JWT)
+4. **Base de datos en Supabase**: Alojamiento con alta disponibilidad (99.9%)
+
+El diagrama de despliegue con mapeo de requisitos no funcionales se encuentra en: `deployment_diagram.puml` (ubicado en la raíz del repositorio)
+
+---
+
+![Diagrama de Despliegue](Docs/diagrams/deployment_diagram.png)
+
+---
 
 ## Requerimientos
 
@@ -101,13 +147,28 @@ Lo que el sistema debe hacer (acciones y funcionalidades específicas)
 
 ### 2. Requerimientos No Funcionales:
 * Cómo debe comportarse el sistema (atributos de calidad, restricciones y rendimiento).
-    1. **RNF01 (Seguridad):** Las contraseñas de los usuarios deben estar encriptadas en la base de datos (por ejemplo, mediante algoritmos como bcrypt).
-    2. **RNF02 (Seguridad/Autorización):** El sistema debe restringir las vistas y acciones según el rol del usuario (ej. un cliente no puede modificar un diagnóstico ni cambiar el estado de la consulta).
+    1. **RNF01 (Seguridad):** Las contraseñas de los usuarios deben estar encriptadas en la base de datos (por ejemplo, mediante algoritmos como RSA).
+    2. **RNF02 (Autorización):** El sistema debe restringir las vistas y acciones según el rol del usuario (ej. un cliente no puede modificar un diagnóstico ni cambiar el estado de la consulta).
     3. **RNF03 (Autenticación):** El sistema debe usar JWT para la autenticación del usuario antes de ejecutar servicios, este token debe ser guardado en "Keychain/Keystore" del móvil y ser enviado en la cabecera (Authorization) en cada petición.
     4. **RNF04 (Rendimiento):** La aplicación móvil debe cargar las vistas principales en menos de 3 segundos bajo una conexión de red estándar (4G/WIFI).
-    5. **RNF05 (Almacenamiento):** Las imágenes (fotos de perfil, mascotas, documentos médicos) deben ser comprimidas antes de subirse al servidor para optimizar el espacio y los tiempos de carga.
+    5. **RNF05 (Optimización de almacenamiento):** Las imágenes (fotos de perfil, mascotas, documentos médicos) deben ser comprimidas antes de subirse al servidor para optimizar el espacio y los tiempos de carga.
     6. **RNF06 (Disponibilidad):** La API y la base de datos deben estar alojadas en la nube, garantizando una alta disponibilidad (uptime del 99.9%).
     7. **RNF07 (Usabilidad):** La interfaz debe ser intuitiva y adaptable (Responsive) a diferentes tamaños de pantalla en dispositivos móviles (smartphones y tablets).
+
+
+## Mapeo de Requerimientos No Funcionales al Diagrama de Despliegue
+
+| RNF | Descripción | Componente en Diagrama |
+|-----|-----------|----------------------|
+| **RNF01** | Encriptación de contraseñas (RSA) | Módulo de Seguridad en bases de datos |
+| **RNF02** | Control de acceso por rol  | Obtención de rol en base de datos local |
+| **RNF03** | Autenticación JWT guardada en Keychain | Keystore en almacenamiento local (SQLite) |
+| **RNF04** | Rendimiento < 3 segundos | Optimización en API REST + Red HTTPS |
+| **RNF05** | Compresión de imágenes antes de subir | Módulo de Compresión en Dispositivo Móvil |
+| **RNF06** | Alta disponibilidad 99.9% | Base de datos en Supabase |
+| **RNF07** | Interfaz responsive | Aplicación Flutter (multiplaforma) |
+
+---
 
 ## Casos de Uso
 Los casos de uso representan las interacciones principales de los actores (Cliente y Veterinario) con el sistema.
@@ -132,9 +193,15 @@ Puedes encontrar el diagrama de casos de uso en el archivo:
 
 Las siguientes imágenes contienen los diagramas completos de los casos de uso (cada imagen representa la mitad del diagrama completo). Se muestran apiladas una debajo de la otra para facilitar su lectura e impresión.
 
+---
+
 <img src="Docs/caso_de_uso/CASO_DE_USO_COMPLETO_1.jpg" width="800" alt="Caso de Uso Completo 1"/>
 
+---
+
 <img src="Docs/caso_de_uso/CASO_DE_USO_COMPLETO_2.jpg" width="800" alt="Caso de Uso Completo 2"/>
+
+---
 
 ## Descripción de Casos de Uso
 
@@ -144,29 +211,48 @@ Los casos de uso documentados a continuación corresponden a los requisitos func
 
 #### Casos de Uso Comunes (Cliente y Veterinario)
 
+---
 **CU01 - Registrarse en la app**
+
 <img src="Docs/casos_de_uso/CU_01.jpg" width="800" alt="CU01 Registrarse"/>
 
+---
+
 **CU02 - Iniciar Sesión**
+
 <img src="Docs/casos_de_uso/CU_02.jpg" width="800" alt="CU02 Iniciar Sesión"/>
 
+---
+
 **CU03 - Editar Perfil**
+
 <img src="Docs/casos_de_uso/CU_03.jpg" width="800" alt="CU03 Editar Perfil"/>
 
 ---
 
 #### Casos de Uso - Cliente
 
+
 **CU04 - Gestionar Mascotas**
+
 <img src="Docs/casos_de_uso/CU_04.jpg" width="800" alt="CU04 Gestionar Mascotas"/>
 
+---
+
 **CU05 - Agendar Consulta Médica**
+
 <img src="Docs/casos_de_uso/CU_05.jpg" width="800" alt="CU05 Agendar Consulta"/>
 
+---
+
 **CU06 - Visualizar Historial Clínico**
+
 <img src="Docs/casos_de_uso/CU_06.jpg" width="800" alt="CU06 Historial Clínico"/>
 
+---
+
 **CU07 - Evaluar Atención**
+
 <img src="Docs/casos_de_uso/CU_07.jpg" width="800" alt="CU07 Evaluar Atención"/>
 
 ---
@@ -174,13 +260,22 @@ Los casos de uso documentados a continuación corresponden a los requisitos func
 #### Casos de Uso - Veterinario
 
 **CU08 - Gestionar Agenda Médica**
+
 <img src="Docs/casos_de_uso/CU_08.jpg" width="800" alt="CU08 Gestionar Agenda"/>
 
+---
+
 **CU09 - Registrar Datos Médicos**
+
 <img src="Docs/casos_de_uso/CU_09.jpg" width="800" alt="CU09 Registrar Datos Médicos"/>
 
+---
+
 **CU10 - Adjuntar Resultados Médicos**
+
 <img src="Docs/casos_de_uso/CU_10.jpg" width="800" alt="CU10 Adjuntar Resultados"/>
+
+---
 
 ## Diagrama de Base de Datos (Schema)
 
@@ -196,6 +291,8 @@ Para soportar todos los requisitos funcionales, se diseñó un modelo de entidad
 - **consultation_specialties**: Clasificación de especialidades por consulta
 
 El diagrama completo se encuentra en: `schema.puml` (ubicado en la raíz del repositorio)
+
+---
 
 ![Diagrama de Base de Datos](Docs/diagrams/schema.png)
 
@@ -252,36 +349,11 @@ Explicación más detallada de los métodos:
 - `VeterinarianAvailability.deactivate()` deshabilita un bloque de disponibilidad.
 - `Species.listAll()`, `Breed.listBySpecies()` y `Specialty.listAll()` recuperan catálogos del sistema para usarse en formularios y consultas.
 
+---
+
 ![Diagrama de Clases (métodos representativos)](Docs/diagrams/class_diagram_v2.png)
 
 ---
-
-## Diagrama de Despliegue
-
-La arquitectura del sistema está compuesta por:
-
-1. **Dispositivo Móvil**: Aplicación Flutter con módulo de compresión de imágenes y almacenamiento seguro de JWT
-2. **Servidor Backend**: API REST en Ruby con módulo de seguridad (Bcrypt + JWT)
-3. **Base de Datos**: SQLite embebida en el servidor
-4. **Infraestructura Cloud**: Alojamiento con alta disponibilidad (99.9%)
-
-El diagrama de despliegue con mapeo de requisitos no funcionales se encuentra en: `deployment_diagram.puml` (ubicado en la raíz del repositorio)
-
-![Diagrama de Despliegue](Docs/diagrams/deployment_diagram.png)
-
----
-
-## Mapeo de Requerimientos No Funcionales al Diagrama de Despliegue
-
-| RNF | Descripción | Componente en Diagrama |
-|-----|-----------|----------------------|
-| **RNF01** | Encriptación de contraseñas (bcrypt) | Módulo de Seguridad en Backend |
-| **RNF02** | Control de acceso por rol | Módulo de Seguridad en Backend |
-| **RNF03** | Autenticación JWT guardada en Keychain | Keystore en Dispositivo Móvil |
-| **RNF04** | Rendimiento < 3 segundos | Optimización en API REST + Red HTTPS |
-| **RNF05** | Compresión de imágenes antes de subir | Módulo de Compresión en Dispositivo Móvil |
-| **RNF06** | Alta disponibilidad 99.9% | Infraestructura Cloud con redundancia |
-| **RNF07** | Interfaz responsive | Aplicación Flutter (multiplaforma) |
 
 ## Mockups (Prototipos de Interfaz)
 

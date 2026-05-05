@@ -2,34 +2,32 @@
 left to right direction
 skinparam DefaultTextAlignment center
 
-node "Dispositivo Móvil (Smartphone/Tablet)\n<<RNF07: Interfaz Responsive>>\n<<RNF04: Rendimiento>>" as Mobile {
+node "Dispositivo Móvil (Smartphone/Tablet)" as Mobile {
     
+    component "Interfaz" as I
+
     component "Aplicación Veterinaria\n(Flutter)" as AppFlutter
     
-    component "Módulo de Compresión\nde Imágenes\n<<RNF05: Optimización>>" as Compressor
+    component "Módulo de Compresión\nde Imágenes\n" as Compressor
     
-    storage "Keychain / Keystore\n<<RNF03: Autenticación>>" as Keystore {
-        artifact "Token JWT" as JWT
-    }
-
-    AppFlutter ..> Compressor : "Comprime antes\nde subir"
-    AppFlutter ..> Keystore : "Lee / Guarda"
+    database "Almacenamiento local encriptado con RSA (SQLite)" as database1
+    
+    I -->AppFlutter: "Muestra segun rol"
+    AppFlutter --> Compressor : "Optimizador de almacenamiento"
+    Compressor -->database1: "Datos locales"
 }
 
-node "Infraestructura Cloud\n<<RNF06: Alta Disponibilidad 99.9%>>" as Cloud {
-    
-    node "Servidor Backend" as Server {
-        component "API REST\n(Ruby)" as API
-        
-        component "Módulo de Seguridad\n(Bcrypt / JWT)\n<<RNF01, RNF02>>" as Security
-        
-        database "Base de Datos\n(SQLite Embebida)" as DB
-        
-        API ..> Security : "Encripta claves y\nvalida roles"
-        API --> DB : "Persistencia"
-    }
+cloud "Despliegue en Railway del Backend" as Cloud1 {
+    component "API REST\n(Ruby)" as API
+
+}
+
+cloud "Base de datos en Supabase" as Cloud2 {
+    database "Almacenamiento local encriptado con RSA (Postgresql)" as database2
+
 }
 
 AppFlutter ====> API : " Protocolo HTTPS / REST \n (Header: Authorization Bearer JWT)"
+API ====> database2 : "Protocolo HTTPS / REST \n (Header: User id)"
 
 @enduml
