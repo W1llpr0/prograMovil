@@ -1,5 +1,4 @@
 # 📱 Programacion Movil
-
 Proyecto del curso de Programación Móvil de la Universidad de Lima.
 
 ## Índice
@@ -19,93 +18,64 @@ Pulsa cualquiera de los subtítulos para ir directamente a la sección:
 
 
 ## 👥 Integrantes
-
-- Matías Alarcón
-- Nicolás Champa  
-- Franco Melchor  
 - Juan Zavalaga
+- Franco Melchor  
+- Matias  Alarcon
+- Nicolas Champa  
 
 ## 📝 Enunciado del Programa (Aplicación Móvil Veterinaria)
 
-Debido a la transformación tecnológica que varias empresas están llevando en la actualidad, una clínica veterinaria requiere del desarrollo de una aplicación móvil para la gestión de sus servicios médicos, veterinarios, pacientes y dueños de mascotas. Esta se dirije a dos tipos de usuarios: veterinarios y dueños de mascotas. Debido a que cada uno tendrá información pública y privada, el sistema centraliza la información de todos sus usuarios para su acceso inmediato y remoto. Los dueños y veterinarios poseen información pública para su contacto y privada para la gestión de sus actividades en entornos propios. Cada dueño podrá tener varios pacientes y cada uno puede acceder al servicio médico ofrecido por los veterinarios en sus horarios disponibles. Por parte de los veterinarios, ellos pueden gestionar sus citas médicas, modificar la información médica de sus pacientes y contactarse con los dueños. Finalmennte, para medir la calidad del servicio, se posee la capacidad de valorar a los veterinarios.
+Una clínica veterinaria requiere el desarrollo de una aplicación móvil para la gestión de sus servicios de salud animal y el historial médico de sus pacientes. El sistema debe centralizar la información de todos sus usuarios (clientes -dueño de la mascota- y veterinarios), quienes deben registrar sus nombres, apellidos, correo electrónico, contraseña, teléfono de contacto, una foto de perfil y su sexo.
+
+Existen dos tipos de perfiles de usuario:
+- Clientes: Son los dueños de las mascotas, de quienes se debe registrar además su dirección y documento de identidad.
+- Veterinarios: Profesionales de la clínica de los cuales se requiere el número de colegiatura y sus años de experiencia.
+
+Para facilitar el seguimiento de sus animales, los clientes pueden registrar múltiples mascotas, identificando para cada una su nombre, fecha de nacimiento, sexo, peso actual y una fotografía. Cada mascota pertenece a una raza específica, la cual está asociada a una especie (como canino, felino o exótico). El registro de la raza incluye su nombre, una descripción y una imagen referencial.
+
+A través de la app, los clientes pueden agendar consultas médicas para sus mascotas seleccionando a un veterinario. Al agendar, el cliente elige uno de los horarios disponibles definidos por intervalos en la agenda del veterinario, junto con el motivo de la visita, creando la consulta con un estado inicial (por ejemplo: pendiente). Durante la atención, el veterinario actualiza el estado y registra el diagnóstico, tratamiento recetado y documentos adjuntos.
+
+Además, las atenciones pueden clasificarse en múltiples especialidades o servicios (como medicina general, dermatología, traumatología o peluquería), de las cuales se registra su nombre, descripción y un ícono representativo. Finalmente, para medir la calidad del servicio, los clientes pueden calificar (1, 2, 3, 4 o 5) y dejar reseñas sobre las consultas que han finalizado (completadas), indicando su opinión detallada y la fecha y hora en que publicaron su comentario.
 
 ## Explicación del entorno de desarrollo (Requisitos Previos)
 
-Para la construcción de este proyecto, se ha seleccionado un stack tecnológico orientada a una arquitectura cliente-servidor. A continuación, se detallan las herramientas utilizadas, su propósito y el proceso de configuración necesario.
+Para la construcción de este proyecto, se ha seleccionado un stack tecnológico orientado a una arquitectura **Serverless / BaaS (Backend-as-a-Service)**. Flutter se comunica directamente con Supabase, eliminando la necesidad de una API REST intermedia. A continuación, se detallan las herramientas utilizadas, su propósito y el proceso de configuración necesario.
+
+### Stack Tecnológico
+
+| Capa | Tecnología | Propósito |
+|------|-----------|----------|
+| **Front-end / Móvil** | Flutter + Dart | App compilada nativamente para Android e iOS |
+| **Autenticación** | Supabase Auth (JWT) | Registro, login y autorización por roles mediante JWT |
+| **Base de Datos** | Supabase PostgreSQL | Base de datos relacional gestionada en la nube |
+| **Almacenamiento de Archivos** | Supabase Storage | Imágenes, documentos médicos y archivos CITES |
+| **Lógica de Negocio Serverless** | Supabase Edge Functions + Database Triggers | Generación de cronogramas, hashes de autenticidad y alertas epidemiológicas |
 
 ### 1. Flutter y Dart (Front-end)
 * **Descripción:** Flutter es el SDK de Google para crear aplicaciones compiladas nativamente para móvil desde una única base de código. Utiliza **Dart**, un lenguaje optimizado para interfaces de usuario rápidas y reactivas.
 * **Instalación:**
-    1. Descarga el SDK de Flutter desde [flutter](https://docs.flutter.dev/get-started/install) según tu sistema operativo.
-    2.   Extrae el archivo en una ruta sin espacios (ej: `C:\src\flutter`).
-    3.   Agrega la carpeta `bin` de Flutter a las variables de entorno de tu sistema (**PATH**).
-    4.   Ejecuta `flutter doctor` en la terminal para verificar dependencias de Android/iOS pendientes.
+    1.  Descarga el SDK de Flutter desde [flutter.dev](https://docs.flutter.dev/get-started/install) según tu sistema operativo.
+    2.  Extrae el archivo en una ruta sin espacios (ej: `C:\src\flutter`).
+    3.  Agrega la carpeta `bin` de Flutter a las variables de entorno de tu sistema (**PATH**).
+    4.  Ejecuta `flutter doctor` en la terminal para verificar dependencias de Android/iOS pendientes.
 
-### 2. Ruby (Backend)
-* **Descripción:** Ruby es un lenguaje dinámico y orientado a objetos. En este proyecto se utiliza para implementar la lógica de negocio y el sistema de sincronización (API REST) entre el almacenamiento local del dispositivo y la base de datos central.
-* **Instalación:**
-    1. **Windows:** Usa [RubyInstaller](https://rubyinstaller.org/) (versión con Devkit). 
-    2. Al instalar, marcaremos la opción "Add Ruby executables to your PATH".
-    3. Luego de la instalación, se verifica en el cmd:
-    ```bash
-    ruby -v
-    ```
-    4. Luego se instala blunder para gestionar dependencias
-    ```bash
-    gem install bundler
-    ```
+### 2. Supabase (BaaS)
+* **Descripción:** Plataforma open-source de Backend-as-a-Service que provee autenticación JWT, base de datos PostgreSQL, almacenamiento de archivos y funciones serverless (Edge Functions + Triggers). Reemplaza completamente la API REST intermedia.
+* **Configuración:**
+    1.  Crea un proyecto en [supabase.com](https://supabase.com).
+    2.  Copia las variables `SUPABASE_URL` y `SUPABASE_ANON_KEY` desde el panel del proyecto.
+    3.  Agrega el paquete en Flutter: `flutter pub add supabase_flutter`.
+    4.  Inicializa el cliente en `main.dart`: `await Supabase.initialize(url: ..., anonKey: ...)`.
 
-### 3. Supabase (Base de Datos en la Nube)
-* **Descripción**: Supabase es una plataforma Backend-as-a-Service que ofrece base de datos PostgreSQL, autenticación y APIs automáticas. Se usará para el almacenaje centralizado de los datos de la aplicación.
-* **Instalación:**
-    1. Crear un proyecto en [supabase](https://supabase.com/).
-    2.  Obtener las credenciales `SUPABASE_URL`, `ANON_KEY` y `SERVICE_ROLE_KEY`. El primero identificará la ubicación de nuestra base de datos, el segundo permitirá al fron end visualizar los datos y el tercero modificarlos en el backend.
-
-### 4. Railway (Despliegue del Backend)
-* **Descripción**: Railway es una plataforma de despliegue en la nube que permite alojar el backend de aplicaciones con costo bajo. Se usará para ejecutar la lógica del negocio y comunicar la app con la base de datos en Supabase
-* **Instalación:**
-1. Crear una cuenta en [railway](https://railway.app).
-2. Conectar el repositorio del backend (GitHub o Git).
-3. Crear un nuevo proyecto seleccionando “Deploy from GitHub Repo”.
-4. Obtener la URL pública para la comunicación del frontend con el backend.
-
-### 5. Visual Studio Code (IDE)
+### 3. Visual Studio Code (IDE)
 * **Descripción:** Editor de código fuente versátil que sirve como estación de trabajo principal para el desarrollo de todas las capas de la aplicación.
-* **Instalación:**
+* **Configuración:**
     1.  Descarga e instala [VS Code](https://code.visualstudio.com/).
-    2.  Instala las siguientes extensiones: 
-        * Flutter (incluye Dart)
-        * Ruby LSP
+    2.  Instala la extensión oficial de **Flutter** (esto instalará automáticamente Dart).
+    3.  Instala la extensión **Supabase** para autocompletado de SQL y gestión del proyecto.
 
-### 6. Android Studio
-* **Descripción:**  Android Studio servirá para la emulación de equipos android en Windows, se escogió porque ya posee integración nativa con Flutter.
-* **Instalación:**
-    1. Descargar [Android Studio](https://developer.android.com/studio)
-    2. Instalar el **SDK de Android** y **Android Virtual Device** durante la configuración inicial.
-    3. Configurar variables de entorno a nuestro usuario: 
-    ```BASH
-    ANDROID_SDK_ROOT = C:\Users\TU_USUARIO\AppData\Local\Android\Sdk
-    ```
-    4. Aceptar las licencias dentro de flutter
-    ```BASH
-    flutter doctor --android-licenses
-    ```
-
-## Diagrama de Despliegue
-
-La arquitectura del sistema está compuesta por:
-
-1. **Dispositivo Móvil**: Aplicación Flutter con interfaz, módulo de compresión de imágenes y almacenamiento seguro de JWT
-2. **Despliegue del Backend en Railway**: API REST en Ruby con módulo de seguridad (RSA + JWT)
-4. **Base de datos en Supabase**: Alojamiento con alta disponibilidad (99.9%)
-
-El diagrama de despliegue con mapeo de requisitos no funcionales se encuentra en: `deployment_diagram.puml` (ubicado en la raíz del repositorio)
-
----
-
-![Diagrama de Despliegue](Docs/diagrams/deployment_diagram.png)
-
----
+### 4. Android Studio
+* Para mayor comodidad en el entorno de desarrollo móvil (Front-end) y no depender de extensiones en VS Code, instalar Android Studio es la mejor opción (incluyendo SDKs de Android).
 
 ## Requerimientos
 
@@ -115,7 +85,7 @@ Lo que el sistema debe hacer (acciones y funcionalidades específicas)
 * Gestión de Usuarios y Autenticación:
     * **RF01:** El sistema debe permitir el registro de nuevos usuarios asignándoles un rol específico (Cliente o Veterinario).
     * **RF02:** El sistema debe permitir a los usuarios iniciar sesión utilizando su correo electrónico y contraseña.
-    * **RF03:** El sistema debe permitir a los usuarios (clientes y veterinarios) editar la información de su perfil (teléfono, foto de perfil, etc) según los campos permitidos para su rol.
+    * **RF03:** El sistema debe permitir a los usuarios (clientes y veterinarios) editar la información de su perfil (teléfono, foto de perfil, et*) según los campos permitidos para su ro*
 
 * Gestión de Mascotas y Catálogo:
     * **RF04:** El sistema debe permitir a los clientes registrar, editar y visualizar el perfil de sus mascotas (nombre, fecha de nacimiento*sexo, peso actual y foto).
@@ -126,38 +96,38 @@ Lo que el sistema debe hacer (acciones y funcionalidades específicas)
     * **RF07:** El sistema debe asignar automáticamente el estado "Pendiente" a toda nueva consulta generada por un cliente.
     * **RF08:** El sistema debe permitir al veterinario visualizar una lista de las consultas que tiene agendadas.
     * **RF09:** El sistema debe permitir al veterinario cambiar el estado de la consulta (ej. Confirmada, En curso, Completada, Cancelada).
-    * **RF10:** El sistema debe permitir al veterinario registrar los datos médicos de una consulta en curso o completada, incluyendo diagnóstico, tratamiento recetado y las especialidades aplicadas.
+    * **RF10:** El sistema debe permitir al veterinario registrar los datos médicos de una consulta en curso o completada, incluyendo diagnóstico, tratamiento recetado y las especialidades aplicadas. Al guardar, el sistema generará automáticamente un cronograma de medicación en la base de datos.
     * **RF11:** El sistema debe permitir al veterinario subir y visualizar documentos adjuntos (archivos o imágenes como radiografías) vinculados a la consulta.
     * **RF12:** El sistema debe permitir al cliente visualizar el historial completo de consultas médicas de sus mascotas, incluyendo el detalle de diagnósticos, tratamientos recetados y documentos adjuntos (archivos o imágenes) proporcionados por el veterinario, una vez que la consulta tenga el estado "Completada".
 
 * Sistema de Evaluación:
     * **RF13:** El sistema debe permitir al cliente otorgar una calificación (del 1 al 5) y escribir una reseña únicamente a las consultas que tengan el estado "Completada".
 
+* Adherencia a Tratamientos:
+    * **RF14:** El sistema debe permitir al cliente registrar el cumplimiento de cada toma de medicación generada por el cronograma, mediante confirmación desde notificaciones push.
+    * **RF15:** El sistema debe permitir al veterinario consultar la tasa de adherencia al tratamiento de cada paciente.
+
+* Alertas Epidemiológicas:
+    * **RF16:** Al registrar un diagnóstico contagioso, un trigger en Supabase evaluará la ubicación geográfica del cliente y notificará a los dueños cercanos sobre el brote activo.
+    * **RF17:** El sistema debe mostrar un mapa epidemiológico con alertas zonales activas accesible por el cliente.
+
+* Historial Clínico con Autenticidad Criptográfica:
+    * **RF18:** Al finalizar una cita crítica (vacunas, cirugías), Supabase generará un hash único (firma digital) del registro médico para garantizar su inmutabilidad.
+    * **RF19:** El cliente debe poder generar y verificar el token de autenticidad de un historial clínico para demostrar su validez legal en otras clínicas o viajes internacionales.
+
+* Módulo de Especies Exóticas:
+    * **RF20:** El sistema debe permitir registrar seguimiento morfológico de mascotas exóticas, incluyendo fotografías alineadas a lo largo del tiempo para evaluar crecimiento (ej. caparazones de tortugas Mata mata/Taricaya, coloración de invertebrados).
+    * **RF21:** El sistema debe permitir gestionar una bóveda legal de documentos de mascotas exóticas, incluyendo facturas de zoocriaderos y certificados CITES que demuestren el origen legal del animal.
 
 ### 2. Requerimientos No Funcionales:
 * Cómo debe comportarse el sistema (atributos de calidad, restricciones y rendimiento).
-    1. **RNF01 (Seguridad):** Las contraseñas de los usuarios deben estar encriptadas en la base de datos (por ejemplo, mediante algoritmos como RSA).
-    2. **RNF02 (Autorización):** El sistema debe restringir las vistas y acciones según el rol del usuario (ej. un cliente no puede modificar un diagnóstico ni cambiar el estado de la consulta).
+    1. **RNF01 (Seguridad):** Las contraseñas de los usuarios deben estar encriptadas en la base de datos (por ejemplo, mediante algoritmos como bcrypt).
+    2. **RNF02 (Seguridad/Autorización):** El sistema debe restringir las vistas y acciones según el rol del usuario (ej. un cliente no puede modificar un diagnóstico ni cambiar el estado de la consulta).
     3. **RNF03 (Autenticación):** El sistema debe usar JWT para la autenticación del usuario antes de ejecutar servicios, este token debe ser guardado en "Keychain/Keystore" del móvil y ser enviado en la cabecera (Authorization) en cada petición.
     4. **RNF04 (Rendimiento):** La aplicación móvil debe cargar las vistas principales en menos de 3 segundos bajo una conexión de red estándar (4G/WIFI).
-    5. **RNF05 (Optimización de almacenamiento):** Las imágenes (fotos de perfil, mascotas, documentos médicos) deben ser comprimidas antes de subirse al servidor para optimizar el espacio y los tiempos de carga.
-    6. **RNF06 (Disponibilidad):** La API y la base de datos deben estar alojadas en la nube y offline, garantizando una alta disponibilidad (uptime del 99.9%).
+    5. **RNF05 (Almacenamiento):** Las imágenes (fotos de perfil, mascotas, documentos médicos) deben ser comprimidas antes de subirse al servidor para optimizar el espacio y los tiempos de carga.
+    6. **RNF06 (Disponibilidad):** Supabase y su base de datos deben garantizar una alta disponibilidad (uptime del 99.9%) al estar gestionados como servicio cloud.
     7. **RNF07 (Usabilidad):** La interfaz debe ser intuitiva y adaptable (Responsive) a diferentes tamaños de pantalla en dispositivos móviles (smartphones y tablets).
-
-
-## Mapeo de Requerimientos No Funcionales al Diagrama de Despliegue
-
-| RNF | Descripción | Componente en Diagrama |
-|-----|-----------|----------------------|
-| **RNF01** | Encriptación de contraseñas (RSA) | Módulo de Seguridad en bases de datos |
-| **RNF02** | Control de acceso por rol  | Obtención de rol según la base de datos |
-| **RNF03** | Autenticación JWT guardada en Keychain | keychain|
-| **RNF04** | Rendimiento < 3 segundos | Optimización en API REST + Red HTTPS |
-| **RNF05** | Compresión de imágenes antes de subir | Módulo de Compresión en Dispositivo Móvil |
-| **RNF06** | Alta disponibilidad 99.9% | Base de datos en Supabase |
-| **RNF07** | Interfaz responsive | Aplicación Flutter (multiplaforma) |
-
----
 
 ## Casos de Uso
 Los casos de uso representan las interacciones principales de los actores (Cliente y Veterinario) con el sistema.
@@ -172,116 +142,64 @@ Los casos de uso representan las interacciones principales de los actores (Clien
     * **CU07 - Evaluar Atención:** Tras finalizar una consulta, el cliente selecciona las estrellas (1-5) y deja un comentario sobre el servicio recibido.
 * Actor: Veterinario
     * **CU08 - Gestionar Agenda Médica:** El veterinario visualiza su calendario de citas y actualiza el estado de las consultas solicitadas.
-    * **CU09 - Registrar Datos Médicos:** El veterinario ingresa el diagnóstico y el tratamiento de una mascota durante o después de su cita.
+    * **CU09 - Registrar Datos Médicos:** El veterinario ingresa el diagnóstico y el tratamiento de una mascota durante o después de su cita. Al guardar, el sistema genera automáticamente un cronograma de medicación y, si el diagnóstico es contagioso, dispara una alerta epidemiológica por geofencing.
     * **CU10 - Adjuntar Resultados Médicos:** El veterinario sube archivos PDF o imágenes (como análisis de sangre o radiografías) a la consulta específica.
+* Actor: Cliente (nuevas funcionalidades)
+    * **CU11 - Registrar Cumplimiento de Tratamiento:** El cliente confirma la toma de medicación desde notificaciones push de la app, permitiendo al veterinario ver la tasa de adherencia al tratamiento.
+    * **CU12 - Consultar Mapa Epidemiológico / Recibir Alertas Zonales:** El cliente consulta el mapa de brotes activos en su zona o recibe notificaciones push cuando hay un caso contagioso cerca de su dirección registrada.
+* Modificaciones a Casos de Uso Existentes:
+    * **CU06 (ampliado) - Visualizar Historial Clínico:** Incluye el sub-caso de uso (<<extend>>) **"Generar/Verificar Token de Autenticidad"** para demostrar legalmente la validez del historial en otras clínicas o viajes.
+    * **CU04 (ampliado) - Gestionar Mascotas:** Incluye sub-casos (<<include>>) para **"Registrar Seguimiento Morfológico"** (fotos alineadas en el tiempo para evaluar crecimiento en especies exóticas) y **"Gestionar Bóveda Legal"** (facturas de zoocriaderos y certificados CITES).
 
 Puedes encontrar el diagrama de casos de uso en el archivo:
 - `use_cases_schema.puml` (ubicado en la raíz del repositorio)
 
 ### Diagramas Completos de Casos de Uso
 
-Las siguientes imágenes contienen los diagramas completos de los casos de uso (cada imagen representa la mitad del diagrama completo). Se muestran apiladas una debajo de la otra para facilitar su lectura e impresión.
-
----
-
-<img src="Docs/caso_de_uso/CASO_DE_USO_COMPLETO_1.jpg" width="800" alt="Caso de Uso Completo 1"/>
-
----
-
-<img src="Docs/caso_de_uso/CASO_DE_USO_COMPLETO_2.jpg" width="800" alt="Caso de Uso Completo 2"/>
-
----
+El diagrama PlantUML actualizado (CU01–CU12 con relaciones <<include>> y <<extend>>) se encuentra en:
+- `use_cases_schema.puml` (ubicado en la raíz del repositorio)
 
 ## Descripción de Casos de Uso
 
-Los casos de uso documentados a continuación corresponden a los requisitos funcionales (RF01-RF13) y están relacionados directamente con el diagrama de base de datos y los mockups de interfaz.
-
-### Diagramas Detallados de Casos de Uso
+Los casos de uso documentados a continuación corresponden a los requisitos funcionales (RF01–RF21) y están relacionados directamente con el diagrama de base de datos.
 
 #### Casos de Uso Comunes (Cliente y Veterinario)
-
----
-**CU01 - Registrarse en la app**
-
-<img src="Docs/casos_de_uso/CU_01.jpg" width="800" alt="CU01 Registrarse"/>
-
----
-
-**CU02 - Iniciar Sesión**
-
-<img src="Docs/casos_de_uso/CU_02.jpg" width="800" alt="CU02 Iniciar Sesión"/>
-
----
-
-**CU03 - Editar Perfil**
-
-<img src="Docs/casos_de_uso/CU_03.jpg" width="800" alt="CU03 Editar Perfil"/>
-
----
+- **CU01** Registrarse en la app
+- **CU02** Iniciar Sesión (Supabase Auth / JWT)
+- **CU03** Editar Perfil
 
 #### Casos de Uso - Cliente
-
-
-**CU04 - Gestionar Mascotas**
-
-<img src="Docs/casos_de_uso/CU_04.jpg" width="800" alt="CU04 Gestionar Mascotas"/>
-
----
-
-**CU05 - Agendar Consulta Médica**
-
-<img src="Docs/casos_de_uso/CU_05.jpg" width="800" alt="CU05 Agendar Consulta"/>
-
----
-
-**CU06 - Visualizar Historial Clínico**
-
-<img src="Docs/casos_de_uso/CU_06.jpg" width="800" alt="CU06 Historial Clínico"/>
-
----
-
-**CU07 - Evaluar Atención**
-
-<img src="Docs/casos_de_uso/CU_07.jpg" width="800" alt="CU07 Evaluar Atención"/>
-
----
+- **CU04** Gestionar Mascotas *(incluye: Registrar Seguimiento Morfológico, Gestionar Bóveda Legal CITES)*
+- **CU05** Agendar Consulta Médica
+- **CU06** Visualizar Historial Clínico *(extiende: Generar/Verificar Token de Autenticidad)*
+- **CU07** Evaluar Atención
+- **CU11** Registrar Cumplimiento de Tratamiento *(confirma toma de medicación vía push)*
+- **CU12** Consultar Mapa Epidemiológico / Recibir Alertas Zonales
 
 #### Casos de Uso - Veterinario
-
-**CU08 - Gestionar Agenda Médica**
-
-<img src="Docs/casos_de_uso/CU_08.jpg" width="800" alt="CU08 Gestionar Agenda"/>
-
----
-
-**CU09 - Registrar Datos Médicos**
-
-<img src="Docs/casos_de_uso/CU_09.jpg" width="800" alt="CU09 Registrar Datos Médicos"/>
-
----
-
-**CU10 - Adjuntar Resultados Médicos**
-
-<img src="Docs/casos_de_uso/CU_10.jpg" width="800" alt="CU10 Adjuntar Resultados"/>
-
----
+- **CU08** Gestionar Agenda Médica
+- **CU09** Registrar Datos Médicos *(trigger: genera cronograma de medicación + alerta epidemiológica si diagnóstico contagioso)*
+- **CU10** Adjuntar Resultados Médicos
 
 ## Diagrama de Base de Datos (Schema)
 
 Para soportar todos los requisitos funcionales, se diseñó un modelo de entidades relacional que incluye:
 
-- **users y roles**: Gestión de usuarios con autenticación (clientes y veterinarios)
+- **users y roles**: Gestión de usuarios con autenticación JWT via Supabase Auth (clientes y veterinarios)
 - **clients y veterinarians**: Datos específicos por tipo de usuario
 - **species y breeds**: Catálogo predefinido de especies y razas
 - **pets**: Registro de mascotas con sus atributos (nombre, fecha de nacimiento, sexo, peso, foto)
 - **veterinarian_availability**: Disponibilidad semanal de veterinarios con intervalos de tiempo
-- **consultations**: Registro de consultas médicas con estado, diagnóstico, tratamiento
-- **consultation_documents**: Adjuntos de radiografías y análisis
+- **consultations**: Registro de consultas médicas con estado, diagnóstico, tratamiento y hash de autenticidad
+- **consultation_documents**: Adjuntos de radiografías y análisis (almacenados en Supabase Storage)
 - **consultation_specialties**: Clasificación de especialidades por consulta
+- **medication_schedules**: Cronogramas de medicación generados automáticamente desde CU09
+- **treatment_adherence**: Registro de cumplimiento de tomas confirmadas por el cliente (CU11)
+- **epidemiological_alerts**: Alertas de brotes activos por zona geográfica (CU12)
+- **morphological_records**: Fotos alineadas en el tiempo para seguimiento de crecimiento en especies exóticas (CU04)
+- **legal_documents**: Bóveda de certificados CITES y facturas de zoocriaderos (CU04)
 
 El diagrama completo se encuentra en: `schema.puml` (ubicado en la raíz del repositorio)
-
----
 
 ![Diagrama de Base de Datos](Docs/diagrams/schema.png)
 
@@ -295,14 +213,18 @@ El diagrama de clases muestra las entidades del dominio, sus atributos principal
 - Contenido: cada clase representa una entidad del esquema y sus asociaciones muestran cómo se relacionan los datos entre sí.
 
 Clases clave:
-- `User`: concentra los datos comunes de autenticación y perfil. Sus métodos representan acciones como registrar una cuenta, iniciar sesión, actualizar datos y cambiar la contraseña.
-- `Client` y `Veterinarian`: especializan el usuario según su rol. El cliente puede listar y crear mascotas; el veterinario puede revisar sus consultas, cambiar estados y consultar su disponibilidad.
-- `Pet`: representa cada mascota registrada. Sus métodos permiten calcular la edad, buscarla por identificador y actualizar su información básica.
-- `Consultation`: concentra el flujo principal de atención médica. Sus métodos modelan la creación de la consulta, su confirmación o cancelación, el cierre con diagnóstico y tratamiento, el agregado de especialidades y la calificación final.
-- `ConsultationDocument`: modela los archivos adjuntos asociados a una consulta, como radiografías o informes médicos.
-- `ConsultationSpecialty`: vincula cada consulta con una o varias especialidades, por ejemplo medicina general o dermatología.
-- `VeterinarianAvailability`: representa los intervalos de disponibilidad de cada veterinario, con métodos para listar, activar o desactivar franjas horarias.
-- `Species`, `Breed` y `Specialty`: representan catálogos del sistema. Sus métodos permiten listar registros y obtener elementos específicos para alimentar formularios y consultas del backend.
+- `User`: concentra los datos comunes de autenticación y perfil (via Supabase Auth + JWT).
+- `Client` y `Veterinarian`: especializan el usuario según su rol, con RLS en Supabase.
+- `Pet`: representa cada mascota. Incluye referencias a `MorphologicalRecord` (seguimiento morfológico) y `LegalDocument` (bóveda CITES).
+- `Consultation`: flujo principal de atención médica. Al completarse, genera un `MedicationSchedule` via trigger y, si el diagnóstico es contagioso, una `EpidemiologicalAlert`.
+- `ConsultationDocument`: archivos adjuntos almacenados en Supabase Storage.
+- `ConsultationSpecialty`: vincula consultas con especialidades clínicas.
+- `VeterinarianAvailability`: intervalos de disponibilidad del veterinario.
+- `MedicationSchedule` y `TreatmentAdherence`: cronograma de medicación y registro de cumplimiento del cliente (CU11).
+- `EpidemiologicalAlert`: alertas de brotes activos por zona geográfica (CU12).
+- `MorphologicalRecord`: fotos alineadas en el tiempo para especies exóticas (CU04).
+- `LegalDocument`: certificados CITES y facturas de zoocriaderos (CU04).
+- `Species`, `Breed` y `Specialty`: catálogos del sistema.
 
 Métodos clave:
 - Los métodos del diagrama representan acciones de dominio y reglas de negocio.
@@ -338,191 +260,38 @@ Explicación más detallada de los métodos:
 - `VeterinarianAvailability.deactivate()` deshabilita un bloque de disponibilidad.
 - `Species.listAll()`, `Breed.listBySpecies()` y `Specialty.listAll()` recuperan catálogos del sistema para usarse en formularios y consultas.
 
----
-
 ![Diagrama de Clases (métodos representativos)](Docs/diagrams/class_diagram_v2.png)
 
 ---
 
+## Diagrama de Despliegue
+
+La arquitectura del sistema está compuesta por:
+
+1. **Dispositivo Móvil**: Aplicación Flutter con módulo de compresión de imágenes y almacenamiento seguro de JWT en Keychain/Keystore
+2. **Supabase Auth**: Autenticación con JWT, gestión de sesiones y control de acceso por roles (RLS – Row Level Security)
+3. **Supabase PostgreSQL**: Base de datos relacional gestionada en la nube con triggers para lógica de negocio
+4. **Supabase Storage**: Almacenamiento de imágenes, documentos médicos y archivos CITES
+5. **Supabase Edge Functions**: Funciones serverless para generación de hashes de autenticidad y notificaciones push
+
+El diagrama de despliegue con mapeo de requisitos no funcionales se encuentra en: `deployment_diagram.puml` (ubicado en la raíz del repositorio)
+
+![Diagrama de Despliegue](Docs/diagrams/deployment_diagram.png)
+
+---
+
+## Mapeo de Requerimientos No Funcionales al Diagrama de Despliegue
+
+| RNF | Descripción | Componente en Diagrama |
+|-----|-----------|----------------------|
+| **RNF01** | Encriptación de contraseñas (bcrypt) | Módulo de Seguridad en Backend |
+| **RNF02** | Control de acceso por rol | Módulo de Seguridad en Backend |
+| **RNF03** | Autenticación JWT guardada en Keychain | Keystore en Dispositivo Móvil + Supabase Auth |
+| **RNF04** | Rendimiento < 3 segundos | SDK Supabase con caché + Red HTTPS |
+| **RNF05** | Compresión de imágenes antes de subir | Módulo de Compresión en Dispositivo Móvil → Supabase Storage |
+| **RNF06** | Alta disponibilidad 99.9% | Supabase Cloud (PostgreSQL gestionado) |
+| **RNF07** | Interfaz responsive | Aplicación Flutter (multiplataforma) |
+
 ## Mockups (Prototipos de Interfaz)
 
-A continuación, se detallan las interacciones principales del sistema, ordenadas por Caso de Uso. Cada sección incluye su diagrama de flujo funcional, los prototipos de interfaz (mockups) que ilustran la experiencia del usuario y los **requerimientos funcionales que satisfacen**.
-
-#### **CU01 - Registrarse en la app**
-*   **Actor principal:** Usuario no registrado
-*   **Descripción:** El usuario se registra en la aplicación eligiendo un rol (Cliente o Veterinario) y proporcionando su información básica.
-*   **Requisitos Satisfechos:**
-    *   **RF01:** Registro de nuevos usuarios asignándoles un rol.
-*   **Flujo principal:**
-    1. El usuario selecciona "Regístrate" en la pantalla de inicio.
-    2. El sistema muestra un selector de rol.
-    3. El usuario ingresa la información requerida (nombres, teléfono, dirección, etc.).
-    4. El sistema valida que el correo no exista y crea la cuenta en la base de datos.
-    5. El sistema inicia la sesión automáticamente.
-
-<p align="center">
-  <img src="Docs/mockups/m_2.jpg" width="300" alt="Mockup Registro"/>
-</p>
-
----
-
-#### **CU02 - Iniciar Sesión**
-*   **Actor principal:** Usuario (Cliente / Veterinario)
-*   **Descripción:** El usuario accede a su cuenta existente en la aplicación mediante sus credenciales.
-*   **Requisitos Satisfechos:**
-    *   **RF02:** Inicio de sesión utilizando correo electrónico y contraseña.
-    *   *RNF02:* El sistema carga el Dashboard correspondiente al rol (Autorización).
-*   **Flujo principal:**
-    1. El usuario abre la aplicación y visualiza la pantalla de bienvenida.
-    2. Ingresa su correo electrónico y contraseña.
-    3. Toca el botón "Iniciar Sesión".
-    4. El sistema valida las credenciales encriptadas en la base de datos.
-    5. El sistema redirige al usuario a su respectivo Dashboard.
-
-<p align="center">
-  <img src="Docs/mockups/m_1.jpg" width="300" alt="Mockup Login"/>
-</p>
-
----
-
-#### **CU03 - Editar Perfil**
-*   **Actor principal:** Usuario (Cliente / Veterinario)
-*   **Descripción:** El usuario administra los datos de su cuenta. Los clientes actualizan datos de contacto; los veterinarios gestionan su experiencia y especialidades.
-*   **Requisitos Satisfechos:**
-    *   **RF03:** Editar información del perfil según los campos permitidos para su rol.
-*   **Flujo principal:**
-    1. El usuario navega a la pestaña "Perfil".
-    2. El sistema muestra su información personal y avatar.
-    3. El usuario puede modificar sus datos editables según su rol.
-    4. El sistema guarda los cambios en la base de datos.
-
-<p align="center">
-  <img src="Docs/mockups/m_8.jpg" width="300" alt="Mockup Perfil Cliente"/>
-  <img src="Docs/mockups/m_14.jpg" width="300" alt="Mockup Perfil Veterinario"/>
-</p>
-
----
-
-### Casos de Uso - Cliente
-
-#### **CU04 - Gestionar Mascotas**
-*   **Actor principal:** Cliente
-*   **Descripción:** El cliente visualiza la lista de sus animales registrados, accede a sus perfiles o inscribe nuevos pacientes.
-*   **Requisitos Satisfechos:**
-    *   **RF04:** Registrar, editar y visualizar el perfil de mascotas.
-    *   **RF05:** (Al crear mascota) Mostrar catálogo de especies y razas.
-*   **Flujo principal:**
-    1. El cliente selecciona la pestaña "Mascotas" en la navegación inferior.
-    2. El sistema recupera de la tabla `pets` las mascotas asociadas a su ID.
-    3. El usuario visualiza la lista con foto, nombre, raza, edad y sexo.
-    4. El cliente puede seleccionar una mascota específica o pulsar el botón flotante (+) para registrar una nueva.
-
-<p align="center">
-  <img src="Docs/mockups/m_3.jpg" width="300" alt="Mockup Dashboard Cliente con Mascotas"/>
-  <img src="Docs/mockups/m_4.jpg" width="300" alt="Mockup Lista de Mascotas"/>
-</p>
-
----
-
-#### **CU05 - Agendar Consulta Médica**
-*   **Actor principal:** Cliente
-*   **Descripción:** El cliente reserva un turno seleccionando a la mascota paciente, el servicio, el médico y el horario.
-*   **Requisitos Satisfechos:**
-    *   **RF06:** Agendar consulta seleccionando mascota, veterinario, horario y motivo.
-    *   **RF07:** Asignar estado "Pendiente" automáticamente a la nueva consulta.
-*   **Flujo principal:**
-    1. El cliente presiona el botón "Agendar Cita".
-    2. El cliente escoge qué mascota necesita atención y la especialidad requerida.
-    3. El sistema lista a los veterinarios disponibles filtrados por la especialidad.
-    4. El cliente escoge un día y un intervalo de tiempo disponible en la agenda del doctor elegido.
-    5. El cliente confirma la reservación y el sistema guarda la consulta con estado "Pendiente".
-
-<p align="center">
-  <img src="Docs/mockups/m_6.jpg" width="300" alt="Mockup Agendar Paso 1"/>
-  <img src="Docs/mockups/m_7.jpg" width="300" alt="Mockup Agendar Paso 2"/>
-</p>
-
----
-
-#### **CU06 - Visualizar Historial Clínico**
-*   **Actor principal:** Cliente / Veterinario
-*   **Descripción:** Permite consultar el registro médico pasado de una mascota. El cliente lo ve como historial; el veterinario lo ve como pre-consulta.
-*   **Requisitos Satisfechos:**
-    *   **RF12:** Visualizar el historial completo de consultas médicas de sus mascotas.
-*   **Flujo principal:**
-    1. El usuario selecciona una mascota desde su lista (Cliente) o agenda (Veterinario).
-    2. El sistema muestra la ficha técnica estática (peso, sexo, raza).
-    3. Se despliega una línea de tiempo (timeline) ordenando las consultas con estado "Completada".
-    4. Se visualiza el diagnóstico de cada cita y los motivos de la misma.
-
-<p align="center">
-  <img src="Docs/mockups/m_5.jpg" width="300" alt="Mockup Historial Timeline (Cliente)"/>
-  <img src="Docs/mockups/m_11.jpg" width="300" alt="Mockup Pre-Consulta (Veterinario)"/>
-</p>
-
----
-
-#### **CU07 - Evaluar Atención**
-*   **Actor principal:** Cliente
-*   **Descripción:** Tras finalizar una consulta (estado "Completada"), el cliente otorga estrellas (1-5) y deja un comentario sobre el servicio.
-*   **Requisitos Satisfechos:**
-    *   **RF13:** Otorgar calificación y reseña únicamente a consultas con estado "Completada".
-
-<p align="center">
-  <img src="Docs/mockups/m_15.jpg" width="300" alt="Evaluacion (Cliente)"/>
-</p>
-
----
-
-### Casos de Uso - Veterinario
-
-#### **CU08 - Gestionar Agenda Médica**
-*   **Actor principal:** Veterinario
-*   **Descripción:** El doctor visualiza sus métricas diarias y todos sus turnos ordenados cronológicamente con sus respectivos estados.
-*   **Requisitos Satisfechos:**
-    *   **RF08:** Visualizar lista de consultas agendadas.
-    *   **RF09:** Cambiar el estado de la consulta (ej. En curso, Completada).
-*   **Flujo principal:**
-    1. El veterinario ingresa a la aplicación (Dashboard) o a la pestaña "Agenda".
-    2. El sistema carga las consultas asociadas a su ID desde la tabla `consultations`.
-    3. El veterinario navega entre las pestañas "Hoy", "Mañana" o "Semana".
-    4. Visualiza la lista de pacientes con indicadores visuales de estado (Completada, En espera, Pendiente).
-
-<p align="center">
-  <img src="Docs/mockups/m_9.jpg" width="300" alt="Mockup Dashboard Vet"/>
-  <img src="Docs/mockups/m_10.jpg" width="300" alt="Mockup Agenda Diaria"/>
-</p>
-
----
-
-#### **CU09 - Registrar Datos Médicos**
-*   **Actor principal:** Veterinario
-*   **Descripción:** El médico documenta los hallazgos clínicos y el tratamiento a seguir durante la atención de una consulta en estado "En curso".
-*   **Requisitos Satisfechos:**
-    *   **RF10:** Registrar datos médicos de una consulta en curso o completada (diagnóstico, tratamiento, especialidades).
-*   **Flujo principal:**
-    1. El veterinario inicia la consulta médica desde la agenda.
-    2. Ingresa el texto correspondiente al "Diagnóstico Clínico".
-    3. Ingresa las medicinas, dosis y recomendaciones en "Tratamiento prescrito".
-    4. Puede guardar un borrador o avanzar al paso de adjuntos.
-
-<p align="center">
-  <img src="Docs/mockups/m_12.jpg" width="300" alt="Mockup Registrar Diagnóstico"/>
-</p>
-
----
-
-#### **CU10 - Adjuntar Resultados Médicos**
-*   **Actor principal:** Veterinario
-*   **Descripción:** El veterinario anexa documentos digitales al registro médico de la mascota y cierra el ciclo de atención.
-*   **Requisitos Satisfechos:**
-    *   **RF11:** Subir y visualizar documentos adjuntos vinculados a la consulta.
-*   **Flujo principal:**
-    1. El veterinario accede a la zona de subida (Dropzone) en la consulta activa.
-    2. Selecciona archivos desde el almacenamiento del dispositivo (Recetas en PDF, radiografías, análisis de sangre).
-    3. El sistema procesa, comprime y vincula los archivos a la tabla `consultation_documents`.
-    4. El veterinario presiona "Guardar y Finalizar Cita", pasando la consulta al estado "Completada".
-
-<p align="center">
-  <img src="Docs/mockups/m_13.jpg" width="300" alt="Mockup Subir Archivos Médicos"/>
-</p>
+Los prototipos de interfaz están siendo rediseñados para adaptarse a las nuevas funcionalidades core.

@@ -1,0 +1,290 @@
+@startuml
+' Diagrama de Clases v2 — VetCare (Arquitectura Supabase BaaS)
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+' ===========================
+' AUTENTICACIÓN Y PERFIL
+' ===========================
+
+class Sex {
+  +id: int
+  +name: varchar
+}
+
+class User {
+  +id: uuid
+  +sex_id: int
+  +role: varchar
+  +email: varchar
+  +first_name: varchar
+  +last_name: varchar
+  +phone: varchar
+  +photo_url: varchar
+  +latitude: decimal
+  +longitude: decimal
+  --
+  +register(params: Map): User
+  +login(email: varchar, password: varchar): JWTToken
+  +updateProfile(params: Map): boolean
+  +uploadProfilePhoto(file: File): String
+}
+
+class Client {
+  +id: int
+  +user_id: uuid
+  +address: text
+  +identity_document: varchar
+  --
+  +listPets(): List<Pet>
+  +createPet(params: Map): Pet
+  +confirmMedicationTake(scheduleId: int): TreatmentAdherence
+  +getEpidemiologicalAlerts(): List<EpidemiologicalAlert>
+}
+
+class Veterinarian {
+  +id: int
+  +user_id: uuid
+  +license_number: varchar
+  +years_experience: int
+  +default_appointment_duration_minutes: int
+  --
+  +listConsultations(status?: varchar): List<Consultation>
+  +updateConsultationStatus(consultationId: int, status: varchar): boolean
+  +getAvailableSlots(date: date): List<time>
+  +getAdherenceReport(petId: int): AdherenceReport
+}
+
+' ===========================
+' CATÁLOGO DE ANIMALES
+' ===========================
+
+class Species {
+  +id: int
+  +name: varchar
+  +is_exotic: boolean
+  --
+  +listAll(): List<Species>
+}
+
+class Breed {
+  +id: int
+  +species_id: int
+  +name: varchar
+  +description: text
+  +reference_image_url: varchar
+  --
+  +listBySpecies(speciesId: int): List<Breed>
+}
+
+class Pet {
+  +id: int
+  +client_id: int
+  +breed_id: int
+  +sex_id: int
+  +name: varchar
+  +birth_date: date
+  +current_weight: decimal
+  +photo_url: varchar
+  --
+  +getAge(): int
+  +updateProfile(params: Map): boolean
+  +addMorphologicalRecord(record: MorphologicalRecord): boolean
+  +addLegalDocument(doc: LegalDocument): boolean
+  +getMorphologicalTimeline(): List<MorphologicalRecord>
+  +getLegalVault(): List<LegalDocument>
+}
+
+' ===========================
+' MÓDULO DE CONSULTAS
+' ===========================
+
+class Specialty {
+  +id: int
+  +name: varchar
+  +description: text
+  +icon_url: varchar
+  --
+  +listAll(): List<Specialty>
+}
+
+class Consultation {
+  +id: int
+  +pet_id: int
+  +veterinarian_id: int
+  +status: varchar
+  +consultation_date: date
+  +consultation_time: time
+  +reason: text
+  +diagnosis: text
+  +is_contagious: boolean
+  +prescribed_treatment: text
+  +integrity_hash: varchar
+  +rating: int
+  +review_comment: text
+  +review_datetime: datetime
+  --
+  +create(params: Map): Consultation
+  +confirm(): boolean
+  +cancel(reason: varchar): boolean
+  +complete(diagnosis: text, treatment: text, isContagious: boolean): boolean
+  +generateIntegrityHash(): String
+  +verifyIntegrityHash(token: String): boolean
+  +attachDocument(doc: ConsultationDocument): boolean
+  +addSpecialty(specialtyId: int): boolean
+  +rate(rating: int, comment: varchar): boolean
+}
+
+class ConsultationDocument {
+  +id: int
+  +consultation_id: int
+  +file_url: varchar
+  +document_type: varchar
+  --
+  +uploadToStorage(file: File): ConsultationDocument
+  +delete(): boolean
+}
+
+class ConsultationSpecialty {
+  +consultation_id: int
+  +specialty_id: int
+  --
+  +add(consultationId: int, specialtyId: int): ConsultationSpecialty
+  +remove(consultationId: int, specialtyId: int): boolean
+}
+
+class VeterinarianAvailability {
+  +id: int
+  +veterinarian_id: int
+  +day_of_week: int
+  +start_time: time
+  +end_time: time
+  +slot_duration_minutes: int
+  +is_active: boolean
+  --
+  +listForVeterinarian(vetId: int): List<VeterinarianAvailability>
+  +activate(): boolean
+  +deactivate(): boolean
+}
+
+' ===========================
+' MÓDULO DE ADHERENCIA (CU11)
+' ===========================
+
+class MedicationSchedule {
+  +id: int
+  +consultation_id: int
+  +medication_name: varchar
+  +dose: varchar
+  +frequency_hours: int
+  +start_datetime: datetime
+  +end_datetime: datetime
+  +created_by_trigger: boolean
+  --
+  +generateFromConsultation(consultationId: int): List<MedicationSchedule>
+  +getPendingTakes(clientId: int): List<TreatmentAdherence>
+  +sendPushNotification(clientId: int): boolean
+}
+
+class TreatmentAdherence {
+  +id: int
+  +medication_schedule_id: int
+  +client_id: int
+  +scheduled_datetime: datetime
+  +confirmed_at: datetime
+  +status: varchar
+  --
+  +confirm(): boolean
+  +getAdherenceRate(scheduleId: int): float
+}
+
+' ===========================
+' MÓDULO EPIDEMIOLÓGICO (CU12)
+' ===========================
+
+class EpidemiologicalAlert {
+  +id: int
+  +consultation_id: int
+  +disease_name: varchar
+  +origin_latitude: decimal
+  +origin_longitude: decimal
+  +radius_km: decimal
+  +active: boolean
+  +created_at: datetime
+  +resolved_at: datetime
+  --
+  +createFromTrigger(consultationId: int): EpidemiologicalAlert
+  +getActiveAlertsNear(lat: decimal, lon: decimal, radiusKm: decimal): List<EpidemiologicalAlert>
+  +resolve(): boolean
+  +notifyNearbyClients(): boolean
+}
+
+' ===========================
+' MÓDULO ESPECIES EXÓTICAS (CU04)
+' ===========================
+
+class MorphologicalRecord {
+  +id: int
+  +pet_id: int
+  +photo_url: varchar
+  +recorded_at: date
+  +weight_grams: decimal
+  +length_cm: decimal
+  +notes: text
+  --
+  +uploadAlignedPhoto(file: File, petId: int): MorphologicalRecord
+  +getTimeline(petId: int): List<MorphologicalRecord>
+  +compareGrowth(recordA: int, recordB: int): Map
+}
+
+class LegalDocument {
+  +id: int
+  +pet_id: int
+  +document_type: varchar
+  +file_url: varchar
+  +issued_by: varchar
+  +issued_date: date
+  +cites_appendix: varchar
+  +notes: text
+  --
+  +uploadToVault(file: File, petId: int): LegalDocument
+  +listByPet(petId: int): List<LegalDocument>
+  +delete(): boolean
+}
+
+' ===========================
+' RELACIONES
+' ===========================
+
+' Auth y perfil
+Sex "1" -- "0..*" User
+Sex "1" -- "0..*" Pet
+User "1" -- "0..1" Client
+User "1" -- "0..1" Veterinarian
+
+' Catálogo
+Species "1" -- "0..*" Breed
+Breed "1" -- "0..*" Pet
+Client "1" -- "0..*" Pet
+
+' Consultas
+Pet "1" -- "0..*" Consultation
+Veterinarian "1" -- "0..*" Consultation
+Veterinarian "1" -- "0..*" VeterinarianAvailability
+Consultation "1" -- "0..*" ConsultationDocument
+Consultation "1" -- "0..*" ConsultationSpecialty
+Specialty "1" -- "0..*" ConsultationSpecialty
+
+' Adherencia
+Consultation "1" -- "0..*" MedicationSchedule
+MedicationSchedule "1" -- "0..*" TreatmentAdherence
+Client "1" -- "0..*" TreatmentAdherence
+
+' Epidemiología
+Consultation "1" -- "0..1" EpidemiologicalAlert
+
+' Módulo exóticos
+Pet "1" -- "0..*" MorphologicalRecord
+Pet "1" -- "0..*" LegalDocument
+
+@enduml
