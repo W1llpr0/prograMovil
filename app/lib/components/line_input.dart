@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 /// Underline text field matching VetCare's design system.
-/// Shows an animated MONO label above + 1px bottom border.
+/// Shows an animated MONO label above + 1px bottom border + focus square indicator.
 class LineInput extends StatefulWidget {
   final TextEditingController controller;
   final String label;
@@ -43,45 +44,62 @@ class _LineInputState extends State<LineInput> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 180),
-              style: TextStyle(
-                fontFamily: 'SpaceGrotesk',
+            Text(
+              widget.label.toUpperCase(),
+              style: GoogleFonts.jetBrainsMono(
                 fontSize: 9,
                 letterSpacing: 0.22,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w500,
                 color: labelColor,
               ),
-              child: Text(widget.label.toUpperCase()),
             ),
-            TextFormField(
-              controller: widget.controller,
-              keyboardType: widget.keyboardType,
-              obscureText: widget.obscureText,
-              maxLines: widget.maxLines,
-              textCapitalization: widget.textCapitalization,
-              validator: widget.validator,
-              style: TextStyle(
-                fontFamily: 'SpaceGrotesk',
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                letterSpacing: -0.02,
-                color: cs.onSurface,
-              ),
-              decoration: InputDecoration(
-                hintText: widget.hint,
-                border: InputBorder.none,
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: cs.onSurface, width: 1),
+            Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                TextFormField(
+                  controller: widget.controller,
+                  keyboardType: widget.keyboardType,
+                  obscureText: widget.obscureText,
+                  maxLines: widget.maxLines,
+                  textCapitalization: widget.textCapitalization,
+                  validator: widget.validator,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: -0.02 * 18,
+                    color: cs.onSurface,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: widget.hint,
+                    hintStyle: GoogleFonts.spaceGrotesk(
+                      fontSize: 18,
+                      color: cs.onSurface.withValues(alpha: 0.35),
+                    ),
+                    border: InputBorder.none,
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: cs.onSurface, width: 1),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: cs.onSurface, width: 1),
+                    ),
+                    errorBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: cs.onSurface, width: 1),
+                    ),
+                    contentPadding: const EdgeInsets.fromLTRB(0, 6, 20, 10),
+                  ),
                 ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: cs.onSurface, width: 1),
+                // Focus indicator — small filled square (from mockup)
+                AnimatedOpacity(
+                  opacity: _focused ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 180),
+                  child: Container(
+                    width: 6,
+                    height: 6,
+                    margin: const EdgeInsets.only(bottom: 4),
+                    color: cs.onSurface,
+                  ),
                 ),
-                errorBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: cs.onSurface, width: 1),
-                ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 8),
-              ),
+              ],
             ),
           ],
         ),

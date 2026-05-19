@@ -10,6 +10,10 @@ class RegisterMedicalController extends GetxController {
   final diagnosisCtrl = TextEditingController();
   final treatmentCtrl = TextEditingController();
   final notesCtrl = TextEditingController();
+  final tempCtrl = TextEditingController();
+  final weightCtrl = TextEditingController();
+  final hrCtrl = TextEditingController();
+  final rrCtrl = TextEditingController();
 
   final RxBool isContagious = false.obs;
   final RxBool isLoading = false.obs;

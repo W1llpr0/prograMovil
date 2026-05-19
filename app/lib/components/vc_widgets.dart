@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 /// Section header with the VetCare typography — MONO EYEBROW label above
 /// a large display title.
@@ -28,9 +29,7 @@ class SectionHeader extends StatelessWidget {
               children: [
                 Text(
                   eyebrow.toUpperCase(),
-                  style: TextStyle(
-                    fontFamily: 'SpaceGrotesk',
-                    fontSize: 9,
+                  style: GoogleFonts.spaceGrotesk(fontSize: 9,
                     letterSpacing: 0.32,
                     fontWeight: FontWeight.w700,
                     color: cs.onSurface.withValues(alpha: 0.45),
@@ -39,9 +38,7 @@ class SectionHeader extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   title,
-                  style: TextStyle(
-                    fontFamily: 'SpaceGrotesk',
-                    fontSize: 28,
+                  style: GoogleFonts.spaceGrotesk(fontSize: 28,
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.04,
                     height: 0.95,
@@ -106,18 +103,14 @@ class VcDataRow extends StatelessWidget {
         children: [
           Text(
             label.toUpperCase(),
-            style: TextStyle(
-              fontFamily: 'SpaceGrotesk',
-              fontSize: 9,
+            style: GoogleFonts.spaceGrotesk(fontSize: 9,
               letterSpacing: 0.22,
               color: cs.onSurface.withValues(alpha: 0.45),
             ),
           ),
           Text(
             value,
-            style: TextStyle(
-              fontFamily: 'SpaceGrotesk',
-              fontSize: 13,
+            style: GoogleFonts.spaceGrotesk(fontSize: 13,
               fontWeight: FontWeight.w600,
               letterSpacing: -0.02,
               color: cs.onSurface,
@@ -144,9 +137,7 @@ class MonoBadge extends StatelessWidget {
       ),
       child: Text(
         label.toUpperCase(),
-        style: TextStyle(
-          fontFamily: 'SpaceGrotesk',
-          fontSize: 9,
+        style: GoogleFonts.spaceGrotesk(fontSize: 9,
           letterSpacing: 0.22,
           fontWeight: FontWeight.w700,
           color: cs.onSurface,

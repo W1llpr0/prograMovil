@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../components/app_controller.dart';
@@ -70,11 +71,9 @@ class _SplashPageState extends State<SplashPage>
               const SizedBox(height: 28),
               Opacity(
                 opacity: _titleFade.value,
-                child: const Text(
+                child: Text(
                   'VetCare',
-                  style: TextStyle(
-                    fontFamily: 'SpaceGrotesk',
-                    fontSize: 30,
+                  style: GoogleFonts.spaceGrotesk(fontSize: 30,
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.04,
                     color: Colors.white,
@@ -84,11 +83,9 @@ class _SplashPageState extends State<SplashPage>
               const SizedBox(height: 10),
               Opacity(
                 opacity: _titleFade.value * 0.55,
-                child: const Text(
-                  'SIGNED · DECENTRALIZED · v 1.0',
-                  style: TextStyle(
-                    fontFamily: 'SpaceGrotesk',
-                    fontSize: 9,
+                child: Text(
+                  'SIGNED · DECENTRALIZED · v 4.2',
+                  style: GoogleFonts.jetBrainsMono(fontSize: 9,
                     letterSpacing: 0.32,
                     color: Colors.white,
                   ),

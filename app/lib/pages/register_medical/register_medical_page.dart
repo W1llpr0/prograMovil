@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../components/line_input.dart';
 import '../../components/monochrome_button.dart';
-import '../../components/vc_widgets.dart';
+import '../../models/consultation.dart';
 import 'register_medical_controller.dart';
 
 class RegisterMedicalPage extends StatelessWidget {
@@ -12,98 +13,190 @@ class RegisterMedicalPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
+    final Consultation? c = Get.arguments as Consultation?;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('MEDICAL RECORD'),
-        leading: IconButton(icon: Icon(Icons.close, color: cs.onSurface), onPressed: () => Get.back()),
-      ),
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Consultation info
-              if (ctrl.consultation != null) ...[
-                Text('CONSULTATION', style: TextStyle(fontSize: 9, letterSpacing: 0.32, fontWeight: FontWeight.w700, color: cs.onSurface.withValues(alpha: 0.45))),
-                const SizedBox(height: 8),
-                if (ctrl.consultation!.petName != null)
-                  VcDataRow(label: 'Pet', value: ctrl.consultation!.petName!),
-                VcDataRow(
-                  label: 'Scheduled',
-                  value: '${ctrl.consultation!.scheduledAt.day}/${ctrl.consultation!.scheduledAt.month}/${ctrl.consultation!.scheduledAt.year} '
-                      '${ctrl.consultation!.scheduledAt.hour.toString().padLeft(2, '0')}:${ctrl.consultation!.scheduledAt.minute.toString().padLeft(2, '0')}',
-                ),
-                const Divider(height: 32),
-              ],
-              LineInput(
-                controller: ctrl.diagnosisCtrl,
-                label: 'DIAGNOSIS',
-                maxLines: 3,
-                textCapitalization: TextCapitalization.sentences,
-              ),
-              LineInput(
-                controller: ctrl.treatmentCtrl,
-                label: 'TREATMENT',
-                maxLines: 3,
-                textCapitalization: TextCapitalization.sentences,
-              ),
-              LineInput(
-                controller: ctrl.notesCtrl,
-                label: 'NOTES (optional)',
-                maxLines: 3,
-                textCapitalization: TextCapitalization.sentences,
-              ),
-              const SizedBox(height: 8),
-              // Contagious toggle
-              Obx(() => Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('CONTAGIOUS DISEASE', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: cs.onSurface)),
-                          Text('Will trigger an epidemiological alert', style: TextStyle(fontSize: 10, color: cs.onSurface.withValues(alpha: 0.45))),
-                        ],
-                      ),
-                      Switch(value: ctrl.isContagious.value, onChanged: (v) => ctrl.isContagious.value = v),
-                    ],
-                  )),
-              const SizedBox(height: 24),
-              // SHA-256 note
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(border: Border.all(color: cs.onSurface.withValues(alpha: 0.2), width: 1)),
-                child: Row(
-                  children: [
-                    Icon(Icons.lock_outline, size: 14, color: cs.onSurface.withValues(alpha: 0.55)),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'A SHA-256 integrity hash will be generated and stored with this record.',
-                        style: TextStyle(fontFamily: 'SpaceGrotesk', fontSize: 10, color: cs.onSurface.withValues(alpha: 0.55), height: 1.5),
-                      ),
+        child: Column(
+          children: [
+            // ── Top nav ───────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(22, 8, 22, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () => Get.back(),
+                    child: Container(
+                      width: 38, height: 38,
+                      decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
+                      child: const Icon(Icons.chevron_left, size: 18, color: Colors.black),
                     ),
+                  ),
+                  Text('MEDICAL RECORD', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
+                  const SizedBox(width: 38),
+                ],
+              ),
+            ),
+
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(22, 0, 22, 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    Text('REGISTER', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
+                        color: Colors.black.withValues(alpha: 0.55))),
+                    const SizedBox(height: 12),
+                    RichText(
+                      text: TextSpan(children: [
+                        TextSpan(
+                          text: c?.petName != null ? '${c!.petName}·\n' : 'Record·\n',
+                          style: GoogleFonts.spaceGrotesk(fontSize: 38, fontWeight: FontWeight.w700,
+                              letterSpacing: -0.04 * 38, height: 0.92, color: Colors.black),
+                        ),
+                        TextSpan(text: 'new entry.',
+                            style: GoogleFonts.instrumentSerif(fontSize: 36, fontStyle: FontStyle.italic,
+                                fontWeight: FontWeight.w400, letterSpacing: -0.02 * 36, height: 1.0, color: Colors.black)),
+                      ]),
+                    ),
+
+                    // ── Vitals grid ─────────────────────────────
+                    const SizedBox(height: 28),
+                    Text('VITALS', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(child: _VitalCard(label: 'TEMP °C', ctrl: ctrl.tempCtrl, hint: '38.5')),
+                        const SizedBox(width: 12),
+                        Expanded(child: _VitalCard(label: 'WEIGHT KG', ctrl: ctrl.weightCtrl, hint: '12.4')),
+                        const SizedBox(width: 12),
+                        Expanded(child: _VitalCard(label: 'HR BPM', ctrl: ctrl.hrCtrl, hint: '90')),
+                        const SizedBox(width: 12),
+                        Expanded(child: _VitalCard(label: 'RR /MIN', ctrl: ctrl.rrCtrl, hint: '22')),
+                      ],
+                    ),
+
+                    Container(height: 1, color: Colors.black, margin: const EdgeInsets.symmetric(vertical: 22)),
+
+                    // ── Diagnosis ────────────────────────────────
+                    LineInput(
+                      label: 'DIAGNOSIS',
+                      hint: 'Primary diagnosis...',
+                      controller: ctrl.diagnosisCtrl,
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 22),
+                    LineInput(
+                      label: 'TREATMENT',
+                      hint: 'Prescribed treatment...',
+                      controller: ctrl.treatmentCtrl,
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 22),
+                    LineInput(
+                      label: 'NOTES',
+                      hint: 'Additional observations...',
+                      controller: ctrl.notesCtrl,
+                      maxLines: 3,
+                    ),
+
+                    const SizedBox(height: 22),
+
+                    // Contagious toggle
+                    Obx(() => GestureDetector(
+                      onTap: () => ctrl.isContagious.toggle(),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 16),
+                        decoration: const BoxDecoration(border: Border(top: BorderSide(color: Colors.black), bottom: BorderSide(color: Colors.black))),
+                        child: Row(
+                          children: [
+                            Expanded(child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('CONTAGIOUS', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
+                                const SizedBox(height: 2),
+                                Text('Mark if this condition is contagious', style: GoogleFonts.spaceGrotesk(fontSize: 12,
+                                    color: Colors.black.withValues(alpha: 0.55))),
+                              ],
+                            )),
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 240),
+                              width: 50, height: 28,
+                              padding: const EdgeInsets.all(3),
+                              decoration: BoxDecoration(
+                                color: ctrl.isContagious.value ? Colors.black : Colors.white,
+                                border: Border.all(color: Colors.black),
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                              child: AnimatedAlign(
+                                duration: const Duration(milliseconds: 280),
+                                curve: Curves.easeInOut,
+                                alignment: ctrl.isContagious.value ? Alignment.centerRight : Alignment.centerLeft,
+                                child: Container(
+                                  width: 20, height: 20,
+                                  decoration: BoxDecoration(
+                                    color: ctrl.isContagious.value ? Colors.white : Colors.black,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )),
+
+                    const SizedBox(height: 32),
+
+                    Obx(() => MonochromeButton(
+                      label: ctrl.isLoading.value ? 'SAVING...' : 'SAVE & GENERATE HASH →',
+                      filled: true,
+                      onPressed: ctrl.isLoading.value ? null : () => ctrl.save(),
+                    )),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
-              Obx(() => ctrl.message.value.isEmpty
-                  ? const SizedBox.shrink()
-                  : Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Text(ctrl.message.value, style: TextStyle(fontSize: 11, color: cs.onSurface.withValues(alpha: 0.7))),
-                    )),
-              Obx(() => MonochromeButton(
-                    label: 'SAVE RECORD',
-                    onPressed: ctrl.save,
-                    isLoading: ctrl.isLoading.value,
-                  )),
-              const SizedBox(height: 40),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+}
+
+class _VitalCard extends StatelessWidget {
+  final String label, hint;
+  final TextEditingController ctrl;
+  const _VitalCard({required this.label, required this.ctrl, required this.hint});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+      decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: GoogleFonts.jetBrainsMono(fontSize: 8, letterSpacing: 0.16,
+              color: Colors.black.withValues(alpha: 0.55))),
+          const SizedBox(height: 6),
+          TextField(
+            controller: ctrl,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            style: GoogleFonts.spaceGrotesk(fontSize: 20, fontWeight: FontWeight.w600, color: Colors.black),
+            decoration: InputDecoration(
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+              border: InputBorder.none,
+              hintText: hint,
+              hintStyle: GoogleFonts.spaceGrotesk(fontSize: 20, fontWeight: FontWeight.w600,
+                  color: Colors.black.withValues(alpha: 0.25)),
+            ),
+          ),
+        ],
       ),
     );
   }

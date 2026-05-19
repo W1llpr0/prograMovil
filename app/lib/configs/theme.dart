@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 /// Strictly monochrome theme — inspired by the VetCare design system.
 /// Light: white background, black text/borders.
 /// Dark : black background, white text/borders.
 class AppTheme {
+  // Keep this for any legacy,references
   static const _fontFamily = 'SpaceGrotesk';
 
   static ThemeData light() => _build(
@@ -48,11 +50,10 @@ class AppTheme {
         foregroundColor: onBackground,
         elevation: 0,
         scrolledUnderElevation: 0,
-        titleTextStyle: TextStyle(
-          fontFamily: _fontFamily,
+        titleTextStyle: GoogleFonts.spaceGrotesk(
           fontSize: 15,
           fontWeight: FontWeight.w600,
-          letterSpacing: -0.03,
+          letterSpacing: -0.03 * 15,
           color: onBackground,
         ),
         iconTheme: IconThemeData(color: onBackground),
@@ -62,13 +63,13 @@ class AppTheme {
           backgroundColor: onBackground,
           foregroundColor: background,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-          textStyle: const TextStyle(
-            fontFamily: _fontFamily,
+          minimumSize: const Size(double.infinity, 62),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+          shape: const StadiumBorder(),
+          textStyle: GoogleFonts.jetBrainsMono(
             fontSize: 12,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.22,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.26,
           ),
         ),
       ),
@@ -77,12 +78,12 @@ class AppTheme {
           foregroundColor: onBackground,
           side: border,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-          textStyle: const TextStyle(
-            fontFamily: _fontFamily,
+          minimumSize: const Size(double.infinity, 56),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: const StadiumBorder(),
+          textStyle: GoogleFonts.jetBrainsMono(
             fontSize: 12,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w500,
             letterSpacing: 0.22,
           ),
         ),
@@ -92,25 +93,23 @@ class AppTheme {
         border: UnderlineInputBorder(borderSide: border),
         enabledBorder: UnderlineInputBorder(borderSide: border),
         focusedBorder: UnderlineInputBorder(borderSide: border),
-        labelStyle: TextStyle(
-          fontFamily: _fontFamily,
-          fontSize: 10,
+        labelStyle: GoogleFonts.jetBrainsMono(
+          fontSize: 9,
           letterSpacing: 0.22,
           color: onBackground.withValues(alpha: 0.55),
         ),
-        hintStyle: TextStyle(
-          fontFamily: _fontFamily,
+        hintStyle: GoogleFonts.spaceGrotesk(
           fontSize: 16,
           color: onBackground.withValues(alpha: 0.35),
         ),
       ),
-      textTheme: TextTheme(
-        displayLarge: TextStyle(fontFamily: _fontFamily, fontWeight: FontWeight.w700, letterSpacing: -0.04, color: onBackground),
-        titleLarge: TextStyle(fontFamily: _fontFamily, fontWeight: FontWeight.w600, letterSpacing: -0.03, color: onBackground),
-        bodyLarge: TextStyle(fontFamily: _fontFamily, color: onBackground),
-        bodyMedium: TextStyle(fontFamily: _fontFamily, color: onBackground),
-        labelSmall: TextStyle(fontFamily: _fontFamily, fontSize: 10, letterSpacing: 0.22, color: onBackground.withValues(alpha: 0.55)),
-      ),
+      textTheme: GoogleFonts.spaceGroteskTextTheme(TextTheme(
+        displayLarge: TextStyle(fontWeight: FontWeight.w700, letterSpacing: -0.04 * 50, color: onBackground),
+        titleLarge: TextStyle(fontWeight: FontWeight.w600, letterSpacing: -0.03 * 22, color: onBackground),
+        bodyLarge: TextStyle(color: onBackground),
+        bodyMedium: TextStyle(color: onBackground),
+        labelSmall: TextStyle(fontSize: 10, letterSpacing: 0.22, color: onBackground.withValues(alpha: 0.55)),
+      )),
       dividerTheme: DividerThemeData(color: onBackground.withValues(alpha: 0.12), thickness: 1, space: 0),
       cardTheme: CardThemeData(
         color: background,
@@ -127,8 +126,8 @@ class AppTheme {
         unselectedItemColor: onBackground.withValues(alpha: 0.35),
         elevation: 0,
         type: BottomNavigationBarType.fixed,
-        selectedLabelStyle: const TextStyle(fontSize: 10, letterSpacing: 0.22, fontWeight: FontWeight.w700),
-        unselectedLabelStyle: const TextStyle(fontSize: 10, letterSpacing: 0.22),
+        selectedLabelStyle: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.22, fontWeight: FontWeight.w700),
+        unselectedLabelStyle: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.22),
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith((s) => s.contains(WidgetState.selected) ? background : onBackground),

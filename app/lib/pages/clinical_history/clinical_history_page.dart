@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../components/vc_widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../components/vc_wordmark.dart';
+import '../../models/consultation.dart';
 import 'clinical_history_controller.dart';
 
 class ClinicalHistoryPage extends StatelessWidget {
@@ -10,128 +12,228 @@ class ClinicalHistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
+    final Consultation? c = Get.arguments as Consultation?;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('clinical_history'.tr),
-        leading: IconButton(icon: Icon(Icons.arrow_back, color: cs.onSurface), onPressed: () => Get.back()),
-      ),
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Obx(() {
-          final c = ctrl.consultation.value;
-          if (c == null) return const SizedBox.shrink();
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Date
-                Text(
-                  '${c.scheduledAt.day.toString().padLeft(2, '0')} / ${c.scheduledAt.month.toString().padLeft(2, '0')} / ${c.scheduledAt.year}',
-                  style: TextStyle(
-                    fontFamily: 'SpaceGrotesk',
-                    fontSize: 32,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.04,
-                    color: cs.onSurface,
+        child: Column(
+          children: [
+            // ── Header nav ─────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(22, 8, 22, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () => Get.back(),
+                    child: Container(
+                      width: 38, height: 38,
+                      decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
+                      child: const Icon(Icons.chevron_left, size: 18, color: Colors.black),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                MonoBadge(label: c.status),
-                const SizedBox(height: 24),
-                // Integrity badge
-                if (ctrl.integrityChecked.value) _IntegrityBanner(ok: ctrl.integrityOk.value, cs: cs),
-                const SizedBox(height: 16),
-                // Details
-                if (c.reason != null) ...[
-                  _Field(label: 'REASON', value: c.reason!, cs: cs),
-                  const SizedBox(height: 16),
-                ],
-                if (c.diagnosis != null) ...[
-                  _Field(label: 'DIAGNOSIS', value: c.diagnosis!, cs: cs),
-                  const SizedBox(height: 16),
-                ],
-                if (c.treatment != null) ...[
-                  _Field(label: 'TREATMENT', value: c.treatment!, cs: cs),
-                  const SizedBox(height: 16),
-                ],
-                if (c.notes != null) ...[
-                  _Field(label: 'NOTES', value: c.notes!, cs: cs),
-                  const SizedBox(height: 16),
-                ],
-                if (c.isContagious) ...[
-                  const SizedBox(height: 8),
-                  MonoBadge(label: '⚠ CONTAGIOUS'),
-                ],
-                if (c.integrityHash != null) ...[
-                  const SizedBox(height: 24),
-                  Text('SHA-256 HASH', style: TextStyle(fontSize: 9, letterSpacing: 0.22, color: cs.onSurface.withValues(alpha: 0.45))),
-                  const SizedBox(height: 4),
-                  Text(
-                    c.integrityHash!,
-                    style: TextStyle(fontFamily: 'SpaceGrotesk', fontSize: 10, letterSpacing: 0.05, color: cs.onSurface.withValues(alpha: 0.6)),
+                  const VcWordmark(),
+                  Container(
+                    width: 38, height: 38,
+                    decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
+                    child: const Icon(Icons.more_horiz, size: 18, color: Colors.black),
                   ),
                 ],
-              ],
+              ),
             ),
-          );
-        }),
+
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ── Appointment eyebrow ─────────────────────
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(22, 12, 22, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            c != null
+                                ? 'APPOINTMENT · ${c.scheduledAt.day.toString().padLeft(2, '0')} ${_monthName(c.scheduledAt.month).toUpperCase()} ${c.scheduledAt.year} · ${c.status.toUpperCase()}'
+                                : 'APPOINTMENT · 14 MAY 2026 · COMPLETED',
+                            style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
+                                color: Colors.black.withValues(alpha: 0.55)),
+                          ),
+                          const SizedBox(height: 12),
+                          RichText(
+                            text: TextSpan(children: [
+                              TextSpan(
+                                text: c?.diagnosis != null ? _firstWord(c!.diagnosis!) : 'Atopic\ndermatitis.',
+                                style: GoogleFonts.spaceGrotesk(fontSize: 38, fontWeight: FontWeight.w700,
+                                    letterSpacing: -0.04 * 38, height: 0.95, color: Colors.black),
+                              ),
+                              TextSpan(
+                                text: c?.diagnosis != null && c!.diagnosis!.split(' ').length > 1
+                                    ? ' ${c.diagnosis!.split(' ').skip(1).join(' ')}.'
+                                    : ' flare-up.',
+                                style: GoogleFonts.instrumentSerif(fontSize: 32, fontStyle: FontStyle.italic,
+                                    fontWeight: FontWeight.w400, letterSpacing: -0.02 * 32, color: Colors.black),
+                              ),
+                            ]),
+                          ),
+
+                          // Tag chips
+                          const SizedBox(height: 18),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 6,
+                            children: [
+                              if (c?.petName != null) _Chip(c!.petName!.toUpperCase()),
+                              const _Chip('CHRONIC'),
+                              const _Chip('GRADE II'),
+                              const _Chip('FOLLOW-UP · 14 D'),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // ── Doctor card ────────────────────────────────
+                    Container(
+                      margin: const EdgeInsets.fromLTRB(22, 22, 22, 0),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      padding: const EdgeInsets.all(18),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 52, height: 52,
+                            decoration: const BoxDecoration(color: Colors.black, shape: BoxShape.circle),
+                            child: Center(
+                              child: Text(
+                                c?.vetName != null ? c!.vetName![0].toUpperCase() : 'RP',
+                                style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w600, fontSize: 18, color: Colors.white),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(c?.vetName != null ? 'Dr. ${c!.vetName}' : 'Dr. Rodrigo Paz',
+                                    style: GoogleFonts.spaceGrotesk(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black)),
+                                const SizedBox(height: 4),
+                                Text('Exotics & Small Animals · Lic. BO-08214',
+                                    style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.08,
+                                        color: Colors.black.withValues(alpha: 0.55))),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                            decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
+                            child: Text('SIGNED', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16, color: Colors.black)),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // ── Diagnosis text ──────────────────────────────
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(22, 22, 22, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('DIAGNOSIS', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
+                          const SizedBox(height: 8),
+                          Text(
+                            c?.diagnosis ??
+                                'Bilateral pododermatitis with secondary Malassezia infection. Score 4/10 on the canine atopic dermatitis extent index. Triggered by new environmental allergen exposure during March–April.',
+                            style: GoogleFonts.spaceGrotesk(fontSize: 13, height: 1.55, color: Colors.black),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Hair line
+                    Container(height: 1, color: Colors.black, margin: const EdgeInsets.fromLTRB(22, 22, 22, 22)),
+
+                    // ── Treatment list ──────────────────────────────
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
+                      child: Text('PRESCRIBED TREATMENT · 06 ITEMS',
+                          style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
+                    ),
+                    const SizedBox(height: 12),
+
+                    _RxRow(code: 'RX 01', name: 'Apoquel 16 mg', regime: '1 tab / 24 h · 14 days', isFirst: true),
+                    _RxRow(code: 'RX 02', name: 'Malaseb shampoo', regime: 'Bathe / 72 h · 4 weeks', isFirst: false),
+                    _RxRow(code: 'RX 03', name: 'Omega-3 (EPA/DHA)', regime: '1 ml / 24 h · ongoing', isFirst: false),
+                    _RxRow(code: 'RX 04', name: 'Hypoallergenic diet', regime: 'Replace kibble · 60 days', isFirst: false),
+                    Container(height: 1, color: Colors.black, margin: const EdgeInsets.symmetric(horizontal: 22)),
+                    const SizedBox(height: 40),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
+  String _monthName(int m) {
+    const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return months[m];
+  }
+
+  String _firstWord(String s) => s.split(' ').first;
 }
 
-class _IntegrityBanner extends StatelessWidget {
-  final bool ok;
-  final ColorScheme cs;
-  const _IntegrityBanner({required this.ok, required this.cs});
+class _Chip extends StatelessWidget {
+  final String label;
+  const _Chip(this.label);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: ok ? cs.onSurface : Colors.transparent,
-        border: Border.all(color: cs.onSurface, width: 1),
-      ),
-      child: Row(
-        children: [
-          Icon(ok ? Icons.verified_outlined : Icons.warning_amber_outlined, size: 16, color: ok ? cs.surface : cs.onSurface),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              ok ? 'integrity_verified'.tr : 'integrity_failed'.tr,
-              style: TextStyle(
-                fontFamily: 'SpaceGrotesk',
-                fontSize: 10,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.22,
-                color: ok ? cs.surface : cs.onSurface,
-              ),
-            ),
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
+      child: Text(label, style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16, color: Colors.black)),
     );
   }
 }
 
-class _Field extends StatelessWidget {
-  final String label;
-  final String value;
-  final ColorScheme cs;
-  const _Field({required this.label, required this.value, required this.cs});
+class _RxRow extends StatelessWidget {
+  final String code, name, regime;
+  final bool isFirst;
+  const _RxRow({required this.code, required this.name, required this.regime, required this.isFirst});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: TextStyle(fontSize: 9, letterSpacing: 0.22, fontWeight: FontWeight.w700, color: cs.onSurface.withValues(alpha: 0.45))),
-        const SizedBox(height: 6),
-        Text(value, style: TextStyle(fontFamily: 'SpaceGrotesk', fontSize: 15, color: cs.onSurface, height: 1.5)),
-      ],
+    return Container(
+      padding: const EdgeInsets.fromLTRB(22, 14, 22, 14),
+      decoration: const BoxDecoration(border: Border(top: BorderSide(color: Colors.black))),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 54,
+            child: Text(code, style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.16, color: Colors.black)),
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name, style: GoogleFonts.spaceGrotesk(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black)),
+                const SizedBox(height: 3),
+                Text(regime, style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.04,
+                    color: Colors.black.withValues(alpha: 0.55))),
+              ],
+            ),
+          ),
+          const Icon(Icons.chevron_right, size: 16, color: Colors.black),
+        ],
+      ),
     );
   }
 }

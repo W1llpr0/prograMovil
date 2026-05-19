@@ -7,13 +7,21 @@ class ProfileController extends GetxController {
   final AppController appCtrl = Get.find<AppController>();
   final AuthService _authService = AuthService();
 
-  Future<void> logout() async {
+  final RxBool pushNotifs = true.obs;
+  final RxBool geofenceAlerts = true.obs;
+  final RxBool ledgerBroadcasts = false.obs;
+
+  Future<void> signOut() async {
     await _authService.signOut();
     appCtrl.setUser(null);
     Get.offAllNamed(AppRoutes.signIn);
   }
 
-  void toggleTheme() => appCtrl.toggleTheme();
+  // Legacy alias
+  Future<void> logout() => signOut();
 
+  void pickPhoto() {}
+
+  void toggleTheme() => appCtrl.toggleTheme();
   void toggleLocale() => appCtrl.toggleLocale();
 }

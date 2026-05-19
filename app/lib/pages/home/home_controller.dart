@@ -11,6 +11,7 @@ class HomeController extends GetxController {
 
   final RxList<Pet> pets = <Pet>[].obs;
   final RxBool isLoading = false.obs;
+  final RxBool doseDone = false.obs;
 
   @override
   void onInit() {

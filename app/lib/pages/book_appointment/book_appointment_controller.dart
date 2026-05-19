@@ -12,6 +12,14 @@ class BookAppointmentController extends GetxController {
   final ConsultationService _consultationService = ConsultationService();
 
   final reasonCtrl = TextEditingController();
+  final timeCtrl = TextEditingController();
+
+  // Aliases for page compatibility
+  RxInt get step => currentStep;
+  RxList<Pet> get pets => pet.value != null ? <Pet>[pet.value!].obs : <Pet>[].obs;
+  final RxInt selectedPetId = 0.obs;
+
+  Future<void> submit() => book();
 
   final Rx<Pet?> pet = Rx<Pet?>(null);
   final RxList<Veterinarian> vets = <Veterinarian>[].obs;
@@ -99,6 +107,7 @@ class BookAppointmentController extends GetxController {
   @override
   void onClose() {
     reasonCtrl.dispose();
+    timeCtrl.dispose();
     super.onClose();
   }
 }

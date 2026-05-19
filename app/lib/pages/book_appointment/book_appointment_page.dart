@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../components/line_input.dart';
 import '../../components/monochrome_button.dart';
-import '../../components/vc_widgets.dart';
 import 'book_appointment_controller.dart';
 
 class BookAppointmentPage extends StatelessWidget {
@@ -10,285 +10,237 @@ class BookAppointmentPage extends StatelessWidget {
 
   final BookAppointmentController ctrl = Get.put(BookAppointmentController());
 
+  static const List<String> _steps = ['PET', 'VET', 'DATE & TIME', 'CONFIRM'];
+
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('book_appointment'.tr),
-        leading: IconButton(icon: Icon(Icons.close, color: cs.onSurface), onPressed: () => Get.back()),
-      ),
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Obx(() => Column(
+        child: Column(
+          children: [
+            // ── Top nav ────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(22, 8, 22, 0),
+              child: Obx(() => Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: ctrl.step.value > 0 ? ctrl.prevStep : () => Get.back(),
+                    child: Container(
+                      width: 38, height: 38,
+                      decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
+                      child: const Icon(Icons.chevron_left, size: 18, color: Colors.black),
+                    ),
+                  ),
+                  Text(
+                    'STEP ${(ctrl.step.value + 1).toString().padLeft(2, '0')} / 04',
+                    style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black),
+                  ),
+                  const SizedBox(width: 38),
+                ],
+              )),
+            ),
+
+            // Progress bar
+            const SizedBox(height: 12),
+            Obx(() => Row(
               children: [
-                // Step indicator
-                _StepIndicator(current: ctrl.currentStep.value, cs: cs),
-                // Step body
-                Expanded(child: _StepBody(ctrl: ctrl, cs: cs)),
-                // Navigation buttons
-                Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: _NavButtons(ctrl: ctrl),
-                ),
+                for (int i = 0; i < 4; i++)
+                  Expanded(
+                    child: Container(
+                      height: 1,
+                      color: i <= ctrl.step.value ? Colors.black : Colors.black.withValues(alpha: 0.15),
+                    ),
+                  ),
               ],
             )),
-      ),
-    );
-  }
-}
 
-class _StepIndicator extends StatelessWidget {
-  final int current;
-  final ColorScheme cs;
-  const _StepIndicator({required this.current, required this.cs});
-
-  @override
-  Widget build(BuildContext context) {
-    const steps = ['VET', 'DATE', 'TIME', 'CONFIRM'];
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-      child: Row(
-        children: List.generate(steps.length, (i) {
-          final active = i <= current;
-          return Expanded(
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 180),
-                        height: 2,
-                        color: active ? cs.onSurface : cs.onSurface.withValues(alpha: 0.15),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        steps[i],
-                        style: TextStyle(
-                          fontSize: 8,
-                          letterSpacing: 0.22,
-                          fontWeight: FontWeight.w700,
-                          color: active ? cs.onSurface : cs.onSurface.withValues(alpha: 0.35),
-                        ),
-                      ),
-                    ],
-                  ),
+            Expanded(
+              child: Obx(() => SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(22, 24, 22, 40),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(_steps[ctrl.step.value],
+                        style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
+                            color: Colors.black.withValues(alpha: 0.55))),
+                    const SizedBox(height: 10),
+                    ..._stepContent(ctrl),
+                  ],
                 ),
-                if (i < steps.length - 1) const SizedBox(width: 4),
-              ],
+              )),
             ),
-          );
-        }),
+
+            // Bottom CTA
+            Padding(
+              padding: const EdgeInsets.fromLTRB(22, 0, 22, 22),
+              child: Obx(() => MonochromeButton(
+                label: ctrl.step.value < 3
+                    ? 'CONTINUE →'
+                    : (ctrl.isLoading.value ? 'BOOKING...' : 'CONFIRM BOOKING →'),
+                filled: true,
+                onPressed: ctrl.isLoading.value ? null : () {
+                  if (ctrl.step.value < 3) {
+                    ctrl.nextStep();
+                  } else {
+                    ctrl.submit();
+                  }
+                },
+              )),
+            ),
+          ],
+        ),
       ),
     );
   }
-}
 
-class _StepBody extends StatelessWidget {
-  final BookAppointmentController ctrl;
-  final ColorScheme cs;
-  const _StepBody({required this.ctrl, required this.cs});
+  List<Widget> _stepContent(BookAppointmentController ctrl) {
+    switch (ctrl.step.value) {
+      case 0:
+        return [
+          RichText(text: TextSpan(children: [
+            TextSpan(text: 'Select\nyour ', style: GoogleFonts.spaceGrotesk(fontSize: 36, fontWeight: FontWeight.w700,
+                letterSpacing: -0.04 * 36, height: 0.92, color: Colors.black)),
+            TextSpan(text: 'pet.', style: GoogleFonts.instrumentSerif(fontSize: 34, fontStyle: FontStyle.italic,
+                color: Colors.black, fontWeight: FontWeight.w400)),
+          ])),
+          const SizedBox(height: 28),
+          if (ctrl.pets.isEmpty)
+            Text('No pets found.', style: GoogleFonts.spaceGrotesk(fontSize: 14, color: Colors.black.withValues(alpha: 0.5)))
+          else
+            ...ctrl.pets.map((pet) => GestureDetector(
+              onTap: () => ctrl.selectedPetId.value = pet.id ?? 0,
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: ctrl.selectedPetId.value == (pet.id ?? 0) ? Colors.black : Colors.white,
+                  border: Border.all(color: Colors.black),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(children: [
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(pet.name, style: GoogleFonts.spaceGrotesk(fontSize: 16, fontWeight: FontWeight.w600,
+                        color: ctrl.selectedPetId.value == (pet.id ?? 0) ? Colors.white : Colors.black)),
+                    Text(pet.speciesName ?? '', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.06,
+                        color: (ctrl.selectedPetId.value == (pet.id ?? 0) ? Colors.white : Colors.black).withValues(alpha: 0.55))),
+                  ])),
+                  Icon(ctrl.selectedPetId.value == (pet.id ?? 0) ? Icons.check : Icons.chevron_right,
+                      size: 18, color: ctrl.selectedPetId.value == (pet.id ?? 0) ? Colors.white : Colors.black),
+                ]),
+              ),
+            )),
+        ];
 
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() {
-      switch (ctrl.currentStep.value) {
-        case 0:
-          return _SelectVet(ctrl: ctrl, cs: cs);
-        case 1:
-          return _SelectDate(ctrl: ctrl, cs: cs);
-        case 2:
-          return _SelectTime(ctrl: ctrl, cs: cs);
-        case 3:
-          return _Confirm(ctrl: ctrl, cs: cs);
-        default:
-          return const SizedBox.shrink();
-      }
-    });
-  }
-}
+      case 1:
+        return [
+          RichText(text: TextSpan(children: [
+            TextSpan(text: 'Choose\nyour ', style: GoogleFonts.spaceGrotesk(fontSize: 36, fontWeight: FontWeight.w700,
+                letterSpacing: -0.04 * 36, height: 0.92, color: Colors.black)),
+            TextSpan(text: 'vet.', style: GoogleFonts.instrumentSerif(fontSize: 34, fontStyle: FontStyle.italic,
+                color: Colors.black, fontWeight: FontWeight.w400)),
+          ])),
+          const SizedBox(height: 28),
+          LineInput(label: 'REASON FOR VISIT', hint: 'Describe the reason...', controller: ctrl.reasonCtrl, maxLines: 3),
+        ];
 
-class _SelectVet extends StatelessWidget {
-  final BookAppointmentController ctrl;
-  final ColorScheme cs;
-  const _SelectVet({required this.ctrl, required this.cs});
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() => ListView(
-          padding: const EdgeInsets.all(24),
-          children: [
-            Text('SELECT VETERINARIAN', style: TextStyle(fontSize: 9, letterSpacing: 0.32, fontWeight: FontWeight.w700, color: cs.onSurface.withValues(alpha: 0.45))),
-            const SizedBox(height: 16),
-            ...ctrl.vets.map((vet) {
-              final selected = ctrl.selectedVet.value?.id == vet.id;
-              return GestureDetector(
-                onTap: () => ctrl.selectedVet.value = vet,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: selected ? cs.onSurface : Colors.transparent,
-                    border: Border.all(color: selected ? cs.onSurface : cs.onSurface.withValues(alpha: 0.2), width: 1),
+      case 2:
+        return [
+          RichText(text: TextSpan(children: [
+            TextSpan(text: 'Pick a\n', style: GoogleFonts.spaceGrotesk(fontSize: 36, fontWeight: FontWeight.w700,
+                letterSpacing: -0.04 * 36, height: 0.92, color: Colors.black)),
+            TextSpan(text: 'date & time.', style: GoogleFonts.instrumentSerif(fontSize: 34, fontStyle: FontStyle.italic,
+                color: Colors.black, fontWeight: FontWeight.w400)),
+          ])),
+          const SizedBox(height: 28),
+          GestureDetector(
+            onTap: () async {
+              final picked = await showDatePicker(
+                context: Get.context!,
+                initialDate: ctrl.selectedDate.value ?? DateTime.now(),
+                firstDate: DateTime.now(),
+                lastDate: DateTime.now().add(const Duration(days: 90)),
+                builder: (ctx, child) => Theme(
+                  data: ThemeData.light().copyWith(
+                    colorScheme: const ColorScheme.light(primary: Colors.black),
                   ),
-                  child: Text(
-                    'Dr. ${vet.fullName}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: selected ? cs.surface : cs.onSurface,
-                    ),
-                  ),
+                  child: child!,
                 ),
               );
-            }),
-          ],
-        ));
-  }
-}
-
-class _SelectDate extends StatelessWidget {
-  final BookAppointmentController ctrl;
-  final ColorScheme cs;
-  const _SelectDate({required this.ctrl, required this.cs});
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('SELECT DATE', style: TextStyle(fontSize: 9, letterSpacing: 0.32, fontWeight: FontWeight.w700, color: cs.onSurface.withValues(alpha: 0.45))),
-                const SizedBox(height: 32),
-                GestureDetector(
-                  onTap: () => ctrl.pickDate(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(border: Border.all(color: cs.onSurface, width: 1)),
-                    child: Text(
-                      ctrl.selectedDate.value != null
-                          ? '${ctrl.selectedDate.value!.day.toString().padLeft(2, '0')} / ${ctrl.selectedDate.value!.month.toString().padLeft(2, '0')} / ${ctrl.selectedDate.value!.year}'
-                          : 'TAP TO SELECT',
-                      style: TextStyle(
-                        fontFamily: 'SpaceGrotesk',
-                        fontSize: ctrl.selectedDate.value != null ? 24 : 13,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: ctrl.selectedDate.value != null ? -0.03 : 0.22,
-                        color: cs.onSurface,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              if (picked != null) ctrl.selectedDate.value = picked;
+            },
+            child: Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(16)),
+              child: Row(children: [
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text('DATE', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.18,
+                      color: Colors.black.withValues(alpha: 0.55))),
+                  const SizedBox(height: 4),
+                  Obx(() => Text(
+                    ctrl.selectedDate.value != null
+                        ? '${ctrl.selectedDate.value!.day.toString().padLeft(2,'0')} / ${ctrl.selectedDate.value!.month.toString().padLeft(2,'0')} / ${ctrl.selectedDate.value!.year}'
+                        : 'Tap to select',
+                    style: GoogleFonts.spaceGrotesk(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black),
+                  )),
+                ])),
+                const Icon(Icons.calendar_today_outlined, size: 18, color: Colors.black),
+              ]),
             ),
           ),
-        ));
-  }
-}
+          const SizedBox(height: 16),
+          LineInput(label: 'PREFERRED TIME', hint: 'e.g. 10:00 AM', controller: ctrl.timeCtrl),
+        ];
 
-class _SelectTime extends StatelessWidget {
-  final BookAppointmentController ctrl;
-  final ColorScheme cs;
-  const _SelectTime({required this.ctrl, required this.cs});
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(32),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('SELECT TIME', style: TextStyle(fontSize: 9, letterSpacing: 0.32, fontWeight: FontWeight.w700, color: cs.onSurface.withValues(alpha: 0.45))),
-                const SizedBox(height: 32),
-                GestureDetector(
-                  onTap: () => ctrl.pickTime(context),
-                  child: Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(border: Border.all(color: cs.onSurface, width: 1)),
-                    child: Text(
-                      ctrl.selectedTime.value != null
-                          ? ctrl.selectedTime.value!.format(context)
-                          : 'TAP TO SELECT',
-                      style: TextStyle(
-                        fontFamily: 'SpaceGrotesk',
-                        fontSize: ctrl.selectedTime.value != null ? 28 : 13,
-                        fontWeight: FontWeight.w700,
-                        color: cs.onSurface,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+      case 3:
+        return [
+          RichText(text: TextSpan(children: [
+            TextSpan(text: 'Review &\n', style: GoogleFonts.spaceGrotesk(fontSize: 36, fontWeight: FontWeight.w700,
+                letterSpacing: -0.04 * 36, height: 0.92, color: Colors.black)),
+            TextSpan(text: 'confirm.', style: GoogleFonts.instrumentSerif(fontSize: 34, fontStyle: FontStyle.italic,
+                color: Colors.black, fontWeight: FontWeight.w400)),
+          ])),
+          const SizedBox(height: 28),
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(18)),
+            child: Column(children: [
+              _SummaryRow(label: 'PET', value: ctrl.pets.isNotEmpty
+                  ? (ctrl.pets.firstWhereOrNull((p) => p.id == ctrl.selectedPetId.value)?.name ?? '—')
+                  : '—'),
+              const SizedBox(height: 12),
+              _SummaryRow(label: 'DATE', value: ctrl.selectedDate.value != null
+                  ? '${ctrl.selectedDate.value!.day.toString().padLeft(2,'0')} / ${ctrl.selectedDate.value!.month.toString().padLeft(2,'0')} / ${ctrl.selectedDate.value!.year}'
+                  : '—'),
+              const SizedBox(height: 12),
+              _SummaryRow(label: 'REASON', value: ctrl.reasonCtrl.text.isEmpty ? '—' : ctrl.reasonCtrl.text),
+            ]),
           ),
-        ));
+        ];
+
+      default:
+        return [];
+    }
   }
 }
 
-class _Confirm extends StatelessWidget {
-  final BookAppointmentController ctrl;
-  final ColorScheme cs;
-  const _Confirm({required this.ctrl, required this.cs});
+class _SummaryRow extends StatelessWidget {
+  final String label, value;
+  const _SummaryRow({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('CONFIRM APPOINTMENT', style: TextStyle(fontSize: 9, letterSpacing: 0.32, fontWeight: FontWeight.w700, color: cs.onSurface.withValues(alpha: 0.45))),
-              const SizedBox(height: 16),
-              if (ctrl.pet.value != null) VcDataRow(label: 'Pet', value: ctrl.pet.value!.name),
-              if (ctrl.selectedVet.value != null) VcDataRow(label: 'Veterinarian', value: 'Dr. ${ctrl.selectedVet.value!.fullName}'),
-              if (ctrl.selectedDate.value != null)
-                VcDataRow(label: 'Date', value: '${ctrl.selectedDate.value!.day}/${ctrl.selectedDate.value!.month}/${ctrl.selectedDate.value!.year}'),
-              if (ctrl.selectedTime.value != null)
-                VcDataRow(label: 'Time', value: ctrl.selectedTime.value!.format(context)),
-              const SizedBox(height: 20),
-              LineInput(controller: ctrl.reasonCtrl, label: 'REASON (optional)', maxLines: 3),
-              if (ctrl.message.value.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Text(ctrl.message.value, style: TextStyle(fontSize: 11, color: cs.onSurface.withValues(alpha: 0.7))),
-              ],
-            ],
-          ),
-        ));
-  }
-}
-
-class _NavButtons extends StatelessWidget {
-  final BookAppointmentController ctrl;
-  const _NavButtons({required this.ctrl});
-
-  @override
-  Widget build(BuildContext context) {
-    return Obx(() => Row(
-          children: [
-            if (ctrl.currentStep.value > 0) ...[
-              Expanded(
-                child: MonochromeButton(
-                  label: 'BACK',
-                  onPressed: ctrl.prevStep,
-                  filled: false,
-                ),
-              ),
-              const SizedBox(width: 12),
-            ],
-            Expanded(
-              child: ctrl.currentStep.value < 3
-                  ? MonochromeButton(label: 'NEXT', onPressed: ctrl.nextStep)
-                  : MonochromeButton(
-                      label: 'confirm'.tr,
-                      onPressed: ctrl.book,
-                      isLoading: ctrl.isLoading.value,
-                    ),
-            ),
-          ],
-        ));
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 70,
+          child: Text(label, style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.18,
+              color: Colors.black.withValues(alpha: 0.55))),
+        ),
+        Expanded(child: Text(value, style: GoogleFonts.spaceGrotesk(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black))),
+      ],
+    );
   }
 }

@@ -13,8 +13,11 @@ class AddPetController extends GetxController {
   final PetService _petService = PetService();
 
   final nameCtrl = TextEditingController();
+  final breedCtrl = TextEditingController();
+  final birthDateCtrl = TextEditingController();
   final weightCtrl = TextEditingController();
   final microchipCtrl = TextEditingController();
+  final Rx<File?> imageFile = Rx<File?>(null);
 
   final RxList<Species> speciesList = <Species>[].obs;
   final Rx<Species?> selectedSpecies = Rx<Species?>(null);
@@ -92,9 +95,13 @@ class AddPetController extends GetxController {
     }
   }
 
+  Future<void> submit() => savePet();
+
   @override
   void onClose() {
     nameCtrl.dispose();
+    breedCtrl.dispose();
+    birthDateCtrl.dispose();
     weightCtrl.dispose();
     microchipCtrl.dispose();
     super.onClose();

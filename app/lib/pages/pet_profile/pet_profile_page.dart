@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../components/monochrome_button.dart';
-import '../../components/vc_widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../components/vc_wordmark.dart';
 import '../../models/consultation.dart';
 import 'pet_profile_controller.dart';
 
@@ -12,208 +12,253 @@ class PetProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(icon: Icon(Icons.arrow_back, color: cs.onSurface), onPressed: () => Get.back()),
-        title: Obx(() => Text(ctrl.pet.value?.name ?? '')),
-      ),
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Obx(() {
-          final pet = ctrl.pet.value;
-          if (pet == null) return const SizedBox.shrink();
-          return RefreshIndicator(
-            color: cs.onSurface,
-            backgroundColor: cs.surface,
-            onRefresh: ctrl.loadConsultations,
-            child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Pet hero
-                      _PetHero(pet: pet, cs: cs),
-                      // Data grid
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                        child: Column(
-                          children: [
-                            if (pet.speciesName != null) VcDataRow(label: 'Species', value: pet.speciesName!),
-                            if (pet.breedName != null) VcDataRow(label: 'Breed', value: pet.breedName!),
-                            if (pet.sexCode != null) VcDataRow(label: 'Sex', value: pet.sexCode == 'M' ? 'Male' : 'Female'),
-                            if (pet.weightKg != null) VcDataRow(label: 'Weight', value: '${pet.weightKg} kg'),
-                            if (pet.ageYears > 0) VcDataRow(label: 'Age', value: '${pet.ageYears} yr${pet.ageYears > 1 ? 's' : ''}'),
-                            if (pet.microchip != null) VcDataRow(label: 'Microchip', value: pet.microchip!),
-                          ],
-                        ),
-                      ),
-                      // Book appointment button
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: MonochromeButton(label: 'book_appointment'.tr, onPressed: ctrl.goToBookAppointment),
-                      ),
-                      const SizedBox(height: 24),
-                      // Exotic section
-                      if (pet.isExotic) _ExoticSection(ctrl: ctrl, cs: cs),
-                      // History label
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
-                        child: Text('CLINICAL HISTORY',
-                            style: TextStyle(fontSize: 9, letterSpacing: 0.32, fontWeight: FontWeight.w700, color: cs.onSurface.withValues(alpha: 0.45))),
-                      ),
-                    ],
-                  ),
-                ),
-                // Consultations list
-                Obx(() {
-                  if (ctrl.isLoading.value) {
-                    return SliverToBoxAdapter(
-                      child: SizedBox(height: 80, child: Center(child: CircularProgressIndicator(color: cs.onSurface, strokeWidth: 1.5))),
-                    );
-                  }
-                  if (ctrl.consultations.isEmpty) {
-                    return SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(32),
-                        child: Text('No consultations yet.', style: TextStyle(fontSize: 13, color: cs.onSurface.withValues(alpha: 0.45))),
-                      ),
-                    );
-                  }
-                  return SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (_, i) => _ConsultationTile(c: ctrl.consultations[i], onTap: () => ctrl.goToHistory(ctrl.consultations[i]), cs: cs),
-                        childCount: ctrl.consultations.length,
-                      ),
-                    ),
-                  );
-                }),
-              ],
-            ),
-          );
-        }),
-      ),
-    );
-  }
-}
-
-class _PetHero extends StatelessWidget {
-  final dynamic pet;
-  final ColorScheme cs;
-  const _PetHero({required this.pet, required this.cs});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 180,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: cs.onSurface.withValues(alpha: 0.15), width: 1)),
-        image: pet.photoUrl != null
-            ? DecorationImage(image: NetworkImage(pet.photoUrl!), fit: BoxFit.cover)
-            : null,
-        color: cs.onSurface.withValues(alpha: 0.05),
-      ),
-      child: pet.photoUrl == null
-          ? Center(child: Icon(Icons.pets, size: 60, color: cs.onSurface.withValues(alpha: 0.2)))
-          : null,
-    );
-  }
-}
-
-class _ExoticSection extends StatelessWidget {
-  final PetProfileController ctrl;
-  final ColorScheme cs;
-  const _ExoticSection({required this.ctrl, required this.cs});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('EXOTIC · CITES', style: TextStyle(fontSize: 9, letterSpacing: 0.32, fontWeight: FontWeight.w700, color: cs.onSurface.withValues(alpha: 0.45))),
-          const SizedBox(height: 8),
-          Obx(() {
-            if (ctrl.morphological.isEmpty) {
-              return Text('No morphological records.', style: TextStyle(fontSize: 12, color: cs.onSurface.withValues(alpha: 0.45)));
-            }
-            final last = ctrl.morphological.first;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (last.lengthCm != null) VcDataRow(label: 'Length', value: '${last.lengthCm} cm'),
-                if (last.weightKg != null) VcDataRow(label: 'Weight', value: '${last.weightKg} kg'),
-                if (last.scaleCondition != null) VcDataRow(label: 'Scale condition', value: last.scaleCondition!),
-                if (last.colorPattern != null) VcDataRow(label: 'Color pattern', value: last.colorPattern!),
-              ],
-            );
-          }),
-          const SizedBox(height: 8),
-          Obx(() {
-            if (ctrl.legalDocs.isEmpty) return const SizedBox.shrink();
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 8),
-                Text('LEGAL DOCUMENTS', style: TextStyle(fontSize: 9, letterSpacing: 0.32, fontWeight: FontWeight.w700, color: cs.onSurface.withValues(alpha: 0.45))),
-                const SizedBox(height: 8),
-                ...ctrl.legalDocs.map((d) => Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: Row(
-                        children: [
-                          MonoBadge(label: d.docType),
-                          const SizedBox(width: 8),
-                          if (d.isExpired) MonoBadge(label: 'EXPIRED'),
-                        ],
-                      ),
-                    )),
-              ],
-            );
-          }),
-          const Divider(height: 24),
-        ],
-      ),
-    );
-  }
-}
-
-class _ConsultationTile extends StatelessWidget {
-  final Consultation c;
-  final VoidCallback onTap;
-  final ColorScheme cs;
-  const _ConsultationTile({required this.c, required this.onTap, required this.cs});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(border: Border.all(color: cs.onSurface.withValues(alpha: 0.15), width: 1)),
-        child: Row(
+        child: Column(
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            // ── Top nav ─────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(22, 8, 22, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '${c.scheduledAt.day.toString().padLeft(2, '0')}/${c.scheduledAt.month.toString().padLeft(2, '0')}/${c.scheduledAt.year}',
-                    style: TextStyle(fontFamily: 'SpaceGrotesk', fontSize: 13, fontWeight: FontWeight.w600, color: cs.onSurface),
+                  GestureDetector(
+                    onTap: () => Get.back(),
+                    child: Container(
+                      width: 38, height: 38,
+                      decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
+                      child: const Icon(Icons.chevron_left, size: 18, color: Colors.black),
+                    ),
                   ),
-                  if (c.reason != null)
-                    Text(c.reason!, style: TextStyle(fontSize: 11, color: cs.onSurface.withValues(alpha: 0.6))),
+                  const VcWordmark(),
+                  Container(
+                    width: 38, height: 38,
+                    decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
+                    child: const Icon(Icons.more_horiz, size: 18, color: Colors.black),
+                  ),
                 ],
               ),
             ),
-            MonoBadge(label: c.status),
+
+            Expanded(
+              child: RefreshIndicator(
+                color: Colors.black,
+                backgroundColor: Colors.white,
+                onRefresh: ctrl.loadConsultations,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Obx(() {
+                    final pet = ctrl.pet.value;
+                    if (pet == null) return const SizedBox.shrink();
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // ── Hero / photo area ────────────────────
+                        Container(
+                          height: 260,
+                          margin: const EdgeInsets.fromLTRB(22, 16, 22, 0),
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          child: Stack(
+                            children: [
+                              // Pet image or diagonal stripes bg
+                              if (pet.photoUrl != null)
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: Image.network(pet.photoUrl!, width: double.infinity, height: double.infinity, fit: BoxFit.cover),
+                                )
+                              else
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: CustomPaint(
+                                    size: const Size(double.infinity, 260),
+                                    painter: _StripePainter(),
+                                  ),
+                                ),
+                              // Gradient overlay
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(24),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [Colors.transparent, Colors.black.withValues(alpha: 0.85)],
+                                    stops: const [0.4, 1.0],
+                                  ),
+                                ),
+                              ),
+                              // Age tag
+                              Positioned(
+                                top: 14, left: 16,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                  decoration: BoxDecoration(border: Border.all(color: Colors.white.withValues(alpha: 0.5)), borderRadius: BorderRadius.circular(999)),
+                                  child: Text('${pet.ageYears}Y',
+                                      style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.white)),
+                                ),
+                              ),
+                              // Name + species at bottom
+                              Positioned(
+                                left: 16, right: 16, bottom: 16,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(pet.name,
+                                        style: GoogleFonts.spaceGrotesk(fontSize: 28, fontWeight: FontWeight.w700,
+                                            letterSpacing: -0.04 * 28, color: Colors.white)),
+                                    const SizedBox(height: 4),
+                                    Text('${pet.speciesName ?? ''} · ${pet.sexCode ?? '?'}',
+                                        style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.1,
+                                            color: Colors.white.withValues(alpha: 0.7))),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // ── Stats row ────────────────────────────
+                        Container(
+                          margin: const EdgeInsets.fromLTRB(22, 16, 22, 0),
+                          decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(16)),
+                          child: Row(
+                            children: [
+                              _StatCell(value: '${pet.ageYears}Y', label: 'AGE', isLast: false),
+                              _StatCell(value: pet.weightKg != null ? '${pet.weightKg!.toStringAsFixed(1)} KG' : '—', label: 'WEIGHT', isLast: false),
+                              _StatCell(value: pet.isExotic ? 'EXOTIC' : 'DOMESTIC', label: 'TYPE', isLast: true),
+                            ],
+                          ),
+                        ),
+
+                        // ── Consultation history ─────────────────
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(22, 22, 22, 8),
+                          child: Text('CONSULTATION HISTORY',
+                              style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
+                        ),
+
+                        if (ctrl.isLoading.value)
+                          const Padding(
+                            padding: EdgeInsets.all(40),
+                            child: Center(child: CircularProgressIndicator(color: Colors.black, strokeWidth: 1.5)),
+                          )
+                        else if (ctrl.consultations.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.all(40),
+                            child: Center(child: Text('No consultations yet.',
+                                style: GoogleFonts.spaceGrotesk(fontSize: 13, color: Colors.black.withValues(alpha: 0.45)))),
+                          )
+                        else
+                          ...ctrl.consultations.map((c) => _ConsultationRow(c: c)),
+
+                        const SizedBox(height: 40),
+                      ],
+                    );
+                  }),
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
+}
+
+class _StatCell extends StatelessWidget {
+  final String value, label;
+  final bool isLast;
+  const _StatCell({required this.value, required this.label, required this.isLast});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          border: Border(right: isLast ? BorderSide.none : const BorderSide(color: Colors.black)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(value, style: GoogleFonts.spaceGrotesk(fontSize: 18, fontWeight: FontWeight.w700,
+                letterSpacing: -0.03 * 18, color: Colors.black)),
+            const SizedBox(height: 2),
+            Text(label, style: GoogleFonts.jetBrainsMono(fontSize: 8, letterSpacing: 0.16,
+                color: Colors.black.withValues(alpha: 0.55))),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ConsultationRow extends StatelessWidget {
+  final Consultation c;
+  const _ConsultationRow({required this.c});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Get.toNamed('/clinical-history', arguments: c),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
+        decoration: const BoxDecoration(border: Border(top: BorderSide(color: Colors.black))),
+        child: Row(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${c.scheduledAt.day.toString().padLeft(2, '0')} ${_monthName(c.scheduledAt.month)} ${c.scheduledAt.year}',
+                  style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.12, color: Colors.black.withValues(alpha: 0.55)),
+                ),
+                const SizedBox(height: 4),
+                Text(c.diagnosis ?? c.reason ?? 'Consultation',
+                    style: GoogleFonts.spaceGrotesk(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black)),
+              ],
+            ),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+              decoration: BoxDecoration(
+                color: c.status == 'completed' ? Colors.black : Colors.white,
+                border: Border.all(color: Colors.black),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(c.status.toUpperCase(),
+                  style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16,
+                      color: c.status == 'completed' ? Colors.white : Colors.black)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _monthName(int m) {
+    const months = ['', 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    return months[m];
+  }
+}
+
+// Diagonal stripe painter
+class _StripePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.06)
+      ..strokeWidth = 12
+      ..style = PaintingStyle.stroke;
+    const spacing = 22.0;
+    for (double i = -size.height; i < size.width + size.height; i += spacing) {
+      canvas.drawLine(Offset(i, 0), Offset(i + size.height, size.height), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_) => false;
 }
