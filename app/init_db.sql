@@ -322,7 +322,7 @@ create policy "med_schedule_accessible" on medication_schedules
   );
 
 create policy "med_schedule_vet_write" on medication_schedules
-  for insert using (
+  for insert with check (
     exists (select 1 from consultations where id = consultation_id and veterinarian_id = auth.uid())
   );
 
@@ -348,7 +348,7 @@ create policy "morpho_client" on morphological_records
   );
 
 create policy "morpho_vet_write" on morphological_records
-  for insert using (
+  for insert with check (
     exists (select 1 from veterinarians where user_id = auth.uid())
   );
 
