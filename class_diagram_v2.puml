@@ -23,11 +23,6 @@ class User {
   +photo_url: varchar
   +latitude: decimal
   +longitude: decimal
-  --
-  +register(params: Map): User
-  +login(email: varchar, password: varchar): JWTToken
-  +updateProfile(params: Map): boolean
-  +uploadProfilePhoto(file: File): String
 }
 
 class Client {
@@ -35,11 +30,6 @@ class Client {
   +user_id: uuid
   +address: text
   +identity_document: varchar
-  --
-  +listPets(): List<Pet>
-  +createPet(params: Map): Pet
-  +confirmMedicationTake(scheduleId: int): TreatmentAdherence
-  +getEpidemiologicalAlerts(): List<EpidemiologicalAlert>
 }
 
 class Veterinarian {
@@ -48,11 +38,6 @@ class Veterinarian {
   +license_number: varchar
   +years_experience: int
   +default_appointment_duration_minutes: int
-  --
-  +listConsultations(status?: varchar): List<Consultation>
-  +updateConsultationStatus(consultationId: int, status: varchar): boolean
-  +getAvailableSlots(date: date): List<time>
-  +getAdherenceReport(petId: int): AdherenceReport
 }
 
 ' ===========================
@@ -63,8 +48,6 @@ class Species {
   +id: int
   +name: varchar
   +is_exotic: boolean
-  --
-  +listAll(): List<Species>
 }
 
 class Breed {
@@ -73,8 +56,6 @@ class Breed {
   +name: varchar
   +description: text
   +reference_image_url: varchar
-  --
-  +listBySpecies(speciesId: int): List<Breed>
 }
 
 class Pet {
@@ -86,13 +67,6 @@ class Pet {
   +birth_date: date
   +current_weight: decimal
   +photo_url: varchar
-  --
-  +getAge(): int
-  +updateProfile(params: Map): boolean
-  +addMorphologicalRecord(record: MorphologicalRecord): boolean
-  +addLegalDocument(doc: LegalDocument): boolean
-  +getMorphologicalTimeline(): List<MorphologicalRecord>
-  +getLegalVault(): List<LegalDocument>
 }
 
 ' ===========================
@@ -104,8 +78,6 @@ class Specialty {
   +name: varchar
   +description: text
   +icon_url: varchar
-  --
-  +listAll(): List<Specialty>
 }
 
 class Consultation {
@@ -123,16 +95,6 @@ class Consultation {
   +rating: int
   +review_comment: text
   +review_datetime: datetime
-  --
-  +create(params: Map): Consultation
-  +confirm(): boolean
-  +cancel(reason: varchar): boolean
-  +complete(diagnosis: text, treatment: text, isContagious: boolean): boolean
-  +generateIntegrityHash(): String
-  +verifyIntegrityHash(token: String): boolean
-  +attachDocument(doc: ConsultationDocument): boolean
-  +addSpecialty(specialtyId: int): boolean
-  +rate(rating: int, comment: varchar): boolean
 }
 
 class ConsultationDocument {
@@ -140,17 +102,11 @@ class ConsultationDocument {
   +consultation_id: int
   +file_url: varchar
   +document_type: varchar
-  --
-  +uploadToStorage(file: File): ConsultationDocument
-  +delete(): boolean
 }
 
 class ConsultationSpecialty {
   +consultation_id: int
   +specialty_id: int
-  --
-  +add(consultationId: int, specialtyId: int): ConsultationSpecialty
-  +remove(consultationId: int, specialtyId: int): boolean
 }
 
 class VeterinarianAvailability {
@@ -161,10 +117,6 @@ class VeterinarianAvailability {
   +end_time: time
   +slot_duration_minutes: int
   +is_active: boolean
-  --
-  +listForVeterinarian(vetId: int): List<VeterinarianAvailability>
-  +activate(): boolean
-  +deactivate(): boolean
 }
 
 ' ===========================
@@ -180,10 +132,6 @@ class MedicationSchedule {
   +start_datetime: datetime
   +end_datetime: datetime
   +created_by_trigger: boolean
-  --
-  +generateFromConsultation(consultationId: int): List<MedicationSchedule>
-  +getPendingTakes(clientId: int): List<TreatmentAdherence>
-  +sendPushNotification(clientId: int): boolean
 }
 
 class TreatmentAdherence {
@@ -193,9 +141,6 @@ class TreatmentAdherence {
   +scheduled_datetime: datetime
   +confirmed_at: datetime
   +status: varchar
-  --
-  +confirm(): boolean
-  +getAdherenceRate(scheduleId: int): float
 }
 
 ' ===========================
@@ -212,11 +157,6 @@ class EpidemiologicalAlert {
   +active: boolean
   +created_at: datetime
   +resolved_at: datetime
-  --
-  +createFromTrigger(consultationId: int): EpidemiologicalAlert
-  +getActiveAlertsNear(lat: decimal, lon: decimal, radiusKm: decimal): List<EpidemiologicalAlert>
-  +resolve(): boolean
-  +notifyNearbyClients(): boolean
 }
 
 ' ===========================
@@ -231,10 +171,6 @@ class MorphologicalRecord {
   +weight_grams: decimal
   +length_cm: decimal
   +notes: text
-  --
-  +uploadAlignedPhoto(file: File, petId: int): MorphologicalRecord
-  +getTimeline(petId: int): List<MorphologicalRecord>
-  +compareGrowth(recordA: int, recordB: int): Map
 }
 
 class LegalDocument {
@@ -246,10 +182,6 @@ class LegalDocument {
   +issued_date: date
   +cites_appendix: varchar
   +notes: text
-  --
-  +uploadToVault(file: File, petId: int): LegalDocument
-  +listByPet(petId: int): List<LegalDocument>
-  +delete(): boolean
 }
 
 ' ===========================

@@ -25,17 +25,19 @@ Pulsa cualquiera de los subtítulos para ir directamente a la sección:
 
 ## 📝 Enunciado del Programa (Aplicación Móvil Veterinaria)
 
-Una clínica veterinaria requiere el desarrollo de una aplicación móvil para la gestión de sus servicios de salud animal y el historial médico de sus pacientes. El sistema debe centralizar la información de todos sus usuarios (clientes -dueño de la mascota- y veterinarios), quienes deben registrar sus nombres, apellidos, correo electrónico, contraseña, teléfono de contacto, una foto de perfil y su sexo.
+VetCare es una aplicación móvil para la gestión integral de servicios de salud animal y el historial médico de pacientes veterinarios, con soporte avanzado para especies exóticas. El sistema centraliza la información de clientes (dueños de mascotas) y veterinarios, quienes registran nombre, apellidos, correo electrónico, teléfono de contacto, foto de perfil y sexo.
 
 Existen dos tipos de perfiles de usuario:
-- Clientes: Son los dueños de las mascotas, de quienes se debe registrar además su dirección y documento de identidad.
-- Veterinarios: Profesionales de la clínica de los cuales se requiere el número de colegiatura y sus años de experiencia.
+- **Clientes:** Dueños de mascotas, con registro de dirección, documento de identidad y coordenadas geográficas para alertas epidemiológicas.
+- **Veterinarios:** Profesionales de la clínica con número de colegiatura y años de experiencia.
 
-Para facilitar el seguimiento de sus animales, los clientes pueden registrar múltiples mascotas, identificando para cada una su nombre, fecha de nacimiento, sexo, peso actual y una fotografía. Cada mascota pertenece a una raza específica, la cual está asociada a una especie (como canino, felino o exótico). El registro de la raza incluye su nombre, una descripción y una imagen referencial.
+Los clientes pueden registrar múltiples mascotas, identificando nombre, fecha de nacimiento, sexo, peso actual y fotografía. Cada mascota pertenece a una raza específica asociada a una especie (canino, felino, exótico u otro). Para animales exóticos no convencionales (tortugas Mata mata/Taricaya, invertebrados, etc.), el sistema amplía el perfil con **seguimiento morfológico** (fotos alineadas en el tiempo para evaluar crecimiento de caparazones o coloración) y una **bóveda legal** de documentos como facturas de zoocriaderos y certificados CITES que demuestran el origen legal del animal.
 
-A través de la app, los clientes pueden agendar consultas médicas para sus mascotas seleccionando a un veterinario. Al agendar, el cliente elige uno de los horarios disponibles definidos por intervalos en la agenda del veterinario, junto con el motivo de la visita, creando la consulta con un estado inicial (por ejemplo: pendiente). Durante la atención, el veterinario actualiza el estado y registra el diagnóstico, tratamiento recetado y documentos adjuntos.
+A través de la app, los clientes agendan consultas médicas seleccionando veterinario, horario disponible y motivo de visita. Al registrar el diagnóstico y tratamiento, el sistema genera automáticamente un **cronograma de medicación** en base de datos. El cliente puede confirmar cada toma desde notificaciones push, y el veterinario consulta la **tasa de adherencia** al tratamiento. Si el diagnóstico es contagioso, un trigger evalúa la zona geográfica y notifica a dueños cercanos sobre el brote activo, visible también en un **mapa epidemiológico** dentro de la app.
 
-Además, las atenciones pueden clasificarse en múltiples especialidades o servicios (como medicina general, dermatología, traumatología o peluquería), de las cuales se registra su nombre, descripción y un ícono representativo. Finalmente, para medir la calidad del servicio, los clientes pueden calificar (1, 2, 3, 4 o 5) y dejar reseñas sobre las consultas que han finalizado (completadas), indicando su opinión detallada y la fecha y hora en que publicaron su comentario.
+Al finalizar citas críticas (vacunas, cirugías), el sistema genera un **hash SHA-256** del registro médico, permitiendo al cliente generar y verificar un token de autenticidad para demostrar la validez legal del historial en otras clínicas o viajes internacionales.
+
+Las atenciones se clasifican en especialidades (medicina general, dermatología, traumatología, peluquería, etc.). Los clientes pueden calificar (1-5) y dejar reseñas sobre consultas completadas.
 
 ## Explicación del entorno de desarrollo (Requisitos Previos)
 
@@ -130,56 +132,99 @@ Lo que el sistema debe hacer (acciones y funcionalidades específicas)
     7. **RNF07 (Usabilidad):** La interfaz debe ser intuitiva y adaptable (Responsive) a diferentes tamaños de pantalla en dispositivos móviles (smartphones y tablets).
 
 ## Casos de Uso
-Los casos de uso representan las interacciones principales de los actores (Cliente y Veterinario) con el sistema.
-* Actor Común: Cliente y Veterinario
+Los casos de uso representan las interacciones principales de los actores con el sistema.
+
+* **Actor Común: Cliente y Veterinario**
     * **CU01 - Registrarse en la app:** El actor completa el formulario para crear su cuenta de usuario con su rol respectivo.
-    * **CU02 - Iniciar Sesión:** El actor ingresa sus credenciales para acceder a sus funciones habilitadas.
-    * **CU03 - Editar Perfil:** El actor modifica sus datos personales de contacto o actualiza su foto de perfil.
-* Actor: Cliente
-    * **CU04 - Gestionar Mascotas:** El cliente crea, actualiza o visualiza el historial básico de sus mascotas.
-    * **CU05 - Agendar Consulta Médica:** El cliente elige a su mascota, selecciona a un médico de la clínica, escoge uno de los horarios disponibles y envía la solicitud.
-    * **CU06 - Visualizar Historial Clínico:** El cliente ingresa al perfil de su mascota y consulta los registros médicos pasados, pudiendo leer las recetas y descargar las radiografías o análisis adjuntos.
-    * **CU07 - Evaluar Atención:** Tras finalizar una consulta, el cliente selecciona las estrellas (1-5) y deja un comentario sobre el servicio recibido.
-* Actor: Veterinario
+    * **CU02 - Iniciar Sesión:** El actor ingresa sus credenciales (Supabase Auth / JWT) para acceder a sus funciones habilitadas.
+    * **CU03 - Editar Perfil:** El actor modifica sus datos personales de contacto o actualiza su foto de perfil (almacenada en Supabase Storage).
+
+* **Actor: Cliente**
+    * **CU04 - Gestionar Mascotas:** El cliente crea, actualiza o visualiza el perfil de sus mascotas. Para especies exóticas, incluye el registro de seguimiento morfológico (<<include>>) y la gestión de bóveda legal CITES (<<include>>).
+    * **CU05 - Agendar Consulta Médica:** El cliente elige a su mascota, selecciona a un veterinario, escoge un horario disponible y envía la solicitud de cita.
+    * **CU06 - Visualizar Historial Clínico:** El cliente consulta los registros médicos de sus mascotas, descarga documentos adjuntos y puede generar/verificar el token de autenticidad SHA-256 del historial (<<extend>>).
+    * **CU07 - Evaluar Atención:** Tras finalizar una consulta, el cliente otorga una calificación (1-5) y deja un comentario sobre el servicio recibido.
+    * **CU11 - Registrar Cumplimiento de Tratamiento:** El cliente confirma cada toma de medicación programada desde notificaciones push de la app, permitiendo al veterinario consultar la tasa de adherencia.
+    * **CU12 - Consultar Mapa Epidemiológico / Recibir Alertas Zonales:** El cliente visualiza el mapa de brotes activos en su zona o recibe notificaciones push cuando hay un caso contagioso registrado cerca de su dirección.
+
+* **Actor: Veterinario**
     * **CU08 - Gestionar Agenda Médica:** El veterinario visualiza su calendario de citas y actualiza el estado de las consultas solicitadas.
-    * **CU09 - Registrar Datos Médicos:** El veterinario ingresa el diagnóstico y el tratamiento de una mascota durante o después de su cita. Al guardar, el sistema genera automáticamente un cronograma de medicación y, si el diagnóstico es contagioso, dispara una alerta epidemiológica por geofencing.
-    * **CU10 - Adjuntar Resultados Médicos:** El veterinario sube archivos PDF o imágenes (como análisis de sangre o radiografías) a la consulta específica.
-* Actor: Cliente (nuevas funcionalidades)
-    * **CU11 - Registrar Cumplimiento de Tratamiento:** El cliente confirma la toma de medicación desde notificaciones push de la app, permitiendo al veterinario ver la tasa de adherencia al tratamiento.
-    * **CU12 - Consultar Mapa Epidemiológico / Recibir Alertas Zonales:** El cliente consulta el mapa de brotes activos en su zona o recibe notificaciones push cuando hay un caso contagioso cerca de su dirección registrada.
-* Modificaciones a Casos de Uso Existentes:
-    * **CU06 (ampliado) - Visualizar Historial Clínico:** Incluye el sub-caso de uso (<<extend>>) **"Generar/Verificar Token de Autenticidad"** para demostrar legalmente la validez del historial en otras clínicas o viajes.
-    * **CU04 (ampliado) - Gestionar Mascotas:** Incluye sub-casos (<<include>>) para **"Registrar Seguimiento Morfológico"** (fotos alineadas en el tiempo para evaluar crecimiento en especies exóticas) y **"Gestionar Bóveda Legal"** (facturas de zoocriaderos y certificados CITES).
-
-Puedes encontrar el diagrama de casos de uso en el archivo:
-- `use_cases_schema.puml` (ubicado en la raíz del repositorio)
-
-### Diagramas Completos de Casos de Uso
-
-El diagrama PlantUML actualizado (CU01–CU12 con relaciones <<include>> y <<extend>>) se encuentra en:
-- `use_cases_schema.puml` (ubicado en la raíz del repositorio)
+    * **CU09 - Registrar Datos Médicos:** El veterinario registra el diagnóstico y tratamiento de una consulta. Al guardar, el sistema genera automáticamente un cronograma de medicación (trigger) y, si el diagnóstico es contagioso, dispara una alerta epidemiológica por geofencing (<<extend>>).
+    * **CU10 - Adjuntar Resultados Médicos:** El veterinario sube archivos PDF o imágenes (análisis de sangre, radiografías) a la consulta específica vía Supabase Storage.
 
 ## Descripción de Casos de Uso
 
-Los casos de uso documentados a continuación corresponden a los requisitos funcionales (RF01–RF21) y están relacionados directamente con el diagrama de base de datos.
+El siguiente diagrama muestra todas las interacciones del sistema con relaciones `<<include>>` y `<<extend>>`:
 
-#### Casos de Uso Comunes (Cliente y Veterinario)
-- **CU01** Registrarse en la app
-- **CU02** Iniciar Sesión (Supabase Auth / JWT)
-- **CU03** Editar Perfil
+![Diagrama de Casos de Uso](Docs/diagrams/use_cases_schema.png)
 
-#### Casos de Uso - Cliente
-- **CU04** Gestionar Mascotas *(incluye: Registrar Seguimiento Morfológico, Gestionar Bóveda Legal CITES)*
-- **CU05** Agendar Consulta Médica
-- **CU06** Visualizar Historial Clínico *(extiende: Generar/Verificar Token de Autenticidad)*
-- **CU07** Evaluar Atención
-- **CU11** Registrar Cumplimiento de Tratamiento *(confirma toma de medicación vía push)*
-- **CU12** Consultar Mapa Epidemiológico / Recibir Alertas Zonales
+---
 
-#### Casos de Uso - Veterinario
-- **CU08** Gestionar Agenda Médica
-- **CU09** Registrar Datos Médicos *(trigger: genera cronograma de medicación + alerta epidemiológica si diagnóstico contagioso)*
-- **CU10** Adjuntar Resultados Médicos
+### Casos de Uso Comunes (Cliente y Veterinario)
+
+**CU01 - Registrarse en la app**
+El actor completa el formulario de registro seleccionando su rol (Cliente o Veterinario). Incluye: ingresar datos, seleccionar rol y confirmar registro.
+
+<img src="Docs/casos_de_uso/CU_01.jpg" width="800" alt="CU01 Registrarse"/>
+
+**CU02 - Iniciar Sesión**
+El actor ingresa credenciales para autenticarse mediante Supabase Auth, obteniendo un JWT almacenado en Keychain/Keystore.
+
+<img src="Docs/casos_de_uso/CU_02.jpg" width="800" alt="CU02 Iniciar Sesión"/>
+
+**CU03 - Editar Perfil**
+El actor actualiza sus datos personales de contacto. Opcionalmente (<<extend>>) puede actualizar su foto de perfil almacenada en Supabase Storage.
+
+<img src="Docs/casos_de_uso/CU_03.jpg" width="800" alt="CU03 Editar Perfil"/>
+
+---
+
+### Casos de Uso — Cliente
+
+**CU04 - Gestionar Mascotas**
+El cliente crea, actualiza y consulta el perfil de sus mascotas. Para especies exóticas, incluye (<<include>>) el registro de seguimiento morfológico (fotos alineadas en el tiempo para evaluar crecimiento de caparazones o coloración) y la gestión de bóveda legal (certificados CITES y facturas de zoocriaderos).
+
+<img src="Docs/casos_de_uso/CU_04.jpg" width="800" alt="CU04 Gestionar Mascotas"/>
+
+**CU05 - Agendar Consulta Médica**
+El cliente selecciona mascota, veterinario, horario disponible y redacta el motivo de visita. El sistema asigna automáticamente el estado "Pendiente".
+
+<img src="Docs/casos_de_uso/CU_05.jpg" width="800" alt="CU05 Agendar Consulta"/>
+
+**CU06 - Visualizar Historial Clínico**
+El cliente consulta el historial completo de consultas completadas de sus mascotas: diagnósticos, recetas y documentos adjuntos. Opcionalmente (<<extend>>) puede generar o verificar el token de autenticidad SHA-256 del registro para demostrar su validez legal en otras clínicas o viajes internacionales.
+
+<img src="Docs/casos_de_uso/CU_06.jpg" width="800" alt="CU06 Historial Clínico"/>
+
+**CU07 - Evaluar Atención**
+Tras finalizar una consulta, el cliente otorga una calificación de 1 a 5 estrellas. Opcionalmente (<<extend>>) agrega un comentario detallado sobre el servicio.
+
+<img src="Docs/casos_de_uso/CU_07.jpg" width="800" alt="CU07 Evaluar Atención"/>
+
+**CU11 - Registrar Cumplimiento de Tratamiento**
+El cliente recibe notificaciones push por cada toma programada en el cronograma de medicación generado por el veterinario. Al confirmar la toma, el sistema registra la adherencia, permitiendo al veterinario consultar el porcentaje de cumplimiento del tratamiento.
+
+**CU12 - Consultar Mapa Epidemiológico / Recibir Alertas Zonales**
+El cliente accede a un mapa con los brotes activos en su zona. Cuando un veterinario registra un diagnóstico contagioso, un trigger de Supabase evalúa las coordenadas del cliente y envía notificaciones push a los dueños de mascotas dentro del radio de riesgo.
+
+---
+
+### Casos de Uso — Veterinario
+
+**CU08 - Gestionar Agenda Médica**
+El veterinario consulta su calendario de citas y actualiza el estado de cada consulta (Pendiente → Confirmada → En curso → Completada / Cancelada).
+
+<img src="Docs/casos_de_uso/CU_08.jpg" width="800" alt="CU08 Gestionar Agenda"/>
+
+**CU09 - Registrar Datos Médicos**
+El veterinario registra diagnóstico, tratamiento e indica si el diagnóstico es contagioso. Al guardar (<<include>>), el sistema genera automáticamente un cronograma de medicación vía trigger. Si el diagnóstico es contagioso (<<extend>>), se dispara una alerta epidemiológica por geofencing hacia los clientes cercanos.
+
+<img src="Docs/casos_de_uso/CU_09.jpg" width="800" alt="CU09 Registrar Datos Médicos"/>
+
+**CU10 - Adjuntar Resultados Médicos**
+El veterinario sube archivos PDF o imágenes (radiografías, análisis de sangre) directamente a Supabase Storage, asociándolos a la consulta correspondiente.
+
+<img src="Docs/casos_de_uso/CU_10.jpg" width="800" alt="CU10 Adjuntar Resultados"/>
 
 ## Diagrama de Base de Datos (Schema)
 
@@ -199,68 +244,29 @@ Para soportar todos los requisitos funcionales, se diseñó un modelo de entidad
 - **morphological_records**: Fotos alineadas en el tiempo para seguimiento de crecimiento en especies exóticas (CU04)
 - **legal_documents**: Bóveda de certificados CITES y facturas de zoocriaderos (CU04)
 
-El diagrama completo se encuentra en: `schema.puml` (ubicado en la raíz del repositorio)
-
 ![Diagrama de Base de Datos](Docs/diagrams/schema.png)
 
 ---
 
 ## Diagrama de Clases
-El diagrama de clases muestra las entidades del dominio, sus atributos principales, las relaciones entre ellas y los métodos representativos de negocio.
-
-- Propósito: documentar el dominio y servir como referencia para implementar los `models` y las migraciones.
-- Uso recomendado: usarlo como guía; las validaciones, autorizaciones y la lógica completa van en el código fuente.
-- Contenido: cada clase representa una entidad del esquema y sus asociaciones muestran cómo se relacionan los datos entre sí.
+El diagrama de clases muestra las entidades del dominio, sus atributos y las relaciones entre ellas. Sirve como referencia directa para implementar los modelos de datos y las migraciones de Supabase.
 
 Clases clave:
-- `User`: concentra los datos comunes de autenticación y perfil (via Supabase Auth + JWT).
-- `Client` y `Veterinarian`: especializan el usuario según su rol, con RLS en Supabase.
-- `Pet`: representa cada mascota. Incluye referencias a `MorphologicalRecord` (seguimiento morfológico) y `LegalDocument` (bóveda CITES).
-- `Consultation`: flujo principal de atención médica. Al completarse, genera un `MedicationSchedule` via trigger y, si el diagnóstico es contagioso, una `EpidemiologicalAlert`.
+- `User`: datos comunes de autenticación y perfil (via Supabase Auth + JWT). Incluye coordenadas geográficas para alertas epidemiológicas.
+- `Client` y `Veterinarian`: especializan al usuario según su rol, con control de acceso por RLS en Supabase.
+- `Pet`: perfil de cada mascota. Se relaciona con `MorphologicalRecord` (seguimiento morfológico para exóticos) y `LegalDocument` (bóveda CITES).
+- `Consultation`: flujo principal de atención médica. Al completarse genera un `MedicationSchedule` vía trigger y, si el diagnóstico es contagioso, una `EpidemiologicalAlert`.
 - `ConsultationDocument`: archivos adjuntos almacenados en Supabase Storage.
 - `ConsultationSpecialty`: vincula consultas con especialidades clínicas.
 - `VeterinarianAvailability`: intervalos de disponibilidad del veterinario.
-- `MedicationSchedule` y `TreatmentAdherence`: cronograma de medicación y registro de cumplimiento del cliente (CU11).
-- `EpidemiologicalAlert`: alertas de brotes activos por zona geográfica (CU12).
-- `MorphologicalRecord`: fotos alineadas en el tiempo para especies exóticas (CU04).
+- `MedicationSchedule`: cronograma de medicación generado automáticamente al registrar tratamiento (CU09).
+- `TreatmentAdherence`: registro de cada toma confirmada por el cliente vía push (CU11).
+- `EpidemiologicalAlert`: alerta de brote activo generada por geofencing (CU12).
+- `MorphologicalRecord`: registro fotográfico alineado en el tiempo para especies exóticas (CU04).
 - `LegalDocument`: certificados CITES y facturas de zoocriaderos (CU04).
 - `Species`, `Breed` y `Specialty`: catálogos del sistema.
 
-Métodos clave:
-- Los métodos del diagrama representan acciones de dominio y reglas de negocio.
-- Ejemplos: registro e inicio de sesión en `User`, gestión de mascotas en `Client` y `Pet`, control del ciclo de atención en `Consultation`, adjuntos en `ConsultationDocument` y horarios en `VeterinarianAvailability`.
-- El objetivo es mostrar qué responsabilidades tiene cada clase dentro del dominio, no detallar la implementación completa.
-
-Explicación más detallada de los métodos:
-- `User.register()` crea una cuenta nueva con los datos base del usuario y su rol.
-- `User.login()` valida credenciales y permite el acceso al sistema.
-- `User.updateProfile()` actualiza datos de contacto o foto de perfil.
-- `User.changePassword()` modifica la contraseña actual por una nueva.
-- `Client.listPets()` devuelve las mascotas registradas por ese cliente.
-- `Client.createPet()` agrega una nueva mascota asociada al cliente.
-- `Veterinarian.listConsultations()` muestra las consultas asignadas al veterinario.
-- `Veterinarian.updateConsultationStatus()` cambia el estado de una consulta en curso o pendiente.
-- `Veterinarian.listAvailability()` recupera los bloques de horario disponibles.
-- `Veterinarian.getAvailableSlots()` calcula los espacios libres según fecha y configuración.
-- `Pet.getAge()` calcula la edad de la mascota a partir de su fecha de nacimiento.
-- `Pet.updateProfile()` actualiza nombre, peso, foto u otros datos básicos de la mascota.
-- `Consultation.create()` inicia una nueva consulta con mascota, veterinario, fecha, hora y motivo.
-- `Consultation.confirm()` marca la consulta como confirmada.
-- `Consultation.cancel()` cancela la consulta y guarda la razón.
-- `Consultation.complete()` cierra la atención registrando diagnóstico y tratamiento.
-- `Consultation.attachDocument()` asocia un documento médico a la consulta.
-- `Consultation.addSpecialty()` relaciona la consulta con una especialidad clínica.
-- `Consultation.rate()` guarda la calificación y comentario del cliente.
-- `ConsultationDocument.upload()` representa la carga de un archivo médico.
-- `ConsultationDocument.delete()` elimina un documento adjunto.
-- `ConsultationSpecialty.add()` crea la relación entre una consulta y una especialidad.
-- `ConsultationSpecialty.remove()` elimina esa relación.
-- `VeterinarianAvailability.listForVeterinarian()` obtiene la agenda disponible de un veterinario.
-- `VeterinarianAvailability.activate()` habilita un bloque de disponibilidad.
-- `VeterinarianAvailability.deactivate()` deshabilita un bloque de disponibilidad.
-- `Species.listAll()`, `Breed.listBySpecies()` y `Specialty.listAll()` recuperan catálogos del sistema para usarse en formularios y consultas.
-
-![Diagrama de Clases (métodos representativos)](Docs/diagrams/class_diagram_v2.png)
+![Diagrama de Clases](Docs/diagrams/class_diagram_v2.png)
 
 ---
 
@@ -274,8 +280,6 @@ La arquitectura del sistema está compuesta por:
 4. **Supabase Storage**: Almacenamiento de imágenes, documentos médicos y archivos CITES
 5. **Supabase Edge Functions**: Funciones serverless para generación de hashes de autenticidad y notificaciones push
 
-El diagrama de despliegue con mapeo de requisitos no funcionales se encuentra en: `deployment_diagram.puml` (ubicado en la raíz del repositorio)
-
 ![Diagrama de Despliegue](Docs/diagrams/deployment_diagram.png)
 
 ---
@@ -284,8 +288,8 @@ El diagrama de despliegue con mapeo de requisitos no funcionales se encuentra en
 
 | RNF | Descripción | Componente en Diagrama |
 |-----|-----------|----------------------|
-| **RNF01** | Encriptación de contraseñas (bcrypt) | Módulo de Seguridad en Backend |
-| **RNF02** | Control de acceso por rol | Módulo de Seguridad en Backend |
+| **RNF01** | Encriptación de contraseñas (bcrypt) | Supabase Auth (gestionado en la nube) |
+| **RNF02** | Control de acceso por rol | Supabase RLS (Row Level Security) |
 | **RNF03** | Autenticación JWT guardada en Keychain | Keystore en Dispositivo Móvil + Supabase Auth |
 | **RNF04** | Rendimiento < 3 segundos | SDK Supabase con caché + Red HTTPS |
 | **RNF05** | Compresión de imágenes antes de subir | Módulo de Compresión en Dispositivo Móvil → Supabase Storage |
