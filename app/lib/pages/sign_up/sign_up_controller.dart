@@ -1,0 +1,75 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../components/app_controller.dart';
+import '../../configs/app_routes.dart';
+import '../../configs/generic_response.dart';
+import '../../models/app_user.dart';
+import '../../services/auth_service.dart';
+
+class SignUpController extends GetxController {
+  final firstNameCtrl = TextEditingController();
+  final lastNameCtrl = TextEditingController();
+  final emailCtrl = TextEditingController();
+  final phoneCtrl = TextEditingController();
+  final passwordCtrl = TextEditingController();
+  final confirmCtrl = TextEditingController();
+
+  final RxString message = ''.obs;
+  final RxBool isLoading = false.obs;
+  final RxString selectedRole = 'client'.obs;
+
+  final AuthService _authService = AuthService();
+
+  void register() async {
+    final firstName = firstNameCtrl.text.trim();
+    final lastName = lastNameCtrl.text.trim();
+    final email = emailCtrl.text.trim();
+    final password = passwordCtrl.text;
+    final confirm = confirmCtrl.text;
+
+    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty) {
+      message.value = 'error_empty_fields'.tr;
+      return;
+    }
+    if (password != confirm) {
+      message.value = 'error_passwords_mismatch'.tr;
+      return;
+    }
+
+    isLoading.value = true;
+    message.value = '';
+
+    final GenericResponse<AppUser> res = await _authService.signUp(
+      email: email,
+      password: password,
+      firstName: firstName,
+      lastName: lastName,
+      phone: phoneCtrl.text.trim(),
+      role: selectedRole.value,
+    );
+
+    isLoading.value = false;
+
+    if (res.success && res.data != null) {
+      Get.find<AppController>().setUser(res.data!);
+      Get.offAllNamed(
+        res.data!.role == 'veterinarian' ? AppRoutes.vetDashboard : AppRoutes.homeClient,
+      );
+    } else {
+      message.value = res.message;
+    }
+  }
+
+  void goToSignIn() => Get.toNamed(AppRoutes.signIn);
+
+  @override
+  void onClose() {
+    firstNameCtrl.dispose();
+    lastNameCtrl.dispose();
+    emailCtrl.dispose();
+    phoneCtrl.dispose();
+    passwordCtrl.dispose();
+    confirmCtrl.dispose();
+    super.onClose();
+  }
+}
