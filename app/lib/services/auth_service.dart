@@ -50,17 +50,21 @@ class AuthService {
       if (uid == null) {
         return const GenericResponse(success: false, message: 'Registration failed.');
       }
-      // Insert into users table (trigger may handle this, but we ensure it)
-      await _sb.from('users').upsert({
-        'id': uid,
-        'email': email.trim(),
-        'first_name': firstName,
-        'last_name': lastName,
-        'role': role,
-        if (phone != null && phone.isNotEmpty) 'phone': phone,
-      });
-      if (role == 'client') {
-        await _sb.from('clients').upsert({'user_id': uid});
+      // The DB trigger handle_new_auth_user already inserts users/clients/veterinarians rows.
+      // We upsert users here as a fallback in case the trigger is not configured, but
+      // we never manually insert into clients/veterinarians — the trigger handles that
+      // correctly and a manual insert would violate the unique constraint on user_id.
+      try {
+        await _sb.from('users').upsert({
+          'id': uid,
+          'email': email.trim(),
+          'first_name': firstName,
+          'last_name': lastName,
+          'role': role,
+          if (phone != null && phone.isNotEmpty) 'phone': phone,
+        });
+      } catch (_) {
+        // Trigger already created the row — ignore duplicate/conflict errors.
       }
       final profile = await _fetchProfile(uid);
       return GenericResponse(success: true, data: profile, message: 'Account created.');

@@ -9,6 +9,7 @@ class LineInput extends StatefulWidget {
   final String? hint;
   final TextInputType keyboardType;
   final bool obscureText;
+  final bool showPasswordToggle;
   final String? Function(String?)? validator;
   final int maxLines;
   final TextCapitalization textCapitalization;
@@ -20,6 +21,7 @@ class LineInput extends StatefulWidget {
     this.hint,
     this.keyboardType = TextInputType.text,
     this.obscureText = false,
+    this.showPasswordToggle = false,
     this.validator,
     this.maxLines = 1,
     this.textCapitalization = TextCapitalization.none,
@@ -31,6 +33,13 @@ class LineInput extends StatefulWidget {
 
 class _LineInputState extends State<LineInput> {
   bool _focused = false;
+  late bool _obscure;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscure = widget.obscureText;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +68,7 @@ class _LineInputState extends State<LineInput> {
                 TextFormField(
                   controller: widget.controller,
                   keyboardType: widget.keyboardType,
-                  obscureText: widget.obscureText,
+                  obscureText: _obscure,
                   maxLines: widget.maxLines,
                   textCapitalization: widget.textCapitalization,
                   validator: widget.validator,
@@ -85,20 +94,32 @@ class _LineInputState extends State<LineInput> {
                     errorBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: cs.onSurface, width: 1),
                     ),
-                    contentPadding: const EdgeInsets.fromLTRB(0, 6, 20, 10),
+                    contentPadding: EdgeInsets.fromLTRB(0, 6, widget.showPasswordToggle ? 44 : 20, 10),
+                    suffixIcon: widget.showPasswordToggle
+                        ? IconButton(
+                            icon: Icon(
+                              _obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                              size: 18,
+                              color: cs.onSurface.withValues(alpha: 0.55),
+                            ),
+                            onPressed: () => setState(() => _obscure = !_obscure),
+                            splashRadius: 18,
+                          )
+                        : null,
                   ),
                 ),
-                // Focus indicator — small filled square (from mockup)
-                AnimatedOpacity(
-                  opacity: _focused ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 180),
-                  child: Container(
-                    width: 6,
-                    height: 6,
-                    margin: const EdgeInsets.only(bottom: 4),
-                    color: cs.onSurface,
+                // Focus indicator — small filled square (from mockup); hidden when toggle is shown
+                if (!widget.showPasswordToggle)
+                  AnimatedOpacity(
+                    opacity: _focused ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 180),
+                    child: Container(
+                      width: 6,
+                      height: 6,
+                      margin: const EdgeInsets.only(bottom: 4),
+                      color: cs.onSurface,
+                    ),
                   ),
-                ),
               ],
             ),
           ],

@@ -54,7 +54,7 @@ class SignInPage extends StatelessWidget {
                     LineInput(controller: ctrl.emailCtrl, label: 'EMAIL',
                         hint: 'you@vetcare.pe', keyboardType: TextInputType.emailAddress),
                     LineInput(controller: ctrl.passwordCtrl, label: 'PASSWORD',
-                        hint: '••••••••', obscureText: true),
+                        hint: '••••••••', obscureText: true, showPasswordToggle: true),
                     // Remember + forgot row
                     Padding(
                       padding: const EdgeInsets.only(bottom: 22),

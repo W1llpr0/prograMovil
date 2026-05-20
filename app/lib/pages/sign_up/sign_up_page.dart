@@ -105,11 +105,13 @@ class SignUpPage extends StatelessWidget {
                     controller: ctrl.passwordCtrl,
                     label: 'PASSWORD',
                     obscureText: true,
+                    showPasswordToggle: true,
                   ),
                   LineInput(
                     controller: ctrl.confirmCtrl,
                     label: 'CONFIRM PASSWORD',
                     obscureText: true,
+                    showPasswordToggle: true,
                   ),
                   // Terms
                   Padding(
@@ -217,12 +219,14 @@ class _RoleToggle extends StatelessWidget {
                     onTap: () => ctrl.selectedRole.value = 'client',
                     behavior: HitTestBehavior.opaque,
                     child: Center(
-                      child: Text(
-                        'CLIENT',
+                      child: AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 320),
+                        curve: const Cubic(0.2, 0.8, 0.2, 1),
                         style: GoogleFonts.jetBrainsMono(fontSize: 11,
                           letterSpacing: 0.22,
                           color: isClient ? cs.surface : cs.onSurface,
                         ),
+                        child: const Text('CLIENT'),
                       ),
                     ),
                   ),
@@ -232,12 +236,14 @@ class _RoleToggle extends StatelessWidget {
                     onTap: () => ctrl.selectedRole.value = 'veterinarian',
                     behavior: HitTestBehavior.opaque,
                     child: Center(
-                      child: Text(
-                        'VETERINARIAN',
+                      child: AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 320),
+                        curve: const Cubic(0.2, 0.8, 0.2, 1),
                         style: GoogleFonts.jetBrainsMono(fontSize: 11,
                           letterSpacing: 0.22,
                           color: isClient ? cs.onSurface : cs.surface,
                         ),
+                        child: const Text('VETERINARIAN'),
                       ),
                     ),
                   ),
