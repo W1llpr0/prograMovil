@@ -127,7 +127,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildPetsListTab() {
-    return Obx(() => SingleChildScrollView(
+    return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(22, 16, 22, 100),
         child: Column(
@@ -164,7 +164,7 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-    ));
+    );
   }
 
   Widget _buildAppointmentRow({required String date, required String time, required String title, required String doctor, bool isLast = false}) {
