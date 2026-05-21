@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../components/app_controller.dart';
 import '../../configs/app_routes.dart';
+import '../../models/app_user.dart';
 import '../../services/auth_service.dart';
 
 class SplashPage extends StatefulWidget {
@@ -36,7 +37,13 @@ class _SplashPageState extends State<SplashPage>
 
   Future<void> _checkSession() async {
     final appCtrl = Get.find<AppController>();
-    final user = await AuthService().currentUser();
+    AppUser? user;
+    try {
+      user = await AuthService().currentUser();
+    } catch (e) {
+      // Profile not found; redirect to Sign In
+      user = null;
+    }
     appCtrl.setUser(user);
 
     final session = Supabase.instance.client.auth.currentSession;
