@@ -80,15 +80,10 @@ class EpidemiologicalMapPage extends StatelessWidget {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // Pulse ring animation
                                 _PulseRing(),
                                 const SizedBox(height: 16),
                                 Text('MAP VIEW', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
                                     color: Colors.black.withValues(alpha: 0.4))),
-                                const SizedBox(height: 4),
-                                Text('14 cases / 72 h in geofence area',
-                                    style: GoogleFonts.spaceGrotesk(fontSize: 12,
-                                        color: Colors.black.withValues(alpha: 0.5))),
                               ],
                             ),
                           ),

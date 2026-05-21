@@ -19,22 +19,9 @@ class ProfilePage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(22, 8, 22, 0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  GestureDetector(
-                    onTap: () => Get.back(),
-                    child: Container(
-                      width: 38, height: 38,
-                      decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
-                      child: const Icon(Icons.chevron_left, size: 18, color: Colors.black),
-                    ),
-                  ),
                   Text('PROFILE', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
-                  Container(
-                    width: 38, height: 38,
-                    decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
-                    child: const Icon(Icons.more_horiz, size: 18, color: Colors.black),
-                  ),
                 ],
               ),
             ),
@@ -91,17 +78,13 @@ class ProfilePage extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Client · since 2023',
+                                  Text('Client',
                                       style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
                                           color: Colors.black.withValues(alpha: 0.55))),
                                   const SizedBox(height: 6),
                                   Text('$firstName.',
                                       style: GoogleFonts.spaceGrotesk(fontSize: 30, fontWeight: FontWeight.w700,
                                           letterSpacing: -0.04 * 30, color: Colors.black)),
-                                  const SizedBox(height: 6),
-                                  Text('03 PETS · 12 RECORDS · 04 SIGNED',
-                                      style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.10,
-                                          color: Colors.black.withValues(alpha: 0.55))),
                                 ],
                               ),
                             ),
@@ -109,19 +92,7 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
 
-                      // ── KPI strip ──────────────────────────────
-                      Container(
-                        decoration: const BoxDecoration(
-                          border: Border(top: BorderSide(color: Colors.black), bottom: BorderSide(color: Colors.black)),
-                        ),
-                        child: Row(
-                          children: [
-                            _KpiCell(value: '92%', label: 'ADHERENCE', isLast: false),
-                            _KpiCell(value: '04', label: 'VISITS / YR', isLast: false),
-                            _KpiCell(value: '00', label: 'OPEN BILLS', isLast: true),
-                          ],
-                        ),
-                      ),
+
 
                       // ── Contact info ───────────────────────────
                       Padding(
@@ -197,34 +168,6 @@ class ProfilePage extends StatelessWidget {
                 }),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _KpiCell extends StatelessWidget {
-  final String value, label;
-  final bool isLast;
-  const _KpiCell({required this.value, required this.label, required this.isLast});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
-        decoration: BoxDecoration(
-          border: Border(right: isLast ? BorderSide.none : const BorderSide(color: Colors.black)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(value, style: GoogleFonts.spaceGrotesk(fontSize: 26, fontWeight: FontWeight.w700,
-                letterSpacing: -0.04 * 26, color: Colors.black)),
-            const SizedBox(height: 4),
-            Text(label, style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16,
-                color: Colors.black.withValues(alpha: 0.55))),
           ],
         ),
       ),
