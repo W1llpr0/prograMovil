@@ -8,10 +8,12 @@ import 'sign_up_controller.dart';
 class SignUpPage extends StatelessWidget {
   SignUpPage({super.key});
 
-  final SignUpController ctrl = Get.put(SignUpController());
-
   @override
   Widget build(BuildContext context) {
+    // Use Get.find if already registered, otherwise create new
+    final ctrl = Get.isRegistered<SignUpController>()
+        ? Get.find<SignUpController>()
+        : Get.put(SignUpController());
     final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -267,7 +269,7 @@ class _ClientFields extends StatelessWidget {
       children: [
         LineInput(
           controller: ctrl.firstNameCtrl,
-          label: 'FULL NAME',
+          label: 'NAME',
           textCapitalization: TextCapitalization.words,
         ),
         LineInput(
@@ -299,7 +301,7 @@ class _VetFields extends StatelessWidget {
       children: [
         LineInput(
           controller: ctrl.firstNameCtrl,
-          label: 'FULL NAME',
+          label: 'NAME',
           textCapitalization: TextCapitalization.words,
         ),
         LineInput(
