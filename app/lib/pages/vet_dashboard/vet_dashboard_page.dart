@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../components/vc_wordmark.dart';
+import '../../components/vet_agenda.dart';
 import '../../models/consultation.dart';
 import 'vet_dashboard_controller.dart';
 
@@ -101,56 +102,13 @@ class VetDashboardPage extends StatelessWidget {
                       ),
 
                       // ── Week strip ──────────────────────
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.fromLTRB(22, 18, 22, 0),
-                        child: Row(
-                          children: [
-                            _DayChip(day: 'MON', date: '18', active: false),
-                            _DayChip(day: 'TUE', date: '19', active: true),
-                            _DayChip(day: 'WED', date: '20', active: false),
-                            _DayChip(day: 'THU', date: '21', active: false),
-                            _DayChip(day: 'FRI', date: '22', active: false),
-                            _DayChip(day: 'SAT', date: '23', active: false),
-                            _DayChip(day: 'SUN', date: '24', active: false),
-                          ],
-                        ),
-                      ),
+                      // Replaced with VetAgenda component below
 
-                      // ── Timeline ────────────────────────
+                      // ── VetAgenda integrated ────────────
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(22, 24, 22, 4),
-                        child: Text('TIMELINE',
-                            style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
-                                color: Colors.black.withValues(alpha: 0.55))),
+                        padding: const EdgeInsets.only(top: 12),
+                        child: VetAgenda(),
                       ),
-
-                      Obx(() {
-                        if (ctrl.isLoading.value) {
-                          return const SizedBox(height: 100,
-                              child: Center(child: CircularProgressIndicator(color: Colors.black, strokeWidth: 1.5)));
-                        }
-                        if (ctrl.agenda.isEmpty) {
-                          return Padding(
-                            padding: const EdgeInsets.all(40),
-                            child: Center(child: Text('No appointments scheduled.',
-                                style: GoogleFonts.spaceGrotesk(fontSize: 13, color: Colors.black.withValues(alpha: 0.45)))),
-                          );
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.fromLTRB(22, 14, 22, 80),
-                          child: Column(
-                            children: [
-                              for (int i = 0; i < ctrl.agenda.length; i++)
-                                _TimelineSlot(
-                                  c: ctrl.agenda[i],
-                                  isLast: i == ctrl.agenda.length - 1,
-                                  onTap: () => ctrl.goToRegister(ctrl.agenda[i]),
-                                ),
-                            ],
-                          ),
-                        );
-                      }),
                     ],
                   ),
                 ),

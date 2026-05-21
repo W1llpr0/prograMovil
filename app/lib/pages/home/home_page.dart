@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../components/swipe_to_confirm.dart';
+import '../../components/pet_card.dart';
 import '../../pages/profile/profile_page.dart';
 import '../../pages/epidemiological_map/epidemiological_map_page.dart';
 import '../../pages/book_appointment/book_appointment_page.dart';
@@ -8,7 +10,6 @@ import 'home_controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
-
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -25,23 +26,16 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('🏠 HomePage.build() called - Tab: $_selectedTabIndex');
-    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: IndexedStack(
           index: _selectedTabIndex,
           children: [
-            // Tab 0: Dashboard
             _buildDashboardTab(),
-            // Tab 1: Pets List
             _buildPetsListTab(),
-            // Tab 2: Book Appointment
             BookAppointmentPage(),
-            // Tab 3: Map/Alerts
             EpidemiologicalMapPage(),
-            // Tab 4: Profile
             ProfilePage(),
           ],
         ),
@@ -60,28 +54,12 @@ class _HomePageState extends State<HomePage> {
           unselectedItemColor: Colors.grey,
           showUnselectedLabels: true,
           elevation: 0,
-          items: [
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.home_outlined, size: 22),
-              activeIcon: const Icon(Icons.home, size: 22),
-              label: 'Dashboard',
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.pets, size: 22),
-              label: 'Pets',
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.calendar_today, size: 22),
-              label: 'Book',
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.location_on_outlined, size: 22),
-              label: 'Map',
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.person_outline, size: 22),
-              label: 'Profile',
-            ),
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'Dashboard'),
+            BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Pets'),
+            BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Book'),
+            BottomNavigationBarItem(icon: Icon(Icons.location_on_outlined), label: 'Map'),
+            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
           ],
         ),
       ),
@@ -92,7 +70,6 @@ class _HomePageState extends State<HomePage> {
     return Obx(() {
       final user = ctrl.appCtrl.currentUser.value;
       final error = ctrl.errorMessage.value;
-
       return SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(22, 16, 22, 100),
@@ -132,6 +109,8 @@ class _HomePageState extends State<HomePage> {
                       Text('14-DAY ADHERENCE', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.18, color: Colors.black.withValues(alpha: 0.55))),
                       Text('92%', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.06)),
                     ]),
+                    const SizedBox(height: 18),
+                    SwipeToConfirm(onConfirmed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('✅ Dose recorded successfully')))),
                   ],
                 ),
               ),
@@ -159,20 +138,28 @@ class _HomePageState extends State<HomePage> {
                 Obx(() => Text('${ctrl.pets.length.toString().padLeft(2, '0')} / ${ctrl.pets.length.toString().padLeft(2, '0')}', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black.withValues(alpha: 0.55)))),
                 Text('Your pets', style: GoogleFonts.spaceGrotesk(fontSize: 28, fontWeight: FontWeight.w700, letterSpacing: -0.04 * 28)),
               ]),
-              GestureDetector(
-                onTap: ctrl.goToAddPet,
-                child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6), decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 1), borderRadius: BorderRadius.circular(999)), child: Row(children: [
-                  Text('ADD', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.12)),
-                  const SizedBox(width: 6),
-                  const Icon(Icons.add, size: 12),
-                ])),
-              ),
+              GestureDetector(onTap: ctrl.goToAddPet, child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6), decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 1), borderRadius: BorderRadius.circular(999)), child: Row(children: [Text('ADD', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.12)), const SizedBox(width: 6), const Icon(Icons.add, size: 12)]))),
             ]),
             const SizedBox(height: 20),
             Obx(() {
               if (ctrl.isLoading.value) return const Center(child: CircularProgressIndicator());
               if (ctrl.pets.isEmpty) return Container(padding: const EdgeInsets.all(40), child: Center(child: Text('No pets yet.\nTap ADD to register your first pet.', textAlign: TextAlign.center, style: GoogleFonts.spaceGrotesk(fontSize: 13, height: 1.6, color: Colors.black.withValues(alpha: 0.45)))));
-              return ListView.separated(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: ctrl.pets.length, separatorBuilder: (_, __) => const SizedBox(height: 12), itemBuilder: (ctx, i) => _buildPetListItem(ctrl.pets[i]));
+              return ListView.separated(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: ctrl.pets.length, separatorBuilder: (_, __) => const SizedBox(height: 12), itemBuilder: (ctx, i) {
+                final pet = ctrl.pets[i];
+                final birthDate = pet.birthDate ?? DateTime.now();
+                final ageYears = DateTime.now().year - birthDate.year;
+                final ageMonths = (DateTime.now().month - birthDate.month).abs();
+                return PetCard(
+                  name: pet.name ?? 'Unknown',
+                  species: pet.speciesName ?? 'Unknown',
+                  breed: (pet.breedName ?? pet.speciesName ?? 'Unknown'),
+                  sex: pet.sexCode ?? '?',
+                  ageYears: ageYears,
+                  ageMonths: ageMonths > 0 ? ageMonths : 0,
+                  status: 'active',
+                  onTap: () => ctrl.goToPetProfile(pet),
+                );
+              });
             }),
           ],
         ),
@@ -180,35 +167,10 @@ class _HomePageState extends State<HomePage> {
     ));
   }
 
-  Widget _buildPetListItem(dynamic pet) {
-    return GestureDetector(
-      onTap: () => ctrl.goToPetProfile(pet),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 1), borderRadius: BorderRadius.circular(12)),
-        child: Row(children: [
-          const Icon(Icons.pets, size: 32),
-          const SizedBox(width: 12),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(pet.name ?? 'Unknown', style: GoogleFonts.spaceGrotesk(fontSize: 16, fontWeight: FontWeight.w600)),
-            const SizedBox(height: 4),
-            Text('${pet.speciesName ?? 'Unknown'} · ${pet.sexCode ?? '?'}', style: GoogleFonts.jetBrainsMono(fontSize: 10, color: Colors.black.withValues(alpha: 0.55))),
-          ])),
-          const Icon(Icons.chevron_right, size: 16),
-        ]),
-      ),
-    );
-  }
-
   Widget _buildAppointmentRow({required String date, required String time, required String title, required String doctor, bool isLast = false}) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        border: Border(
-          top: const BorderSide(color: Colors.black),
-          bottom: isLast ? const BorderSide(color: Colors.black) : BorderSide.none,
-        ),
-      ),
+      decoration: BoxDecoration(border: Border(top: const BorderSide(color: Colors.black), bottom: isLast ? const BorderSide(color: Colors.black) : BorderSide.none)),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(date, style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.12, color: Colors.black.withValues(alpha: 0.55))),

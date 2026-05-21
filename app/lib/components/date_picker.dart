@@ -5,11 +5,11 @@ class DatePicker extends StatefulWidget {
   final Function(DateTime) onDateSelected;
   final DateTime initialDate;
 
-  const DatePicker({
+  DatePicker({
     super.key,
     required this.onDateSelected,
     DateTime? initialDate,
-  }) : initialDate = initialDate ?? const DateTime(2024, 5, 19);
+  }) : initialDate = initialDate ?? DateTime(2024, 5, 19);
 
   @override
   State<DatePicker> createState() => _DatePickerState();
