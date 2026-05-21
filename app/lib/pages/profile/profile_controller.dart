@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../components/app_controller.dart';
 import '../../configs/app_routes.dart';
@@ -147,7 +149,62 @@ class ProfileController extends GetxController {
 
   Future<void> logout() => signOut();
 
-  void pickPhoto() {}
+  Future<void> pickPhoto() async {
+    try {
+      final picker = ImagePicker();
+      final xFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+      if (xFile == null) return;
+
+      isSaving.value = true;
+      final uid = appCtrl.currentUser.value?.id;
+      if (uid == null) throw Exception('User ID is null');
+
+      final file = File(xFile.path);
+      final fileName = 'profile_$uid.jpg';
+      final storagePath = 'profile-pictures/$uid/$fileName';
+
+      // Upload to Supabase storage
+      await Supabase.instance.client
+          .storage
+          .from('profiles')
+          .upload(storagePath, file, fileOptions: const FileOptions(upsert: true));
+
+      // Get public URL
+      final publicUrl = Supabase.instance.client
+          .storage
+          .from('profiles')
+          .getPublicUrl(storagePath);
+
+      // Update user profile with photo URL
+      await Supabase.instance.client
+          .from('users')
+          .update({'profile_picture': publicUrl}).eq('id', uid);
+
+      // Update local state
+      final currentUser = appCtrl.currentUser.value;
+      if (currentUser != null) {
+        final updatedUser = AppUser(
+          id: currentUser.id,
+          email: currentUser.email,
+          firstName: currentUser.firstName,
+          lastName: currentUser.lastName,
+          phone: currentUser.phone,
+          document: currentUser.document,
+          address: currentUser.address,
+          profilePicture: publicUrl,
+          latitude: currentUser.latitude,
+          longitude: currentUser.longitude,
+          role: currentUser.role,
+        );
+        appCtrl.setUser(updatedUser);
+        Get.snackbar('Success', 'Profile picture updated', snackPosition: SnackPosition.BOTTOM);
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to upload photo: $e', snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      isSaving.value = false;
+    }
+  }
 
   void toggleTheme() => appCtrl.toggleTheme();
   void toggleLocale() => appCtrl.toggleLocale();

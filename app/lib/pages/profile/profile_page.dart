@@ -50,11 +50,16 @@ class ProfilePage extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(999),
                                     color: Colors.grey.shade100,
                                   ),
-                                  child: Center(
-                                    child: Text(initials,
-                                        style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700, fontSize: 38,
-                                            letterSpacing: -0.04 * 38, color: Colors.black)),
-                                  ),
+                                  child: u?.profilePicture != null && u!.profilePicture!.isNotEmpty
+                                      ? ClipRRect(
+                                          borderRadius: BorderRadius.circular(999),
+                                          child: Image.network(u.profilePicture!, fit: BoxFit.cover),
+                                        )
+                                      : Center(
+                                          child: Text(initials,
+                                              style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700, fontSize: 38,
+                                                  letterSpacing: -0.04 * 38, color: Colors.black)),
+                                        ),
                                 ),
                                 Positioned(
                                   bottom: 2, right: 2,
