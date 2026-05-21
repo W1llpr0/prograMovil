@@ -72,12 +72,10 @@ class EpidemiologicalMapController extends GetxController {
   }
 
   Future<void> zoomIn() async {
-    final currentZoom = await mapController.getZoomLevel();
     mapController.animateCamera(CameraUpdate.zoomIn());
   }
 
   Future<void> zoomOut() async {
-    final currentZoom = await mapController.getZoomLevel();
     mapController.animateCamera(CameraUpdate.zoomOut());
   }
 }

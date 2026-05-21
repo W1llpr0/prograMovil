@@ -27,7 +27,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: IndexedStack(
           index: _selectedTabIndex,
@@ -40,29 +39,32 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: Colors.black, width: 1)),
-          color: Colors.white,
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedTabIndex,
-          onTap: (index) => setState(() => _selectedTabIndex = index),
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: Colors.black,
-          unselectedItemColor: Colors.grey,
-          showUnselectedLabels: true,
-          elevation: 0,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'Dashboard'),
-            BottomNavigationBarItem(icon: Icon(Icons.pets), label: 'Pets'),
-            BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Book'),
-            BottomNavigationBarItem(icon: Icon(Icons.location_on_outlined), label: 'Map'),
-            BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profile'),
-          ],
-        ),
-      ),
+      bottomNavigationBar: Builder(builder: (ctx) {
+        final scheme = Theme.of(ctx).colorScheme;
+        return Container(
+          decoration: BoxDecoration(
+            border: Border(top: BorderSide(color: scheme.onSurface, width: 1)),
+            color: scheme.surface,
+          ),
+          child: BottomNavigationBar(
+            currentIndex: _selectedTabIndex,
+            onTap: (index) => setState(() => _selectedTabIndex = index),
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: scheme.surface,
+            selectedItemColor: scheme.onSurface,
+            unselectedItemColor: scheme.onSurface.withValues(alpha: 0.45),
+            showUnselectedLabels: true,
+            elevation: 0,
+            items: [
+              BottomNavigationBarItem(icon: const Icon(Icons.home_outlined), activeIcon: const Icon(Icons.home), label: 'dashboard'.tr),
+              BottomNavigationBarItem(icon: const Icon(Icons.pets), label: 'my_pets'.tr),
+              BottomNavigationBarItem(icon: const Icon(Icons.calendar_today), label: 'book'.tr),
+              BottomNavigationBarItem(icon: const Icon(Icons.location_on_outlined), label: 'map'.tr),
+              BottomNavigationBarItem(icon: const Icon(Icons.person_outline), label: 'profile'.tr),
+            ],
+          ),
+        );
+      }),
     );
   }
 

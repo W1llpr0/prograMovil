@@ -78,5 +78,8 @@
 	<string>VetCare uses your location to show epidemiological alerts near you.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>VetCare uses your location to show epidemiological alerts near you.</string>
+	<!-- Google Maps -->
+	<key>GMSApiKey</key>
+	<string>AIzaSyATOSTmpIP9biAseNaJQYu0_3Wl93-7bXw</string>
 </dict>
 </plist>

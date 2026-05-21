@@ -21,9 +21,12 @@ class AppTranslations extends Translations {
           'login_here': 'Login here',
           // Navigation
           'home': 'Home',
+          'dashboard': 'Dashboard',
           'my_pets': 'My Pets',
           'history': 'History',
           'profile': 'Profile',
+          'book': 'Book',
+          'map': 'Map',
           // Pets
           'add_pet': 'ADD PET',
           'pet_name': 'PET NAME',
@@ -84,9 +87,12 @@ class AppTranslations extends Translations {
           'login_here': 'Inicia sesión aquí',
           // Navigation
           'home': 'Inicio',
-          'my_pets': 'Mis mascotas',
+          'dashboard': 'Inicio',
+          'my_pets': 'Mascotas',
           'history': 'Historial',
           'profile': 'Perfil',
+          'book': 'Cita',
+          'map': 'Mapa',
           // Pets
           'add_pet': 'AGREGAR MASCOTA',
           'pet_name': 'NOMBRE',

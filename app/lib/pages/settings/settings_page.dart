@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../components/app_controller.dart';
 import 'settings_controller.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -11,8 +10,9 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fg = Theme.of(context).colorScheme.onSurface;
+    final bg = Theme.of(context).colorScheme.surface;
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -26,11 +26,11 @@ class SettingsPage extends StatelessWidget {
                     onTap: () => Get.back(),
                     child: Container(
                       width: 38, height: 38,
-                      decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
-                      child: const Icon(Icons.chevron_left, size: 18, color: Colors.black),
+                      decoration: BoxDecoration(border: Border.all(color: fg), borderRadius: BorderRadius.circular(999)),
+                      child: Icon(Icons.chevron_left, size: 18, color: fg),
                     ),
                   ),
-                  Text('settings'.tr.toUpperCase(), style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
+                  Text('settings'.tr.toUpperCase(), style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg)),
                   const SizedBox(width: 38),
                 ],
               ),
@@ -44,16 +44,16 @@ class SettingsPage extends StatelessWidget {
                   children: [
                     // Language section
                     Text('language'.tr, style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
-                        color: Colors.black.withValues(alpha: 0.55))),
+                        color: fg.withValues(alpha: 0.55))),
                     const SizedBox(height: 12),
                     RichText(
                       text: TextSpan(children: [
-                        TextSpan(text: 'select_language'.tr.split('_')[0],
+                        TextSpan(text: 'Selecciona tu',
                             style: GoogleFonts.spaceGrotesk(fontSize: 24, fontWeight: FontWeight.w700,
-                                letterSpacing: -0.04 * 24, height: 0.92, color: Colors.black)),
-                        TextSpan(text: ' language.',
+                                letterSpacing: -0.04 * 24, height: 0.92, color: fg)),
+                        TextSpan(text: ' idioma.',
                             style: GoogleFonts.instrumentSerif(fontSize: 22, fontStyle: FontStyle.italic,
-                                fontWeight: FontWeight.w400, letterSpacing: -0.02 * 22, height: 1.0, color: Colors.black)),
+                                fontWeight: FontWeight.w400, letterSpacing: -0.02 * 22, height: 1.0, color: fg)),
                       ]),
                     ),
 
@@ -80,7 +80,7 @@ class SettingsPage extends StatelessWidget {
 
                     // Theme section
                     Text('appearance'.tr, style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
-                        color: Colors.black.withValues(alpha: 0.55))),
+                        color: fg.withValues(alpha: 0.55))),
                     const SizedBox(height: 12),
                     
                     Obx(() => GestureDetector(
@@ -88,18 +88,18 @@ class SettingsPage extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
+                          border: Border.all(color: fg),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(ctrl.appCtrl.isDark.value ? 'dark_mode'.tr : 'light_mode'.tr,
-                                style: GoogleFonts.spaceGrotesk(fontSize: 14, fontWeight: FontWeight.w500)),
+                                style: GoogleFonts.spaceGrotesk(fontSize: 14, fontWeight: FontWeight.w500, color: fg)),
                             Container(
                               width: 50, height: 28,
                               decoration: BoxDecoration(
-                                color: ctrl.appCtrl.isDark.value ? Colors.black : Colors.grey.shade300,
+                                color: ctrl.appCtrl.isDark.value ? fg : Colors.grey.shade300,
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: Align(
@@ -109,7 +109,7 @@ class SettingsPage extends StatelessWidget {
                                   child: Container(
                                     width: 22, height: 22,
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: bg,
                                       borderRadius: BorderRadius.circular(11),
                                     ),
                                   ),
@@ -146,24 +146,28 @@ class _LanguageOption extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: selected ? Colors.black : Colors.white,
-          border: Border.all(color: Colors.black),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(label,
-                style: GoogleFonts.spaceGrotesk(fontSize: 14, fontWeight: FontWeight.w500,
-                    color: selected ? Colors.white : Colors.black)),
-            if (selected)
-              Icon(Icons.check, color: Colors.white, size: 20),
-          ],
-        ),
-      ),
+      child: Builder(builder: (ctx) {
+        final fg = Theme.of(ctx).colorScheme.onSurface;
+        final bg = Theme.of(ctx).colorScheme.surface;
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: selected ? fg : bg,
+            border: Border.all(color: fg),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(label,
+                  style: GoogleFonts.spaceGrotesk(fontSize: 14, fontWeight: FontWeight.w500,
+                      color: selected ? bg : fg)),
+              if (selected)
+                Icon(Icons.check, color: bg, size: 20),
+            ],
+          ),
+        );
+      }),
     );
   }
 }

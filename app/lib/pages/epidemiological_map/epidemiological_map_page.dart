@@ -11,8 +11,9 @@ class EpidemiologicalMapPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fg = Theme.of(context).colorScheme.onSurface;
+    final bg = Theme.of(context).colorScheme.surface;
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -26,11 +27,11 @@ class EpidemiologicalMapPage extends StatelessWidget {
                     onTap: () => Get.back(),
                     child: Container(
                       width: 38, height: 38,
-                      decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
-                      child: const Icon(Icons.chevron_left, size: 18, color: Colors.black),
+                      decoration: BoxDecoration(border: Border.all(color: fg), borderRadius: BorderRadius.circular(999)),
+                      child: Icon(Icons.chevron_left, size: 18, color: fg),
                     ),
                   ),
-                  Text('EPIDEMIOLOGICAL MAP', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
+                  Text('MAPA EPIDEMIOLÓGICO', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg)),
                   const SizedBox(width: 38),
                 ],
               ),
@@ -47,16 +48,16 @@ class EpidemiologicalMapPage extends StatelessWidget {
                       children: [
                         Text('GEOFENCE · LIMA METRO',
                             style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
-                                color: Colors.black.withValues(alpha: 0.55))),
+                                color: fg.withValues(alpha: 0.55))),
                         const SizedBox(height: 10),
                         RichText(
                           text: TextSpan(children: [
-                            TextSpan(text: 'Disease\n',
+                            TextSpan(text: 'Alertas\n',
                                 style: GoogleFonts.spaceGrotesk(fontSize: 38, fontWeight: FontWeight.w700,
-                                    letterSpacing: -0.04 * 38, height: 0.92, color: Colors.black)),
-                            TextSpan(text: 'alerts.',
-                                style: GoogleFonts.instrumentSerif(fontSize: 36, fontStyle: FontStyle.italic,
-                                    fontWeight: FontWeight.w400, letterSpacing: -0.02 * 36, height: 1.0, color: Colors.black)),
+                                    letterSpacing: -0.04 * 38, height: 0.92, color: fg)),
+                            TextSpan(text: 'de enfermedades.',
+                                style: GoogleFonts.instrumentSerif(fontSize: 28, fontStyle: FontStyle.italic,
+                                    fontWeight: FontWeight.w400, letterSpacing: -0.02 * 28, height: 1.0, color: fg)),
                           ]),
                         ),
                       ],
@@ -75,7 +76,7 @@ class EpidemiologicalMapPage extends StatelessWidget {
                           child: Container(
                             margin: const EdgeInsets.fromLTRB(22, 0, 22, 22),
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
+                              border: Border.all(color: fg),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Obx(() => GoogleMap(
@@ -152,11 +153,11 @@ class EpidemiologicalMapPage extends StatelessWidget {
                                 child: Container(
                                   width: 40, height: 40,
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border: Border.all(color: Colors.black),
+                                    color: bg,
+                                    border: Border.all(color: fg),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: const Icon(Icons.add, color: Colors.black, size: 20),
+                                  child: Icon(Icons.add, color: fg, size: 20),
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -165,11 +166,11 @@ class EpidemiologicalMapPage extends StatelessWidget {
                                 child: Container(
                                   width: 40, height: 40,
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    border: Border.all(color: Colors.black),
+                                    color: bg,
+                                    border: Border.all(color: fg),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: const Icon(Icons.remove, color: Colors.black, size: 20),
+                                  child: Icon(Icons.remove, color: fg, size: 20),
                                 ),
                               ),
                             ],

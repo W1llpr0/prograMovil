@@ -27,6 +27,8 @@ class AddPetController extends GetxController {
   final Rx<DateTime?> birthDate = Rx<DateTime?>(null);
   final RxBool isExotic = false.obs;
   final Rx<File?> photoFile = Rx<File?>(null);
+  final RxBool showCustomBreed = false.obs;
+  final customBreedCtrl = TextEditingController();
 
   final RxBool isLoading = false.obs;
   final RxString message = ''.obs;
@@ -54,12 +56,14 @@ class AddPetController extends GetxController {
   }
 
   Future<void> _loadBreeds(int speciesId) async {
+    breedsList.clear();
+    selectedBreed.value = null;
+    showCustomBreed.value = false;
     final res = await _petService.fetchBreedsBySpecies(speciesId);
     if (res.success && res.data != null) {
       breedsList.assignAll(res.data!);
-      selectedBreed.value = null; // Reset selected breed
     } else {
-      breedsList.clear();
+      message.value = 'Error cargando razas: ${res.message}';
     }
   }
 
@@ -86,7 +90,10 @@ class AddPetController extends GetxController {
 
   Future<void> savePet() async {
     final uid = appCtrl.currentUser.value?.id;
-    if (uid == null) return;
+    if (uid == null) {
+      message.value = 'Debes iniciar sesión.';
+      return;
+    }
     if (nameCtrl.text.trim().isEmpty || selectedSpecies.value == null) {
       message.value = 'error_empty_fields'.tr;
       return;
@@ -95,12 +102,28 @@ class AddPetController extends GetxController {
     isLoading.value = true;
     message.value = '';
 
+    // Handle custom breed: create it in DB if typed
+    int? breedId = selectedBreed.value?.id;
+    if (showCustomBreed.value && customBreedCtrl.text.trim().isNotEmpty) {
+      final breedRes = await _petService.createBreed(
+        customBreedCtrl.text.trim(),
+        selectedSpecies.value!.id,
+      );
+      if (breedRes.success && breedRes.data != null) {
+        breedId = breedRes.data!.id;
+      }
+    }
+
     final pet = Pet(
       clientId: uid,
       name: nameCtrl.text.trim(),
       speciesId: selectedSpecies.value!.id,
-      breedId: selectedBreed.value?.id,
-      sexCode: selectedSex.value.isEmpty || selectedSex.value == 'Unknown' ? null : selectedSex.value,
+      breedId: breedId,
+      sexCode: selectedSex.value == 'Male'
+          ? 'M'
+          : selectedSex.value == 'Female'
+              ? 'F'
+              : null,
       birthDate: birthDate.value,
       weightKg: double.tryParse(weightCtrl.text),
       microchip: microchipCtrl.text.trim().isEmpty ? null : microchipCtrl.text.trim(),
@@ -113,7 +136,7 @@ class AddPetController extends GetxController {
     if (res.success) {
       Get.back(result: true);
     } else {
-      message.value = res.message;
+      message.value = res.message.isNotEmpty ? res.message : 'Error al registrar mascota.';
     }
   }
 

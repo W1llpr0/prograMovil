@@ -72,6 +72,19 @@ class PetService {
     }
   }
 
+  Future<GenericResponse<Breed>> createBreed(String name, int speciesId) async {
+    try {
+      final data = await _sb
+          .from('breeds')
+          .upsert({'name': name, 'species_id': speciesId}, onConflict: 'name,species_id')
+          .select()
+          .single();
+      return GenericResponse(success: true, data: Breed.fromJson(data), message: '');
+    } catch (e) {
+      return GenericResponse(success: false, message: 'Could not create breed.', error: e.toString());
+    }
+  }
+
   Future<String> _uploadPhoto(File file, String userId) async {
     final path = '$userId/${DateTime.now().millisecondsSinceEpoch}.jpg';
     await _sb.storage

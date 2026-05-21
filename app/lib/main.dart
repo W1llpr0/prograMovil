@@ -49,12 +49,12 @@ class VetCareApp extends StatelessWidget {
       // Theme
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.light,
 
       // Translations
       translations: AppTranslations(),
-      locale: const Locale('en', 'US'),
-      fallbackLocale: const Locale('en', 'US'),
+      locale: const Locale('es', 'ES'),
+      fallbackLocale: const Locale('es', 'ES'),
 
       // Flutter localizations (for date/time pickers)
       localizationsDelegates: const [
