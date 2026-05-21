@@ -50,10 +50,9 @@ class AuthService {
       if (uid == null) {
         return const GenericResponse(success: false, message: 'Registration failed.');
       }
-      // The DB trigger handle_new_auth_user already inserts users/clients/veterinarians rows.
-      // We upsert users here as a fallback in case the trigger is not configured, but
-      // we never manually insert into clients/veterinarians — the trigger handles that
-      // correctly and a manual insert would violate the unique constraint on user_id.
+      // The DB trigger handle_new_auth_user inserts the profile rows automatically.
+      // We also insert here as a reliable fallback — all upserts use explicit
+      // onConflict targets so they never throw on duplicates.
       try {
         await _sb.from('users').upsert({
           'id': uid,
@@ -62,11 +61,32 @@ class AuthService {
           'last_name': lastName,
           'role': role,
           if (phone != null && phone.isNotEmpty) 'phone': phone,
-        });
+        }, onConflict: 'id');
+      } catch (_) {}
+
+      try {
+        if (role == 'veterinarian') {
+          await _sb.from('veterinarians').upsert({'user_id': uid}, onConflict: 'user_id');
+        } else {
+          await _sb.from('clients').upsert({'user_id': uid}, onConflict: 'user_id');
+        }
+      } catch (_) {}
+
+      // Fetch profile; fall back to constructing AppUser from signup data if the
+      // row is not yet visible (trigger timing, RLS, etc.).
+      AppUser profile;
+      try {
+        profile = await _fetchProfile(uid);
       } catch (_) {
-        // Trigger already created the row — ignore duplicate/conflict errors.
+        profile = AppUser(
+          id: uid,
+          email: email.trim(),
+          firstName: firstName,
+          lastName: lastName,
+          phone: (phone != null && phone.isNotEmpty) ? phone : null,
+          role: role,
+        );
       }
-      final profile = await _fetchProfile(uid);
       return GenericResponse(success: true, data: profile, message: 'Account created.');
     } on AuthException catch (e) {
       return GenericResponse(success: false, message: e.message, error: e.toString());
@@ -96,7 +116,8 @@ class AuthService {
         .from('users')
         .select()
         .eq('id', uid)
-        .single();
+        .maybeSingle();
+    if (data == null) throw Exception('Profile not found for uid $uid');
     return AppUser.fromJson(data);
   }
 }

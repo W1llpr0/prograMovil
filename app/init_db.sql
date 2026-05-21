@@ -27,25 +27,36 @@ create table if not exists users (
 
 -- Auto-insert user row when a new Supabase Auth user signs up
 create or replace function handle_new_auth_user()
-returns trigger language plpgsql security definer as $$
+returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  v_role user_role := 'client';
 begin
+  -- Avoid casting inside coalesce which can throw when enum value is unexpected
+  if (new.raw_user_meta_data->>'role') = 'veterinarian' then
+    v_role := 'veterinarian';
+  else
+    v_role := 'client';
+  end if;
+
   insert into public.users (id, email, first_name, last_name, role)
   values (
     new.id,
     new.email,
     coalesce(new.raw_user_meta_data->>'first_name', ''),
     coalesce(new.raw_user_meta_data->>'last_name', ''),
-    coalesce((new.raw_user_meta_data->>'role')::user_role, 'client')
+    v_role
   )
   on conflict (id) do nothing;
 
-  -- If client, insert clients row
-  if coalesce(new.raw_user_meta_data->>'role', 'client') = 'client' then
+  if v_role = 'client' then
     insert into public.clients (user_id) values (new.id) on conflict do nothing;
   else
     insert into public.veterinarians (user_id) values (new.id) on conflict do nothing;
   end if;
 
+  return new;
+exception when others then
+  -- Never let profile-creation errors block authentication
   return new;
 end;
 $$;

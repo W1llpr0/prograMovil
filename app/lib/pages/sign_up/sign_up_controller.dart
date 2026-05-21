@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../components/app_controller.dart';
 import '../../configs/app_routes.dart';
 import '../../configs/generic_response.dart';
 import '../../models/app_user.dart';
@@ -51,10 +50,8 @@ class SignUpController extends GetxController {
     isLoading.value = false;
 
     if (res.success && res.data != null) {
-      Get.find<AppController>().setUser(res.data!);
-      Get.offAllNamed(
-        res.data!.role == 'veterinarian' ? AppRoutes.vetDashboard : AppRoutes.homeClient,
-      );
+      // Navigate to email verification screen; user must confirm before accessing the app.
+      Get.offAllNamed(AppRoutes.verifyEmail, arguments: emailCtrl.text.trim());
     } else {
       message.value = res.message;
     }
