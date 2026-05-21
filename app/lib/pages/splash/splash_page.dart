@@ -36,20 +36,25 @@ class _SplashPageState extends State<SplashPage>
   }
 
   Future<void> _checkSession() async {
-    final appCtrl = Get.find<AppController>();
-    AppUser? user;
     try {
-      user = await AuthService().currentUser();
-    } catch (e) {
-      // Profile not found; redirect to Sign In
-      user = null;
-    }
-    appCtrl.setUser(user);
+      final appCtrl = Get.find<AppController>();
+      AppUser? user;
+      try {
+        user = await AuthService().currentUser();
+      } catch (e) {
+        // Profile not found; redirect to Sign In
+        user = null;
+      }
+      appCtrl.setUser(user);
 
-    final session = Supabase.instance.client.auth.currentSession;
-    if (session != null && user != null) {
-      Get.offAllNamed(user.role == 'veterinarian' ? AppRoutes.vetDashboard : AppRoutes.homeClient);
-    } else {
+      final session = Supabase.instance.client.auth.currentSession;
+      if (session != null && user != null) {
+        Get.offAllNamed(user.role == 'veterinarian' ? AppRoutes.vetDashboard : AppRoutes.homeClient);
+      } else {
+        Get.offAllNamed(AppRoutes.signIn);
+      }
+    } catch (e) {
+      // Fallback: any other error, go to Sign In
       Get.offAllNamed(AppRoutes.signIn);
     }
   }
