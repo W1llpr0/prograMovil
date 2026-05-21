@@ -54,7 +54,11 @@ class AppTranslations extends Translations {
           'epidemiological_alerts': 'EPIDEMIOLOGICAL ALERTS',
           // Profile
           'dark_mode': 'Dark mode',
+          'light_mode': 'Light mode',
           'language': 'Language',
+          'settings': 'Settings',
+          'appearance': 'Appearance',
+          'select_language': 'Select your language.',
           'logout': 'LOG OUT',
           // Messages
           'error_empty_fields': 'Please fill in all required fields.',
@@ -113,7 +117,11 @@ class AppTranslations extends Translations {
           'epidemiological_alerts': 'ALERTAS EPIDEMIOLÓGICAS',
           // Profile
           'dark_mode': 'Modo oscuro',
+          'light_mode': 'Modo claro',
           'language': 'Idioma',
+          'settings': 'Configuración',
+          'appearance': 'Apariencia',
+          'select_language': 'Selecciona tu idioma.',
           'logout': 'CERRAR SESIÓN',
           // Messages
           'error_empty_fields': 'Por favor completa todos los campos.',

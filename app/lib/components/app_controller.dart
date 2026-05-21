@@ -6,7 +6,7 @@ import '../models/app_user.dart';
 class AppController extends GetxController {
   final Rx<AppUser?> currentUser = Rx<AppUser?>(null);
   final RxBool isDark = false.obs;
-  final RxString locale = 'en'.obs;
+  final RxString locale = 'es'.obs;
 
   bool get isLoggedIn => currentUser.value != null;
   bool get isVet => currentUser.value?.role == 'veterinarian';

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'epidemiological_map_controller.dart';
 
 class EpidemiologicalMapPage extends StatelessWidget {
@@ -64,28 +65,33 @@ class EpidemiologicalMapPage extends StatelessWidget {
 
                   const SizedBox(height: 22),
 
-                  // ── Map placeholder ──────────────────────────
+                  // ── Map container ──────────────────────────
                   Expanded(
                     child: Stack(
                       children: [
-                        // Map bg
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(22, 0, 22, 22),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                _PulseRing(),
-                                const SizedBox(height: 16),
-                                Text('MAP VIEW', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
-                                    color: Colors.black.withValues(alpha: 0.4))),
-                              ],
+                        // Google Maps
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                            margin: const EdgeInsets.fromLTRB(22, 0, 22, 22),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(20),
                             ),
+                            child: Obx(() => GoogleMap(
+                              initialCameraPosition: CameraPosition(
+                                target: const LatLng(-12.0464, -77.0428), // Lima, Peru
+                                zoom: 12,
+                              ),
+                              onMapCreated: ctrl.onMapCreated,
+                              markers: ctrl.markers.value,
+                              circles: ctrl.circles.value,
+                              myLocationEnabled: true,
+                              myLocationButtonEnabled: false,
+                              zoomControlsEnabled: false,
+                              scrollGesturesEnabled: true,
+                              rotateGesturesEnabled: false,
+                            )),
                           ),
                         ),
 
@@ -134,6 +140,40 @@ class EpidemiologicalMapPage extends StatelessWidget {
                               ),
                             );
                           }),
+                        ),
+
+                        // ── Zoom buttons ──────────────────────
+                        Positioned(
+                          right: 32, bottom: 100,
+                          child: Column(
+                            children: [
+                              GestureDetector(
+                                onTap: ctrl.zoomIn,
+                                child: Container(
+                                  width: 40, height: 40,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(Icons.add, color: Colors.black, size: 20),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              GestureDetector(
+                                onTap: ctrl.zoomOut,
+                                child: Container(
+                                  width: 40, height: 40,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(Icons.remove, color: Colors.black, size: 20),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),

@@ -23,6 +23,7 @@ import 'pages/epidemiological_map/epidemiological_map_page.dart';
 import 'pages/vet_dashboard/vet_dashboard_page.dart';
 import 'pages/register_medical/register_medical_page.dart';
 import 'pages/profile/profile_page.dart';
+import 'pages/settings/settings_page.dart';
 import 'pages/verify_email/verify_email_page.dart';
 
 Future<void> main() async {
@@ -88,6 +89,7 @@ class VetCareApp extends StatelessWidget {
         GetPage(name: AppRoutes.vetDashboard, page: () => VetDashboardPage()),
         GetPage(name: AppRoutes.registerMedical, page: () => RegisterMedicalPage()),
         GetPage(name: AppRoutes.profile, page: () => ProfilePage()),
+        GetPage(name: AppRoutes.settings, page: () => SettingsPage()),
       ],
     );
   }

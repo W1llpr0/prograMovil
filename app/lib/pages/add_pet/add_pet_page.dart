@@ -145,7 +145,25 @@ class AddPetPage extends StatelessWidget {
 
                     const SizedBox(height: 22),
 
-                    LineInput(label: 'BREED', hint: 'e.g. Golden Retriever', controller: ctrl.breedCtrl),
+                    // Breed selector
+                    Text('BREED', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.22,
+                        color: Colors.black.withValues(alpha: 0.55))),
+                    const SizedBox(height: 8),
+                    Obx(() => ctrl.breedsList.isEmpty
+                        ? Text('Select a species first', style: GoogleFonts.spaceGrotesk(fontSize: 12, color: Colors.grey))
+                        : Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final breed in ctrl.breedsList)
+                              _SelectChip(
+                                label: breed.name.toUpperCase(),
+                                selected: ctrl.selectedBreed.value?.id == breed.id,
+                                onTap: () => ctrl.selectedBreed.value = breed,
+                              ),
+                          ],
+                        )),
+
                     const SizedBox(height: 22),
                     
                     // Date picker instead of text input

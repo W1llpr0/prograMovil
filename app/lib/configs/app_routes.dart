@@ -7,6 +7,7 @@ class AppRoutes {
   static const homeClient = '/home-client';
   static const homeVet = '/home-vet';
   static const profile = '/profile';
+  static const settings = '/settings';
   static const addPet = '/add-pet';
   static const petProfile = '/pet-profile';
   static const bookAppointment = '/book-appointment';

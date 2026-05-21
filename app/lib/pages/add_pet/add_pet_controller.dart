@@ -21,6 +21,8 @@ class AddPetController extends GetxController {
 
   final RxList<Species> speciesList = <Species>[].obs;
   final Rx<Species?> selectedSpecies = Rx<Species?>(null);
+  final RxList<Breed> breedsList = <Breed>[].obs;
+  final Rx<Breed?> selectedBreed = Rx<Breed?>(null);
   final RxString selectedSex = ''.obs;
   final Rx<DateTime?> birthDate = Rx<DateTime?>(null);
   final RxBool isExotic = false.obs;
@@ -33,12 +35,31 @@ class AddPetController extends GetxController {
   void onInit() {
     super.onInit();
     _loadSpecies();
+    // Load breeds when species is selected
+    ever(selectedSpecies, (_) {
+      if (selectedSpecies.value != null) {
+        _loadBreeds(selectedSpecies.value!.id);
+      } else {
+        breedsList.clear();
+        selectedBreed.value = null;
+      }
+    });
   }
 
   Future<void> _loadSpecies() async {
     final res = await _petService.fetchSpecies();
     if (res.success && res.data != null) {
       speciesList.assignAll(res.data!);
+    }
+  }
+
+  Future<void> _loadBreeds(int speciesId) async {
+    final res = await _petService.fetchBreedsBySpecies(speciesId);
+    if (res.success && res.data != null) {
+      breedsList.assignAll(res.data!);
+      selectedBreed.value = null; // Reset selected breed
+    } else {
+      breedsList.clear();
     }
   }
 
@@ -78,6 +99,7 @@ class AddPetController extends GetxController {
       clientId: uid,
       name: nameCtrl.text.trim(),
       speciesId: selectedSpecies.value!.id,
+      breedId: selectedBreed.value?.id,
       sexCode: selectedSex.value.isEmpty || selectedSex.value == 'Unknown' ? null : selectedSex.value,
       birthDate: birthDate.value,
       weightKg: double.tryParse(weightCtrl.text),

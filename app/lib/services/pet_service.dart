@@ -62,6 +62,16 @@ class PetService {
     }
   }
 
+  Future<GenericResponse<List<Breed>>> fetchBreedsBySpecies(int speciesId) async {
+    try {
+      final data = await _sb.from('breeds').select().eq('species_id', speciesId).order('name');
+      final list = (data as List).map((e) => Breed.fromJson(e)).toList();
+      return GenericResponse(success: true, data: list);
+    } catch (e) {
+      return GenericResponse(success: false, message: 'Could not load breeds.', error: e.toString());
+    }
+  }
+
   Future<String> _uploadPhoto(File file, String userId) async {
     final path = '$userId/${DateTime.now().millisecondsSinceEpoch}.jpg';
     await _sb.storage

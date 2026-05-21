@@ -19,6 +19,9 @@ dependencies:
   # BaaS
   supabase_flutter: ^2.5.6
 
+  # Maps
+  google_maps_flutter: ^2.10.0
+
   # SHA-256 for consultation integrity hash
   crypto: ^3.0.3
 

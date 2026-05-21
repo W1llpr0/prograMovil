@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../configs/app_routes.dart';
 import 'profile_controller.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -19,9 +20,17 @@ class ProfilePage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(22, 8, 22, 0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('PROFILE', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
+                  GestureDetector(
+                    onTap: () => Get.toNamed(AppRoutes.settings),
+                    child: Container(
+                      width: 38, height: 38,
+                      decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
+                      child: const Icon(Icons.settings, size: 18, color: Colors.black),
+                    ),
+                  ),
                 ],
               ),
             ),
