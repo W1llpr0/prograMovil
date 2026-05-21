@@ -78,7 +78,7 @@ class AddPetController extends GetxController {
       clientId: uid,
       name: nameCtrl.text.trim(),
       speciesId: selectedSpecies.value!.id,
-      sexCode: selectedSex.value.isEmpty ? null : selectedSex.value,
+      sexCode: selectedSex.value.isEmpty || selectedSex.value == 'Unknown' ? null : selectedSex.value,
       birthDate: birthDate.value,
       weightKg: double.tryParse(weightCtrl.text),
       microchip: microchipCtrl.text.trim().isEmpty ? null : microchipCtrl.text.trim(),

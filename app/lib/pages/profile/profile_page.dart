@@ -125,19 +125,19 @@ class ProfilePage extends StatelessWidget {
                       _InfoRow(
                         label: 'PHONE',
                         fieldName: 'phone',
-                        value: u?.phone ?? 'Not set',
+                        value: u?.phone ?? '',
                         onEdit: (val) => ctrl.updateUserField('phone', val),
                       ),
                       _InfoRow(
                         label: 'DOCUMENT',
                         fieldName: 'document',
-                        value: u?.document ?? 'Not set',
+                        value: u?.document ?? '',
                         onEdit: (val) => ctrl.updateUserField('document', val),
                       ),
                       _InfoRow(
                         label: 'ADDRESS',
                         fieldName: 'address',
-                        value: u?.address ?? 'Not set',
+                        value: u?.address ?? '',
                         onEdit: (val) => ctrl.updateUserField('address', val),
                         isLast: true,
                       ),
@@ -217,7 +217,7 @@ class _InfoRowState extends State<_InfoRow> {
           controller: _controller,
           decoration: InputDecoration(
             border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black)),
-            hintText: 'Enter ${widget.label.toLowerCase()}',
+            hintText: 'Add ${widget.label.toLowerCase()}',
           ),
         ),
         actions: [

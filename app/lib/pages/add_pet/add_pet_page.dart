@@ -104,30 +104,28 @@ class AddPetPage extends StatelessWidget {
                           _SelectChip(
                             label: species.name.toUpperCase(),
                             selected: ctrl.selectedSpecies.value?.id == species.id,
-                            onTap: () {
-                              ctrl.selectedSpecies.value = species;
-                            },
+                            onTap: () => ctrl.selectedSpecies.value = species,
                           ),
                       ],
                     )),
 
                     const SizedBox(height: 22),
 
-                    // Sex selector
+                    // Sex selector - with Unknown option
                     Text('SEX', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.22,
                         color: Colors.black.withValues(alpha: 0.55))),
                     const SizedBox(height: 8),
                     Obx(() => Row(
                       children: [
-                        for (final s in ['Male', 'Female'])
+                        for (final s in ['Unknown', 'Male', 'Female'])
                           Expanded(
                             child: Padding(
-                              padding: EdgeInsets.only(right: s == 'Male' ? 8 : 0),
+                              padding: EdgeInsets.only(right: s != 'Female' ? 4 : 0),
                               child: GestureDetector(
                                 onTap: () => ctrl.selectedSex.value = s,
                                 child: AnimatedContainer(
                                   duration: const Duration(milliseconds: 200),
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  padding: const EdgeInsets.symmetric(vertical: 10),
                                   decoration: BoxDecoration(
                                     color: ctrl.selectedSex.value == s ? Colors.black : Colors.white,
                                     border: Border.all(color: Colors.black),
@@ -135,7 +133,7 @@ class AddPetPage extends StatelessWidget {
                                   ),
                                   child: Center(
                                     child: Text(s.toUpperCase(),
-                                        style: GoogleFonts.jetBrainsMono(fontSize: 11, letterSpacing: 0.22,
+                                        style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16,
                                             color: ctrl.selectedSex.value == s ? Colors.white : Colors.black)),
                                   ),
                                 ),
@@ -149,10 +147,52 @@ class AddPetPage extends StatelessWidget {
 
                     LineInput(label: 'BREED', hint: 'e.g. Golden Retriever', controller: ctrl.breedCtrl),
                     const SizedBox(height: 22),
-                    LineInput(label: 'DATE OF BIRTH', hint: 'MM / YYYY', controller: ctrl.birthDateCtrl),
+                    
+                    // Date picker instead of text input
+                    Text('DATE OF BIRTH',
+                        style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.22,
+                            color: Colors.black.withValues(alpha: 0.55))),
+                    const SizedBox(height: 8),
+                    Obx(() => GestureDetector(
+                      onTap: () => ctrl.pickDate(context),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                ctrl.birthDate.value != null
+                                    ? '${ctrl.birthDate.value!.month}/${ctrl.birthDate.value!.year}'
+                                    : 'Select date',
+                                style: GoogleFonts.spaceGrotesk(
+                                  fontSize: 14,
+                                  color: ctrl.birthDate.value != null ? Colors.black : Colors.grey,
+                                ),
+                              ),
+                            ),
+                            const Icon(Icons.calendar_today, size: 18, color: Colors.black),
+                          ],
+                        ),
+                      ),
+                    )),
+
                     const SizedBox(height: 22),
-                    LineInput(label: 'WEIGHT (KG)', hint: '0.0', controller: ctrl.weightCtrl, keyboardType: TextInputType.number),
+
+                    // Weight - optional
+                    Text('WEIGHT (KG)',
+                        style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.22,
+                            color: Colors.black.withValues(alpha: 0.55))),
+                    const SizedBox(height: 4),
+                    Text('Optional',
+                        style: GoogleFonts.spaceGrotesk(fontSize: 10, color: Colors.grey)),
+                    const SizedBox(height: 4),
+                    LineInput(label: '', hint: '0.0', controller: ctrl.weightCtrl, keyboardType: TextInputType.number),
                     const SizedBox(height: 22),
+                    
                     LineInput(label: 'MICROCHIP / ID', hint: 'Optional', controller: ctrl.microchipCtrl),
 
                     const SizedBox(height: 40),
