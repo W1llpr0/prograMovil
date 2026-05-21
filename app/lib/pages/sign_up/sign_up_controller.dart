@@ -50,8 +50,8 @@ class SignUpController extends GetxController {
     isLoading.value = false;
 
     if (res.success && res.data != null) {
-      // Navigate to email verification screen; user must confirm before accessing the app.
-      Get.offAllNamed(AppRoutes.verifyEmail, arguments: emailCtrl.text.trim());
+      // Email confirmation is disabled in Supabase, so navigate directly to Sign In
+      Get.offAllNamed(AppRoutes.signIn);
     } else {
       message.value = res.message;
     }
