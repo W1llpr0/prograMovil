@@ -45,7 +45,7 @@ class AddPetController extends GetxController {
   Future<void> pickPhoto() async {
     final picker = ImagePicker();
     final xFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
-    if (xFile != null) photoFile.value = File(xFile.path);
+    if (xFile != null) imageFile.value = File(xFile.path);
   }
 
   Future<void> pickDate(BuildContext context) async {
@@ -85,7 +85,7 @@ class AddPetController extends GetxController {
       isExotic: isExotic.value || (selectedSpecies.value?.isExotic ?? false),
     );
 
-    final GenericResponse<Pet> res = await _petService.addPet(pet, photo: photoFile.value);
+    final GenericResponse<Pet> res = await _petService.addPet(pet, photo: imageFile.value);
     isLoading.value = false;
 
     if (res.success) {

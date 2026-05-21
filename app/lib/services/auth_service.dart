@@ -52,6 +52,7 @@ class AuthService {
     required String password,
     required String firstName,
     required String lastName,
+    String? document,
     String? phone,
     String role = 'client',
   }) async {
@@ -63,6 +64,7 @@ class AuthService {
           'first_name': firstName,
           'last_name': lastName,
           'role': role,
+          if (document != null && document.isNotEmpty) 'document': document,
           if (phone != null && phone.isNotEmpty) 'phone': phone,
         },
       );
@@ -80,6 +82,7 @@ class AuthService {
           'first_name': firstName,
           'last_name': lastName,
           'role': role,
+          if (document != null && document.isNotEmpty) 'document': document,
           if (phone != null && phone.isNotEmpty) 'phone': phone,
         }, onConflict: 'id');
       } catch (_) {}

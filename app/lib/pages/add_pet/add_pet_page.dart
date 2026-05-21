@@ -100,14 +100,12 @@ class AddPetPage extends StatelessWidget {
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        for (final s in ['Dog', 'Cat', 'Bird', 'Exotic · Reptile', 'Aquatic', 'Other'])
+                        for (final species in ctrl.speciesList)
                           _SelectChip(
-                            label: s.toUpperCase(),
-                            selected: ctrl.selectedSpecies.value?.name == s || (ctrl.speciesList.isEmpty && ctrl.selectedSpecies.value == null),
+                            label: species.name.toUpperCase(),
+                            selected: ctrl.selectedSpecies.value?.id == species.id,
                             onTap: () {
-                              try {
-                                ctrl.selectedSpecies.value = ctrl.speciesList.firstWhere((sp) => sp.name == s);
-                              } catch (_) {}
+                              ctrl.selectedSpecies.value = species;
                             },
                           ),
                       ],

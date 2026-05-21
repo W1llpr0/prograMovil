@@ -8,6 +8,7 @@ import '../../services/auth_service.dart';
 class SignUpController extends GetxController {
   final firstNameCtrl = TextEditingController();
   final lastNameCtrl = TextEditingController();
+  final documentCtrl = TextEditingController();
   final emailCtrl = TextEditingController();
   final phoneCtrl = TextEditingController();
   final passwordCtrl = TextEditingController();
@@ -22,11 +23,12 @@ class SignUpController extends GetxController {
   void register() async {
     final firstName = firstNameCtrl.text.trim();
     final lastName = lastNameCtrl.text.trim();
+    final document = documentCtrl.text.trim();
     final email = emailCtrl.text.trim();
     final password = passwordCtrl.text;
     final confirm = confirmCtrl.text;
 
-    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty) {
+    if (firstName.isEmpty || lastName.isEmpty || document.isEmpty || email.isEmpty || password.isEmpty) {
       message.value = 'error_empty_fields'.tr;
       return;
     }
@@ -43,6 +45,7 @@ class SignUpController extends GetxController {
       password: password,
       firstName: firstName,
       lastName: lastName,
+      document: document,
       phone: phoneCtrl.text.trim(),
       role: selectedRole.value,
     );
@@ -63,6 +66,7 @@ class SignUpController extends GetxController {
   void onClose() {
     firstNameCtrl.dispose();
     lastNameCtrl.dispose();
+    documentCtrl.dispose();
     emailCtrl.dispose();
     phoneCtrl.dispose();
     passwordCtrl.dispose();

@@ -272,6 +272,11 @@ class _ClientFields extends StatelessWidget {
         ),
         LineInput(
           controller: ctrl.lastNameCtrl,
+          label: 'LAST NAME',
+          textCapitalization: TextCapitalization.words,
+        ),
+        LineInput(
+          controller: ctrl.documentCtrl,
           label: 'IDENTITY DOCUMENT · DNI',
         ),
         LineInput(
