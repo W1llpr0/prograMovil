@@ -18,6 +18,8 @@ create table if not exists users (
   first_name  text not null,
   last_name   text not null,
   phone       text,
+  document    text,
+  address     text,
   profile_picture text,
   latitude    double precision,
   longitude   double precision,

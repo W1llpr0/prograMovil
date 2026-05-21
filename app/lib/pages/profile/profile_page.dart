@@ -129,11 +129,47 @@ class ProfilePage extends StatelessWidget {
                         child: Text('CONTACT INFORMATION',
                             style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
                       ),
-                      _InfoRow(label: 'FULL NAME', value: '${u?.firstName ?? ''} ${u?.lastName ?? ''}'),
-                      _InfoRow(label: 'EMAIL', value: u?.email ?? ''),
-                      _InfoRow(label: 'PHONE', value: '+51 994 218 002'),
-                      _InfoRow(label: 'DOCUMENT', value: '48 213 902'),
-                      _InfoRow(label: 'ADDRESS', value: 'Av. La Marina 2240, Lima', isLast: true),
+                      _InfoRow(
+                        label: 'FULL NAME',
+                        fieldName: 'firstName',
+                        value: '${u?.firstName ?? ''} ${u?.lastName ?? ''}',
+                        onEdit: (val) {
+                          if (val.contains(' ')) {
+                            final parts = val.split(' ');
+                            ctrl.updateUserField('firstName', parts[0]);
+                            if (parts.length > 1) {
+                              ctrl.updateUserField('lastName', parts.skip(1).join(' '));
+                            }
+                          } else {
+                            ctrl.updateUserField('firstName', val);
+                          }
+                        },
+                      ),
+                      _InfoRow(
+                        label: 'EMAIL',
+                        fieldName: 'email',
+                        value: u?.email ?? '',
+                        onEdit: (val) => Get.snackbar('Info', 'Email cannot be changed here', snackPosition: SnackPosition.BOTTOM),
+                      ),
+                      _InfoRow(
+                        label: 'PHONE',
+                        fieldName: 'phone',
+                        value: u?.phone ?? 'Not set',
+                        onEdit: (val) => ctrl.updateUserField('phone', val),
+                      ),
+                      _InfoRow(
+                        label: 'DOCUMENT',
+                        fieldName: 'document',
+                        value: u?.document ?? 'Not set',
+                        onEdit: (val) => ctrl.updateUserField('document', val),
+                      ),
+                      _InfoRow(
+                        label: 'ADDRESS',
+                        fieldName: 'address',
+                        value: u?.address ?? 'Not set',
+                        onEdit: (val) => ctrl.updateUserField('address', val),
+                        isLast: true,
+                      ),
 
                       // ── Preferences ───────────────────────────
                       Padding(
@@ -196,10 +232,67 @@ class _KpiCell extends StatelessWidget {
   }
 }
 
-class _InfoRow extends StatelessWidget {
-  final String label, value;
+class _InfoRow extends StatefulWidget {
+  final String label, fieldName, value;
   final bool isLast;
-  const _InfoRow({required this.label, required this.value, this.isLast = false});
+  final Function(String) onEdit;
+
+  const _InfoRow({
+    required this.label,
+    required this.fieldName,
+    required this.value,
+    required this.onEdit,
+    this.isLast = false,
+  });
+
+  @override
+  State<_InfoRow> createState() => _InfoRowState();
+}
+
+class _InfoRowState extends State<_InfoRow> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.value);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _showEditDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: Text('Edit ${widget.label}', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w600)),
+        content: TextField(
+          controller: _controller,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black)),
+            hintText: 'Enter ${widget.label.toLowerCase()}',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('CANCEL', style: GoogleFonts.jetBrainsMono(fontSize: 10)),
+          ),
+          TextButton(
+            onPressed: () {
+              widget.onEdit(_controller.text);
+              Navigator.pop(ctx);
+            },
+            child: Text('SAVE', style: GoogleFonts.jetBrainsMono(fontSize: 10)),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -208,7 +301,7 @@ class _InfoRow extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           top: const BorderSide(color: Colors.black),
-          bottom: isLast ? const BorderSide(color: Colors.black) : BorderSide.none,
+          bottom: widget.isLast ? const BorderSide(color: Colors.black) : BorderSide.none,
         ),
       ),
       child: Row(
@@ -217,17 +310,22 @@ class _InfoRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16,
-                    color: Colors.black.withValues(alpha: 0.55))),
+                Text(widget.label,
+                    style: GoogleFonts.jetBrainsMono(
+                        fontSize: 9, letterSpacing: 0.16, color: Colors.black.withValues(alpha: 0.55))),
                 const SizedBox(height: 4),
-                Text(value, style: GoogleFonts.spaceGrotesk(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black)),
+                Text(widget.value,
+                    style: GoogleFonts.spaceGrotesk(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black)),
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-            decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
-            child: Text('EDIT', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16, color: Colors.black)),
+          GestureDetector(
+            onTap: _showEditDialog,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+              decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
+              child: Text('EDIT', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16, color: Colors.black)),
+            ),
           ),
         ],
       ),

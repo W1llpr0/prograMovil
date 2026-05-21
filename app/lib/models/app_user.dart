@@ -4,6 +4,8 @@ class AppUser {
   final String firstName;
   final String lastName;
   final String? phone;
+  final String? document;
+  final String? address;
   final String? profilePicture;
   final double? latitude;
   final double? longitude;
@@ -15,6 +17,8 @@ class AppUser {
     required this.firstName,
     required this.lastName,
     this.phone,
+    this.document,
+    this.address,
     this.profilePicture,
     this.latitude,
     this.longitude,
@@ -29,6 +33,8 @@ class AppUser {
         firstName: json['first_name'] as String,
         lastName: json['last_name'] as String,
         phone: json['phone'] as String?,
+        document: json['document'] as String?,
+        address: json['address'] as String?,
         profilePicture: json['profile_picture'] as String?,
         latitude: (json['latitude'] as num?)?.toDouble(),
         longitude: (json['longitude'] as num?)?.toDouble(),
@@ -41,6 +47,8 @@ class AppUser {
         'first_name': firstName,
         'last_name': lastName,
         'phone': phone,
+        'document': document,
+        'address': address,
         'profile_picture': profilePicture,
         'latitude': latitude,
         'longitude': longitude,

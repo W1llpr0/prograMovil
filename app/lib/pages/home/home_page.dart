@@ -81,44 +81,70 @@ class _HomePageState extends State<HomePage> {
               if (user != null) Text('Good morning, ${user.firstName}.', style: GoogleFonts.spaceGrotesk(fontSize: 32, fontWeight: FontWeight.w700, letterSpacing: -0.04 * 32)),
               const SizedBox(height: 20),
               if (error.isNotEmpty) Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: Colors.orange.withValues(alpha: 0.1), border: Border.all(color: Colors.orange), borderRadius: BorderRadius.circular(8)), child: Text('⚠️ $error')),
-              Container(
-                decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 1), borderRadius: BorderRadius.circular(20)),
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text('NEXT DOSE · IN 04:12', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18)),
-                        const SizedBox(height: 10),
-                        Text('Apoquel 16 mg', style: GoogleFonts.spaceGrotesk(fontSize: 22, fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 6),
-                        Text('Max · 1 tablet · with food', style: GoogleFonts.spaceGrotesk(fontSize: 12, color: Colors.black.withValues(alpha: 0.6))),
+              Obx(() {
+                final med = ctrl.nextDoseMedication.value;
+                final medEmpty = med == 'No active medications' || med == 'No pets registered yet';
+                return Container(
+                  decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 1), borderRadius: BorderRadius.circular(20)),
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text('NEXT DOSE · ${ctrl.nextDoseTime.value}', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18)),
+                          const SizedBox(height: 10),
+                          Text(med, style: GoogleFonts.spaceGrotesk(fontSize: 22, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 6),
+                          Text(ctrl.nextDoseDetails.value, style: GoogleFonts.spaceGrotesk(fontSize: 12, color: Colors.black.withValues(alpha: 0.6))),
+                        ]),
+                        Container(width: 44, height: 44, decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 1), borderRadius: BorderRadius.circular(999)), child: const Icon(Icons.medication_outlined, size: 20)),
                       ]),
-                      Container(width: 44, height: 44, decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 1), borderRadius: BorderRadius.circular(999)), child: const Icon(Icons.medication_outlined, size: 20)),
-                    ]),
-                    const SizedBox(height: 18),
-                    SizedBox(height: 28, child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                      for (final h in [0.6, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 0.0, 0.8, 1.0, 1.0, 1.0, 1.0, 0.7]) ...[
-                        Expanded(child: Align(alignment: Alignment.bottomCenter, child: FractionallySizedBox(heightFactor: h < 0.06 ? 0.06 : h, child: Container(decoration: BoxDecoration(color: h == 0 ? Colors.transparent : Colors.black, border: h == 0 ? Border.all(color: Colors.black, width: 1) : null, borderRadius: BorderRadius.circular(1)))))),
-                        const SizedBox(width: 3),
-                      ]
-                    ])),
-                    const SizedBox(height: 6),
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                      Text('14-DAY ADHERENCE', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.18, color: Colors.black.withValues(alpha: 0.55))),
-                      Text('92%', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.06)),
-                    ]),
-                    const SizedBox(height: 18),
-                    SwipeToConfirm(onConfirmed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('✅ Dose recorded successfully')))),
-                  ],
-                ),
-              ),
+                      if (!medEmpty) ...[
+                        const SizedBox(height: 18),
+                        SizedBox(height: 28, child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                          for (final h in [0.6, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 0.0, 0.8, 1.0, 1.0, 1.0, 1.0, 0.7]) ...[
+                            Expanded(child: Align(alignment: Alignment.bottomCenter, child: FractionallySizedBox(heightFactor: h < 0.06 ? 0.06 : h, child: Container(decoration: BoxDecoration(color: h == 0 ? Colors.transparent : Colors.black, border: h == 0 ? Border.all(color: Colors.black, width: 1) : null, borderRadius: BorderRadius.circular(1)))))),
+                            const SizedBox(width: 3),
+                          ]
+                        ])),
+                        const SizedBox(height: 6),
+                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                          Text('14-DAY ADHERENCE', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.18, color: Colors.black.withValues(alpha: 0.55))),
+                          Text('92%', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.06)),
+                        ]),
+                        const SizedBox(height: 18),
+                        SwipeToConfirm(onConfirmed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('✅ Dose recorded successfully')))),
+                      ],
+                    ],
+                  ),
+                );
+              }),
               const SizedBox(height: 24),
               Text('UPCOMING', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black.withValues(alpha: 0.55))),
               const SizedBox(height: 12),
-              _buildAppointmentRow(date: '21 MAY', time: '10:30', title: 'Annual checkup · Max', doctor: 'Dr. R. Paz'),
-              _buildAppointmentRow(date: '24 MAY', time: '17:00', title: 'Consultation · Donatello', doctor: 'Dr. R. Paz', isLast: true),
+              Obx(() {
+                if (ctrl.upcomingAppointments.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Center(
+                      child: Text('No upcoming appointments', style: GoogleFonts.spaceGrotesk(fontSize: 13, color: Colors.black.withValues(alpha: 0.5))),
+                    ),
+                  );
+                }
+                return Column(
+                  children: [
+                    for (int i = 0; i < ctrl.upcomingAppointments.length; i++)
+                      _buildAppointmentRow(
+                        date: ctrl.upcomingAppointments[i]['date'],
+                        time: ctrl.upcomingAppointments[i]['time'],
+                        title: '${ctrl.upcomingAppointments[i]['title']} · ${ctrl.upcomingAppointments[i]['petName']}',
+                        doctor: ctrl.upcomingAppointments[i]['vetName'],
+                        isLast: i == ctrl.upcomingAppointments.length - 1,
+                      ),
+                  ],
+                );
+              }),
             ],
           ),
         ),
