@@ -18,12 +18,32 @@ class AuthService {
       if (uid == null) {
         return const GenericResponse(success: false, message: 'Authentication failed.');
       }
-      final profile = await _fetchProfile(uid);
+      
+      // Try to fetch profile; if it doesn't exist, construct from auth data
+      AppUser profile;
+      try {
+        profile = await _fetchProfile(uid);
+      } catch (e) {
+        // Profile not found; construct AppUser from available auth data
+        print('Profile not found for $uid, constructing from metadata: $e');
+        profile = AppUser(
+          id: uid,
+          email: email.trim(),
+          firstName: res.user?.userMetadata?['first_name'] ?? 'User',
+          lastName: res.user?.userMetadata?['last_name'] ?? '',
+          phone: res.user?.userMetadata?['phone'],
+          role: res.user?.userMetadata?['role'] ?? 'client',
+        );
+      }
+      
       return GenericResponse(success: true, data: profile, message: 'Welcome back!');
     } on AuthException catch (e) {
+      print('AuthException in signIn: ${e.message}');
       return GenericResponse(success: false, message: e.message, error: e.toString());
     } catch (e) {
-      return GenericResponse(success: false, message: 'Unexpected error.', error: e.toString());
+      print('Unexpected error in signIn: $e');
+      final errorMsg = 'Error: ${e.toString()}';
+      return GenericResponse(success: false, message: errorMsg, error: e.toString());
     }
   }
 
