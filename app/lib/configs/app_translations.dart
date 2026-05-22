@@ -124,6 +124,39 @@ class AppTranslations extends Translations {
           // Medication status
           'no_active_meds': 'No active medications',
           'no_pets_meds': 'No pets registered yet',
+          // Vet dashboard – tabs & nav
+          'vet_agenda': 'AGENDA',
+          'vet_patients_tab': 'PATIENTS',
+          'vet_reports': 'REPORTS',
+          'vet_reports_schedule': 'REPORTS & SCHEDULE',
+          'vet_sign_out': 'SIGN OUT',
+          // Vet dashboard – agenda
+          'vet_today': 'TODAY',
+          'vet_pending': 'PENDING',
+          'vet_confirmed': 'CONFIRMED',
+          'vet_completed': 'COMPLETED',
+          'vet_no_consultations': 'No consultations for this day.',
+          'vet_notes': 'NOTES',
+          'vet_open_record': 'OPEN RECORD',
+          // Vet dashboard – patients
+          'vet_no_patients': 'No patients yet.',
+          // Vet dashboard – reports
+          'vet_my_practice': 'My practice.',
+          'vet_total': 'TOTAL',
+          'vet_all_time': 'all time',
+          'vet_rate': 'RATE',
+          'vet_completion': 'completion',
+          'vet_unique': 'unique',
+          // Vet dashboard – schedule
+          'vet_weekly_schedule': 'WEEKLY SCHEDULE',
+          'vet_set_hours': 'Set your available hours for each day.',
+          'vet_not_available': 'Not available',
+          'vet_schedule_label': 'SCHEDULE',
+          'vet_start': 'START',
+          'vet_end_time': 'END',
+          'vet_slot_duration': 'APPOINTMENT DURATION (min)',
+          'vet_save_ok': 'Schedule saved.',
+          'vet_save_error': 'Could not save schedule. Please try again.',
         },
         'es_ES': {
           // Auth
@@ -245,6 +278,39 @@ class AppTranslations extends Translations {
           // Medication status
           'no_active_meds': 'Sin medicamentos activos',
           'no_pets_meds': 'Sin mascotas registradas aún',
+          // Vet dashboard – tabs & nav
+          'vet_agenda': 'AGENDA',
+          'vet_patients_tab': 'PACIENTES',
+          'vet_reports': 'REPORTES',
+          'vet_reports_schedule': 'REPORTES Y HORARIO',
+          'vet_sign_out': 'CERRAR SESIÓN',
+          // Vet dashboard – agenda
+          'vet_today': 'HOY',
+          'vet_pending': 'PENDIENTE',
+          'vet_confirmed': 'CONFIRMADO',
+          'vet_completed': 'COMPLETADO',
+          'vet_no_consultations': 'Sin consultas para este día.',
+          'vet_notes': 'NOTAS',
+          'vet_open_record': 'VER HISTORIAL',
+          // Vet dashboard – patients
+          'vet_no_patients': 'Sin pacientes aún.',
+          // Vet dashboard – reports
+          'vet_my_practice': 'Mi consultorio.',
+          'vet_total': 'TOTAL',
+          'vet_all_time': 'total',
+          'vet_rate': 'TASA',
+          'vet_completion': 'completado',
+          'vet_unique': 'únicos',
+          // Vet dashboard – schedule
+          'vet_weekly_schedule': 'HORARIO SEMANAL',
+          'vet_set_hours': 'Configura tus horas disponibles para cada día.',
+          'vet_not_available': 'No disponible',
+          'vet_schedule_label': 'HORARIO',
+          'vet_start': 'INICIO',
+          'vet_end_time': 'FIN',
+          'vet_slot_duration': 'DURACIÓN POR CITA (min)',
+          'vet_save_ok': 'Horario guardado.',
+          'vet_save_error': 'No se pudo guardar el horario. Inténtalo de nuevo.',
         },
       };
 }

@@ -118,18 +118,18 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
             Divider(color: fg.withValues(alpha: 0.15), height: 1),
             const SizedBox(height: 8),
             // Navigation items
-            _drawerNavItem(Icons.calendar_today_outlined, 'AGENDA', 0, fg, bg),
-            _drawerNavItem(Icons.pets_outlined, 'PATIENTS', 1, fg, bg),
+            _drawerNavItem(Icons.calendar_today_outlined, 'vet_agenda'.tr, 0, fg, bg),
+            _drawerNavItem(Icons.pets_outlined, 'vet_patients_tab'.tr, 1, fg, bg),
             _drawerNavItem(
-                Icons.bar_chart_outlined, 'REPORTS & SCHEDULE', 2, fg, bg),
-            _drawerNavItem(Icons.person_outline, 'PROFILE', 3, fg, bg),
+                Icons.bar_chart_outlined, 'vet_reports_schedule'.tr, 2, fg, bg),
+            _drawerNavItem(Icons.person_outline, 'profile'.tr, 3, fg, bg),
             const Spacer(),
             Divider(color: fg.withValues(alpha: 0.15), height: 1),
             // Sign out
             ListTile(
               leading: Icon(Icons.logout,
                   color: fg.withValues(alpha: 0.55), size: 20),
-              title: Text('SIGN OUT',
+              title: Text('vet_sign_out'.tr,
                   style: GoogleFonts.jetBrainsMono(
                       fontSize: 11,
                       letterSpacing: 0.18,
@@ -181,10 +181,10 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _navItem(Icons.calendar_today_outlined, 'AGENDA', 0, fg),
-              _navItem(Icons.pets_outlined, 'PATIENTS', 1, fg),
-              _navItem(Icons.bar_chart_outlined, 'REPORTS', 2, fg),
-              _navItem(Icons.person_outline, 'PROFILE', 3, fg),
+              _navItem(Icons.calendar_today_outlined, 'vet_agenda'.tr, 0, fg),
+              _navItem(Icons.pets_outlined, 'vet_patients_tab'.tr, 1, fg),
+              _navItem(Icons.bar_chart_outlined, 'vet_reports'.tr, 2, fg),
+              _navItem(Icons.person_outline, 'profile'.tr, 3, fg),
             ],
           ),
         ),
@@ -342,10 +342,10 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
                           child: Row(
                             children: [
                               _statCell(ctrl.todayTotal.toString().padLeft(2, '0'),
-                                  'TODAY', fg, false),
+                                  'vet_today'.tr, fg, false),
                               _statCell(
                                   ctrl.completedCount.toString().padLeft(2, '0'),
-                                  'COMPLETED',
+                                  'vet_completed'.tr,
                                   fg,
                                   false),
                               _statCell(
@@ -355,7 +355,7 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
                                   false),
                               _statCell(
                                   ctrl.pendingCount.toString().padLeft(2, '0'),
-                                  'PENDING',
+                                  'vet_pending'.tr,
                                   fg,
                                   true),
                             ],
@@ -455,7 +455,7 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               _kpiItem(
-                                  isToday ? 'TODAY' : DateFormat('d MMM').format(d),
+                                  isToday ? 'vet_today'.tr : DateFormat('d MMM').format(d),
                                   '${dayC.length}',
                                   'appts',
                                   fg),
@@ -479,7 +479,7 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
                         final isToday = d.day == today.day && d.month == today.month;
                         return Text(
                           isToday
-                              ? 'TODAY\'S AGENDA'
+                              ? '${'vet_today'.tr}\'S AGENDA'
                               : '${DateFormat('d MMM yyyy').format(d).toUpperCase()} AGENDA',
                           style: GoogleFonts.jetBrainsMono(
                               fontSize: 10,
@@ -502,7 +502,7 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
                           padding: const EdgeInsets.fromLTRB(22, 0, 22, 100),
                           child: Center(
                             child: Text(
-                              'No consultations for this day.',
+                              'vet_no_consultations'.tr,
                               style: GoogleFonts.spaceGrotesk(
                                   fontSize: 13, color: fg.withValues(alpha: 0.5)),
                             ),
@@ -684,7 +684,7 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
                               shape: const StadiumBorder(),
                               padding: const EdgeInsets.symmetric(vertical: 10),
                             ),
-                            child: Text('NOTES',
+                            child: Text('vet_notes'.tr,
                                 style: GoogleFonts.jetBrainsMono(
                                     fontSize: 10,
                                     letterSpacing: 0.18,
@@ -702,7 +702,7 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 10),
                             ),
-                            child: Text('OPEN RECORD',
+                            child: Text('vet_open_record'.tr,
                                 style: GoogleFonts.jetBrainsMono(
                                     fontSize: 10,
                                     letterSpacing: 0.18,
@@ -723,9 +723,9 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
 
   Widget _statusBadge(String status, bool inProgress, Color fg, Color bg) {
     final label = switch (status) {
-      'completed' => 'COMPLETED',
+      'completed' => 'vet_completed'.tr,
       'in_progress' => 'IN PROGRESS',
-      _ => 'PENDING',
+      _ => 'vet_pending'.tr,
     };
     final filled = status == 'completed';
     final textColor = inProgress ? bg : fg;
@@ -765,7 +765,7 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('PATIENTS',
+                Text('vet_patients_tab'.tr,
                     style: GoogleFonts.jetBrainsMono(
                         fontSize: 10,
                         letterSpacing: 0.18,
@@ -795,7 +795,7 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
               }
               if (patients.isEmpty) {
                 return Center(
-                  child: Text('No patients yet.',
+                  child: Text('vet_no_patients'.tr,
                       style: GoogleFonts.spaceGrotesk(
                           fontSize: 13, color: fg.withValues(alpha: 0.5))),
                 );
@@ -887,13 +887,13 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('REPORTS & SCHEDULE',
+                Text('vet_reports_schedule'.tr,
                     style: GoogleFonts.jetBrainsMono(
                         fontSize: 10,
                         letterSpacing: 0.18,
                         color: fg.withValues(alpha: 0.55))),
                 const SizedBox(height: 8),
-                Text('My practice.',
+                Text('vet_my_practice'.tr,
                     style: GoogleFonts.spaceGrotesk(
                         fontSize: 30,
                         fontWeight: FontWeight.w700,
@@ -918,18 +918,18 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
                       children: [
                         Row(
                           children: [
-                            _reportCard('TOTAL', '$total', 'consultations', fg, bg),
+                            _reportCard('vet_total'.tr, '$total', 'consultations', fg, bg),
                             const SizedBox(width: 12),
-                            _reportCard('COMPLETED', '$completed', 'all time', fg, bg),
+                            _reportCard('vet_completed'.tr, '$completed', 'vet_all_time'.tr, fg, bg),
                           ],
                         ),
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            _reportCard('RATE', '$rate%', 'completion', fg, bg),
+                            _reportCard('vet_rate'.tr, '$rate%', 'vet_completion'.tr, fg, bg),
                             const SizedBox(width: 12),
                             _reportCard(
-                                'PATIENTS', '${ctrl.patients.length}', 'unique', fg, bg),
+                                'vet_patients_tab'.tr, '${ctrl.patients.length}', 'vet_unique'.tr, fg, bg),
                           ],
                         ),
                       ],
@@ -938,13 +938,13 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
                   const SizedBox(height: 32),
 
                   // Schedule management
-                  Text('WEEKLY SCHEDULE',
+                  Text('vet_weekly_schedule'.tr,
                       style: GoogleFonts.jetBrainsMono(
                           fontSize: 10,
                           letterSpacing: 0.18,
                           color: fg.withValues(alpha: 0.55))),
                   const SizedBox(height: 8),
-                  Text('Set your available hours for each day.',
+                  Text('vet_set_hours'.tr,
                       style: GoogleFonts.spaceGrotesk(
                           fontSize: 13, color: fg.withValues(alpha: 0.7))),
                   const SizedBox(height: 16),
@@ -1013,10 +1013,12 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
     final start =
         slot['start_time']?.toString().substring(0, 5) ?? '09:00';
     final end = slot['end_time']?.toString().substring(0, 5) ?? '18:00';
+    final slotMins = slot['slot_duration_minutes'] as int? ?? 30;
     return GestureDetector(
       onTap: () => _showAvailabilityEditor(context, day, dayOfWeek, fg, bg,
           currentStart: isActive ? start : '09:00',
-          currentEnd: isActive ? end : '18:00'),
+          currentEnd: isActive ? end : '18:00',
+          currentSlotMins: slotMins),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 14),
         child: Row(
@@ -1041,11 +1043,21 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: fg.withValues(alpha: 0.2)),
                       ),
-                      child: Text('$start — $end',
-                          style: GoogleFonts.jetBrainsMono(
-                              fontSize: 11, letterSpacing: 0.18, color: fg)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('$start — $end',
+                              style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 11, letterSpacing: 0.18, color: fg)),
+                          Text('${slotMins}min',
+                              style: GoogleFonts.jetBrainsMono(
+                                  fontSize: 9,
+                                  letterSpacing: 0.14,
+                                  color: fg.withValues(alpha: 0.55))),
+                        ],
+                      ),
                     )
-                  : Text('Not available',
+                  : Text('vet_not_available'.tr,
                       style: GoogleFonts.spaceGrotesk(
                           fontSize: 12, color: fg.withValues(alpha: 0.35))),
             ),
@@ -1059,135 +1071,191 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
 
   void _showAvailabilityEditor(
       BuildContext context, String day, int dayOfWeek, Color fg, Color bg,
-      {required String currentStart, required String currentEnd}) {
+      {required String currentStart,
+      required String currentEnd,
+      int currentSlotMins = 30}) {
     final startCtrl = TextEditingController(text: currentStart);
     final endCtrl = TextEditingController(text: currentEnd);
+    const durations = [15, 20, 30, 45, 60];
+    int selectedSlot =
+        durations.contains(currentSlotMins) ? currentSlotMins : 30;
+
     showModalBottomSheet(
       context: context,
       backgroundColor: bg,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => Padding(
-        padding: EdgeInsets.only(
-            left: 24,
-            right: 24,
-            top: 24,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 40),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('$day SCHEDULE',
-                style: GoogleFonts.jetBrainsMono(
-                    fontSize: 12, letterSpacing: 0.18, color: fg)),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('START',
-                          style: GoogleFonts.jetBrainsMono(
-                              fontSize: 9,
-                              letterSpacing: 0.18,
-                              color: fg.withValues(alpha: 0.55))),
-                      TextField(
-                        controller: startCtrl,
-                        style: GoogleFonts.spaceGrotesk(fontSize: 18, color: fg),
-                        decoration: InputDecoration(
-                          hintText: '09:00',
-                          hintStyle: GoogleFonts.spaceGrotesk(
-                              fontSize: 18, color: fg.withValues(alpha: 0.3)),
-                          enabledBorder: UnderlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: fg.withValues(alpha: 0.3))),
-                          focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: fg)),
+      builder: (_) => StatefulBuilder(
+        builder: (ctx, setModalState) => Padding(
+          padding: EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 24,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 40),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('$day ${'vet_schedule_label'.tr}',
+                  style: GoogleFonts.jetBrainsMono(
+                      fontSize: 12, letterSpacing: 0.18, color: fg)),
+              const SizedBox(height: 20),
+              // Start / End time row
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('vet_start'.tr,
+                            style: GoogleFonts.jetBrainsMono(
+                                fontSize: 9,
+                                letterSpacing: 0.18,
+                                color: fg.withValues(alpha: 0.55))),
+                        TextField(
+                          controller: startCtrl,
+                          style: GoogleFonts.spaceGrotesk(
+                              fontSize: 18, color: fg),
+                          decoration: InputDecoration(
+                            hintText: '09:00',
+                            hintStyle: GoogleFonts.spaceGrotesk(
+                                fontSize: 18, color: fg.withValues(alpha: 0.3)),
+                            enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: fg.withValues(alpha: 0.3))),
+                            focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: fg)),
+                          ),
+                          keyboardType: TextInputType.datetime,
                         ),
-                        keyboardType: TextInputType.datetime,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 24),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('END',
-                          style: GoogleFonts.jetBrainsMono(
-                              fontSize: 9,
-                              letterSpacing: 0.18,
-                              color: fg.withValues(alpha: 0.55))),
-                      TextField(
-                        controller: endCtrl,
-                        style: GoogleFonts.spaceGrotesk(fontSize: 18, color: fg),
-                        decoration: InputDecoration(
-                          hintText: '18:00',
-                          hintStyle: GoogleFonts.spaceGrotesk(
-                              fontSize: 18, color: fg.withValues(alpha: 0.3)),
-                          enabledBorder: UnderlineInputBorder(
-                              borderSide:
-                                  BorderSide(color: fg.withValues(alpha: 0.3))),
-                          focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(color: fg)),
+                  const SizedBox(width: 24),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('vet_end_time'.tr,
+                            style: GoogleFonts.jetBrainsMono(
+                                fontSize: 9,
+                                letterSpacing: 0.18,
+                                color: fg.withValues(alpha: 0.55))),
+                        TextField(
+                          controller: endCtrl,
+                          style: GoogleFonts.spaceGrotesk(
+                              fontSize: 18, color: fg),
+                          decoration: InputDecoration(
+                            hintText: '18:00',
+                            hintStyle: GoogleFonts.spaceGrotesk(
+                                fontSize: 18, color: fg.withValues(alpha: 0.3)),
+                            enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: fg.withValues(alpha: 0.3))),
+                            focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: fg)),
+                          ),
+                          keyboardType: TextInputType.datetime,
                         ),
-                        keyboardType: TextInputType.datetime,
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              // Slot duration selector
+              Text('vet_slot_duration'.tr,
+                  style: GoogleFonts.jetBrainsMono(
+                      fontSize: 9,
+                      letterSpacing: 0.18,
+                      color: fg.withValues(alpha: 0.55))),
+              const SizedBox(height: 10),
+              Row(
+                children: durations.map((m) {
+                  final sel = selectedSlot == m;
+                  return GestureDetector(
+                    onTap: () => setModalState(() => selectedSlot = m),
+                    child: Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: sel ? fg : Colors.transparent,
+                        border: Border.all(
+                            color: sel ? fg : fg.withValues(alpha: 0.3)),
+                        borderRadius: BorderRadius.circular(999),
                       ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: fg,
-                      side: BorderSide(color: fg.withValues(alpha: 0.3)),
-                      shape: const StadiumBorder(),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      child: Text('$m',
+                          style: GoogleFonts.spaceGrotesk(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: sel ? bg : fg)),
                     ),
-                    child: Text('CANCEL',
-                        style: GoogleFonts.jetBrainsMono(
-                            fontSize: 11, letterSpacing: 0.18, color: fg)),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      Navigator.pop(context);
-                      await ctrl.saveAvailabilitySlot(
-                        dayOfWeek: dayOfWeek,
-                        startTime: startCtrl.text.trim(),
-                        endTime: endCtrl.text.trim(),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: fg,
-                      foregroundColor: bg,
-                      shape: const StadiumBorder(),
-                      elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 24),
+              // Cancel / Save buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: fg,
+                        side: BorderSide(color: fg.withValues(alpha: 0.3)),
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      child: Text('cancel'.tr,
+                          style: GoogleFonts.jetBrainsMono(
+                              fontSize: 11, letterSpacing: 0.18, color: fg)),
                     ),
-                    child: Text('SAVE',
-                        style: GoogleFonts.jetBrainsMono(
-                            fontSize: 11, letterSpacing: 0.18, color: bg)),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Obx(() => ElevatedButton(
+                          onPressed: ctrl.isSaving.value
+                              ? null
+                              : () async {
+                                  Navigator.pop(ctx);
+                                  await ctrl.saveAvailabilitySlot(
+                                    dayOfWeek: dayOfWeek,
+                                    startTime: startCtrl.text.trim(),
+                                    endTime: endCtrl.text.trim(),
+                                    slotDuration: selectedSlot,
+                                  );
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: fg,
+                            foregroundColor: bg,
+                            shape: const StadiumBorder(),
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          child: ctrl.isSaving.value
+                              ? SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2, color: bg))
+                              : Text('save'.tr,
+                                  style: GoogleFonts.jetBrainsMono(
+                                      fontSize: 11,
+                                      letterSpacing: 0.18,
+                                      color: bg)),
+                        )),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
 
 

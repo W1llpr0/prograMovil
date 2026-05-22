@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show EdgeInsets;
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../components/app_controller.dart';
@@ -16,6 +17,7 @@ class VetDashboardController extends GetxController {
 
   final RxList<Consultation> agenda = <Consultation>[].obs;
   final RxBool isLoading = false.obs;
+  final RxBool isSaving = false.obs;
   final RxString licenseNumber = ''.obs;
   final RxInt yearsExperience = 0.obs;
   final Rx<DateTime> selectedDate = DateTime.now().obs;
@@ -140,21 +142,22 @@ class VetDashboardController extends GetxController {
     }
   }
 
-  Future<void> saveAvailabilitySlot({
+  Future<bool> saveAvailabilitySlot({
     required int dayOfWeek,
     required String startTime,
     required String endTime,
     int slotDuration = 30,
   }) async {
+    isSaving.value = true;
     try {
       final uid = appCtrl.currentUser.value?.id;
-      if (uid == null) return;
+      if (uid == null) return false;
       final vetRow = await _sb
           .from('veterinarians')
           .select('id')
           .eq('user_id', uid)
           .maybeSingle();
-      if (vetRow == null) return;
+      if (vetRow == null) return false;
       final vetId = vetRow['id'];
       await _sb.from('veterinarian_availability').upsert({
         'veterinarian_id': vetId,
@@ -163,10 +166,22 @@ class VetDashboardController extends GetxController {
         'end_time': endTime,
         'slot_duration_minutes': slotDuration,
         'is_active': true,
-      }, onConflict: 'veterinarian_id, day_of_week');
+      }, onConflict: 'veterinarian_id,day_of_week');
       await loadAvailability();
+      Get.snackbar('', 'vet_save_ok'.tr,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 2),
+          margin: const EdgeInsets.all(16));
+      return true;
     } catch (e) {
       debugPrint('saveAvailabilitySlot error: $e');
+      Get.snackbar('', 'vet_save_error'.tr,
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 3),
+          margin: const EdgeInsets.all(16));
+      return false;
+    } finally {
+      isSaving.value = false;
     }
   }
 
