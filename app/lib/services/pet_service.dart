@@ -52,6 +52,15 @@ class PetService {
     }
   }
 
+  Future<GenericResponse<void>> deletePet(int petId) async {
+    try {
+      await _sb.from('pets').delete().eq('id', petId);
+      return const GenericResponse(success: true, message: 'Pet deleted.');
+    } catch (e) {
+      return GenericResponse(success: false, message: 'No se pudo eliminar la mascota.', error: e.toString());
+    }
+  }
+
   Future<GenericResponse<List<Species>>> fetchSpecies() async {
     try {
       final data = await _sb.from('species').select().order('name');

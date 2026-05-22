@@ -12,8 +12,10 @@ class PetProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fg = Theme.of(context).colorScheme.onSurface;
+    final bg = Theme.of(context).colorScheme.surface;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: bg,
       body: SafeArea(
         child: Column(
           children: [
@@ -27,15 +29,40 @@ class PetProfilePage extends StatelessWidget {
                     onTap: () => Get.back(),
                     child: Container(
                       width: 38, height: 38,
-                      decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
-                      child: const Icon(Icons.chevron_left, size: 18, color: Colors.black),
+                      decoration: BoxDecoration(border: Border.all(color: fg), borderRadius: BorderRadius.circular(999)),
+                      child: Icon(Icons.chevron_left, size: 18, color: fg),
                     ),
                   ),
                   const VcWordmark(),
-                  Container(
-                    width: 38, height: 38,
-                    decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
-                    child: const Icon(Icons.more_horiz, size: 18, color: Colors.black),
+                  PopupMenuButton<String>(
+                    icon: Container(
+                      width: 38, height: 38,
+                      decoration: BoxDecoration(border: Border.all(color: fg), borderRadius: BorderRadius.circular(999)),
+                      child: Icon(Icons.more_horiz, size: 18, color: fg),
+                    ),
+                    color: bg,
+                    onSelected: (value) {
+                      if (value == 'photo') ctrl.updatePetPhoto();
+                      if (value == 'delete') _confirmDelete(context);
+                    },
+                    itemBuilder: (ctx) => [
+                      PopupMenuItem(
+                        value: 'photo',
+                        child: Row(children: [
+                          Icon(Icons.photo_camera_outlined, size: 18, color: fg),
+                          const SizedBox(width: 10),
+                          Text('change_photo'.tr, style: GoogleFonts.spaceGrotesk(color: fg)),
+                        ]),
+                      ),
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Row(children: [
+                          const Icon(Icons.delete_outline, size: 18, color: Colors.red),
+                          const SizedBox(width: 10),
+                          Text('delete_pet'.tr, style: GoogleFonts.spaceGrotesk(color: Colors.red)),
+                        ]),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -43,8 +70,8 @@ class PetProfilePage extends StatelessWidget {
 
             Expanded(
               child: RefreshIndicator(
-                color: Colors.black,
-                backgroundColor: Colors.white,
+                color: fg,
+                backgroundColor: bg,
                 onRefresh: ctrl.loadConsultations,
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -59,12 +86,11 @@ class PetProfilePage extends StatelessWidget {
                           height: 260,
                           margin: const EdgeInsets.fromLTRB(22, 16, 22, 0),
                           decoration: BoxDecoration(
-                            color: Colors.black,
+                            color: fg,
                             borderRadius: BorderRadius.circular(24),
                           ),
                           child: Stack(
                             children: [
-                              // Pet image or diagonal stripes bg
                               if (pet.photoUrl != null)
                                 ClipRRect(
                                   borderRadius: BorderRadius.circular(24),
@@ -78,7 +104,6 @@ class PetProfilePage extends StatelessWidget {
                                     painter: _StripePainter(),
                                   ),
                                 ),
-                              // Gradient overlay
                               Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(24),
@@ -90,7 +115,6 @@ class PetProfilePage extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              // Age tag
                               Positioned(
                                 top: 14, left: 16,
                                 child: Container(
@@ -100,7 +124,6 @@ class PetProfilePage extends StatelessWidget {
                                       style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.white)),
                                 ),
                               ),
-                              // Name + species at bottom
                               Positioned(
                                 left: 16, right: 16, bottom: 16,
                                 child: Column(
@@ -123,12 +146,12 @@ class PetProfilePage extends StatelessWidget {
                         // ── Stats row ────────────────────────────
                         Container(
                           margin: const EdgeInsets.fromLTRB(22, 16, 22, 0),
-                          decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(16)),
+                          decoration: BoxDecoration(border: Border.all(color: fg), borderRadius: BorderRadius.circular(16)),
                           child: Row(
                             children: [
-                              _StatCell(value: '${pet.ageYears}Y', label: 'AGE', isLast: false),
-                              _StatCell(value: pet.weightKg != null ? '${pet.weightKg!.toStringAsFixed(1)} KG' : '—', label: 'WEIGHT', isLast: false),
-                              _StatCell(value: pet.isExotic ? 'EXOTIC' : 'DOMESTIC', label: 'TYPE', isLast: true),
+                              _StatCell(value: '${pet.ageYears}Y', label: 'AGE', isLast: false, fg: fg),
+                              _StatCell(value: pet.weightKg != null ? '${pet.weightKg!.toStringAsFixed(1)} KG' : '—', label: 'WEIGHT', isLast: false, fg: fg),
+                              _StatCell(value: pet.isExotic ? 'EXOTIC' : 'DOMESTIC', label: 'TYPE', isLast: true, fg: fg),
                             ],
                           ),
                         ),
@@ -137,22 +160,27 @@ class PetProfilePage extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(22, 22, 22, 8),
                           child: Text('CONSULTATION HISTORY',
-                              style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
+                              style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg)),
                         ),
 
-                        if (ctrl.isLoading.value)
-                          const Padding(
-                            padding: EdgeInsets.all(40),
-                            child: Center(child: CircularProgressIndicator(color: Colors.black, strokeWidth: 1.5)),
-                          )
-                        else if (ctrl.consultations.isEmpty)
-                          Padding(
-                            padding: const EdgeInsets.all(40),
-                            child: Center(child: Text('No consultations yet.',
-                                style: GoogleFonts.spaceGrotesk(fontSize: 13, color: Colors.black.withValues(alpha: 0.45)))),
-                          )
-                        else
-                          ...ctrl.consultations.map((c) => _ConsultationRow(c: c)),
+                        Obx(() {
+                          if (ctrl.isLoading.value) {
+                            return Padding(
+                              padding: const EdgeInsets.all(40),
+                              child: Center(child: CircularProgressIndicator(color: fg, strokeWidth: 1.5)),
+                            );
+                          }
+                          if (ctrl.consultations.isEmpty) {
+                            return Padding(
+                              padding: const EdgeInsets.all(40),
+                              child: Center(child: Text('No consultations yet.',
+                                  style: GoogleFonts.spaceGrotesk(fontSize: 13, color: fg.withValues(alpha: 0.45)))),
+                            );
+                          }
+                          return Column(
+                            children: ctrl.consultations.map((c) => _ConsultationRow(c: c, fg: fg, bg: bg)).toList(),
+                          );
+                        }),
 
                         const SizedBox(height: 40),
                       ],
@@ -166,12 +194,39 @@ class PetProfilePage extends StatelessWidget {
       ),
     );
   }
+
+  void _confirmDelete(BuildContext context) {
+    final fg = Theme.of(context).colorScheme.onSurface;
+    final bg = Theme.of(context).colorScheme.surface;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: bg,
+        title: Text('confirm_delete'.tr, style: GoogleFonts.spaceGrotesk(color: fg, fontWeight: FontWeight.w700)),
+        content: Text('confirm_delete_pet_msg'.tr, style: GoogleFonts.spaceGrotesk(color: fg.withValues(alpha: 0.7))),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('cancel'.tr, style: GoogleFonts.spaceGrotesk(color: fg)),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.back();
+              ctrl.deletePet();
+            },
+            child: Text('delete_pet'.tr, style: GoogleFonts.spaceGrotesk(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _StatCell extends StatelessWidget {
   final String value, label;
   final bool isLast;
-  const _StatCell({required this.value, required this.label, required this.isLast});
+  final Color fg;
+  const _StatCell({required this.value, required this.label, required this.isLast, required this.fg});
 
   @override
   Widget build(BuildContext context) {
@@ -179,16 +234,16 @@ class _StatCell extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          border: Border(right: isLast ? BorderSide.none : const BorderSide(color: Colors.black)),
+          border: Border(right: isLast ? BorderSide.none : BorderSide(color: fg)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(value, style: GoogleFonts.spaceGrotesk(fontSize: 18, fontWeight: FontWeight.w700,
-                letterSpacing: -0.03 * 18, color: Colors.black)),
+                letterSpacing: -0.03 * 18, color: fg)),
             const SizedBox(height: 2),
             Text(label, style: GoogleFonts.jetBrainsMono(fontSize: 8, letterSpacing: 0.16,
-                color: Colors.black.withValues(alpha: 0.55))),
+                color: fg.withValues(alpha: 0.55))),
           ],
         ),
       ),
@@ -198,7 +253,9 @@ class _StatCell extends StatelessWidget {
 
 class _ConsultationRow extends StatelessWidget {
   final Consultation c;
-  const _ConsultationRow({required this.c});
+  final Color fg;
+  final Color bg;
+  const _ConsultationRow({required this.c, required this.fg, required this.bg});
 
   @override
   Widget build(BuildContext context) {
@@ -206,7 +263,7 @@ class _ConsultationRow extends StatelessWidget {
       onTap: () => Get.toNamed('/clinical-history', arguments: c),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
-        decoration: const BoxDecoration(border: Border(top: BorderSide(color: Colors.black))),
+        decoration: BoxDecoration(border: Border(top: BorderSide(color: fg))),
         child: Row(
           children: [
             Column(
@@ -214,24 +271,24 @@ class _ConsultationRow extends StatelessWidget {
               children: [
                 Text(
                   '${c.scheduledAt.day.toString().padLeft(2, '0')} ${_monthName(c.scheduledAt.month)} ${c.scheduledAt.year}',
-                  style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.12, color: Colors.black.withValues(alpha: 0.55)),
+                  style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.12, color: fg.withValues(alpha: 0.55)),
                 ),
                 const SizedBox(height: 4),
                 Text(c.diagnosis ?? c.reason ?? 'Consultation',
-                    style: GoogleFonts.spaceGrotesk(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black)),
+                    style: GoogleFonts.spaceGrotesk(fontSize: 15, fontWeight: FontWeight.w500, color: fg)),
               ],
             ),
             const Spacer(),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
               decoration: BoxDecoration(
-                color: c.status == 'completed' ? Colors.black : Colors.white,
-                border: Border.all(color: Colors.black),
+                color: c.status == 'completed' ? fg : bg,
+                border: Border.all(color: fg),
                 borderRadius: BorderRadius.circular(999),
               ),
               child: Text(c.status.toUpperCase(),
                   style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16,
-                      color: c.status == 'completed' ? Colors.white : Colors.black)),
+                      color: c.status == 'completed' ? bg : fg)),
             ),
           ],
         ),
@@ -245,7 +302,6 @@ class _ConsultationRow extends StatelessWidget {
   }
 }
 
-// Diagonal stripe painter
 class _StripePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
@@ -262,3 +318,5 @@ class _StripePainter extends CustomPainter {
   @override
   bool shouldRepaint(_) => false;
 }
+
+

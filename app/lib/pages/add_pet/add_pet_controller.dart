@@ -6,11 +6,13 @@ import '../../components/app_controller.dart';
 import '../../configs/generic_response.dart';
 import '../../models/pet.dart';
 import '../../models/species.dart';
+import '../../services/breed_api_service.dart';
 import '../../services/pet_service.dart';
 
 class AddPetController extends GetxController {
   final AppController appCtrl = Get.find<AppController>();
   final PetService _petService = PetService();
+  final BreedApiService _breedApiService = BreedApiService();
 
   final nameCtrl = TextEditingController();
   final breedCtrl = TextEditingController();
@@ -62,7 +64,25 @@ class AddPetController extends GetxController {
     breedsList.clear();
     selectedBreed.value = null;
     showCustomBreed.value = false;
-    final res = await _petService.fetchBreedsBySpecies(speciesId);
+
+    final speciesName = selectedSpecies.value?.name ?? '';
+    GenericResponse<List<Breed>> res;
+
+    if (speciesName == 'Perro' || speciesName.toLowerCase() == 'dog') {
+      res = await _breedApiService.fetchDogBreeds(speciesId);
+      // Fall back to DB if API fails
+      if (!res.success || (res.data?.isEmpty ?? true)) {
+        res = await _petService.fetchBreedsBySpecies(speciesId);
+      }
+    } else if (speciesName == 'Gato' || speciesName.toLowerCase() == 'cat') {
+      res = await _breedApiService.fetchCatBreeds(speciesId);
+      if (!res.success || (res.data?.isEmpty ?? true)) {
+        res = await _petService.fetchBreedsBySpecies(speciesId);
+      }
+    } else {
+      res = await _petService.fetchBreedsBySpecies(speciesId);
+    }
+
     if (res.success && res.data != null) {
       breedsList.assignAll(res.data!);
     } else {
@@ -107,7 +127,14 @@ class AddPetController extends GetxController {
 
     // Handle custom breed: create it in DB if typed
     int? breedId = selectedBreed.value?.id;
-    if (showCustomBreed.value && customBreedCtrl.text.trim().isNotEmpty) {
+    // If breed has a negative ID it came from the external API → upsert it in DB
+    if (breedId != null && breedId < 0) {
+      final breedRes = await _petService.createBreed(
+        selectedBreed.value!.name,
+        selectedSpecies.value!.id,
+      );
+      breedId = breedRes.success ? breedRes.data?.id : null;
+    } else if (showCustomBreed.value && customBreedCtrl.text.trim().isNotEmpty) {
       final breedRes = await _petService.createBreed(
         customBreedCtrl.text.trim(),
         selectedSpecies.value!.id,

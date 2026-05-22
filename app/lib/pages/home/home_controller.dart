@@ -5,13 +5,17 @@ import '../../components/app_controller.dart';
 import '../../configs/app_routes.dart';
 import '../../configs/generic_response.dart';
 import '../../models/pet.dart';
+import '../../models/veterinarian.dart';
+import '../../services/consultation_service.dart';
 import '../../services/pet_service.dart';
 
 class HomeController extends GetxController {
   final AppController appCtrl = Get.find<AppController>();
   final PetService _petService = PetService();
+  final ConsultationService _consultationService = ConsultationService();
 
   final RxList<Pet> pets = <Pet>[].obs;
+  final RxList<Veterinarian> vets = <Veterinarian>[].obs;
   final RxBool isLoading = false.obs;
   final RxBool doseDone = false.obs;
   final RxString errorMessage = ''.obs;
@@ -46,6 +50,7 @@ class HomeController extends GetxController {
         loadPets(),
         loadNextDose(),
         loadUpcomingAppointments(),
+        loadVets(),
       ]);
     } catch (e) {
       errorMessage.value = 'Error loading data: $e';
@@ -190,7 +195,9 @@ class HomeController extends GetxController {
     return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
   }
 
-  void goToAddPet() => Get.toNamed(AppRoutes.addPet)?.then((_) => loadPets());
+  void goToAddPet() => Get.toNamed(AppRoutes.addPet)?.then((_) async {
+        await Future.wait([loadPets(), loadNextDose(), loadUpcomingAppointments()]);
+      });
 
   void goToPetProfile(Pet pet) => Get.toNamed(AppRoutes.petProfile, arguments: pet);
 
@@ -199,4 +206,15 @@ class HomeController extends GetxController {
   void goToMedication() => Get.toNamed(AppRoutes.medicationAdherence);
 
   void goToAlerts() => Get.toNamed(AppRoutes.epidemiologicalMap);
+
+  Future<void> loadVets() async {
+    try {
+      final res = await _consultationService.fetchVeterinarians();
+      if (res.success && res.data != null) {
+        vets.assignAll(res.data!);
+      }
+    } catch (e) {
+      debugPrint('❌ Error loading vets: $e');
+    }
+  }
 }

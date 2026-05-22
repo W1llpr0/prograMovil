@@ -108,6 +108,20 @@ class AppTranslations extends Translations {
           'loading_breeds': 'Loading breeds...',
           'write_breed': 'Write breed...',
           'other': 'OTHER',
+          // Pet profile actions
+          'delete_pet': 'Delete pet',
+          'change_photo': 'Change photo',
+          'confirm_delete': 'Confirm delete',
+          'confirm_delete_pet_msg': 'Are you sure you want to delete this pet? This action cannot be undone.',
+          'pet_deleted': 'Pet deleted successfully.',
+          // Appointments tab
+          'no_pets_yet_appt': 'No pets registered',
+          'no_pets_appt_hint': 'Register a pet in the Pets tab to book an appointment.',
+          'no_vets_available': 'No veterinarians available at the moment.',
+          'select_pet_appointment': 'SELECT YOUR PET TO BOOK AN APPOINTMENT',
+          // Medication status
+          'no_active_meds': 'No active medications',
+          'no_pets_meds': 'No pets registered yet',
         },
         'es_ES': {
           // Auth
@@ -213,6 +227,20 @@ class AppTranslations extends Translations {
           'loading_breeds': 'Cargando razas...',
           'write_breed': 'Escribe la raza...',
           'other': 'OTRO',
+          // Pet profile actions
+          'delete_pet': 'Eliminar mascota',
+          'change_photo': 'Cambiar foto',
+          'confirm_delete': 'Confirmar eliminación',
+          'confirm_delete_pet_msg': '¿Estás seguro que deseas eliminar esta mascota? Esta acción no se puede deshacer.',
+          'pet_deleted': 'Mascota eliminada correctamente.',
+          // Appointments tab
+          'no_pets_yet_appt': 'Sin mascotas registradas',
+          'no_pets_appt_hint': 'Registra una mascota en la pestaña Mascotas para agendar una cita.',
+          'no_vets_available': 'No hay veterinarios disponibles en este momento.',
+          'select_pet_appointment': 'SELECCIONA TU MASCOTA PARA AGENDAR UNA CITA',
+          // Medication status
+          'no_active_meds': 'Sin medicamentos activos',
+          'no_pets_meds': 'Sin mascotas registradas aún',
         },
       };
 }
