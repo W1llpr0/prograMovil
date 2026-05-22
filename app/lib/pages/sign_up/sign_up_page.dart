@@ -306,12 +306,13 @@ class _VetFields extends StatelessWidget {
         ),
         LineInput(
           controller: ctrl.lastNameCtrl,
-          label: 'LICENSE NUMBER · CMP',
+          label: 'LAST NAME',
+          textCapitalization: TextCapitalization.words,
         ),
         LineInput(
-          controller: ctrl.phoneCtrl,
-          label: 'SPECIALTY',
-          textCapitalization: TextCapitalization.words,
+          controller: ctrl.documentCtrl,
+          label: 'LICENSE NUMBER · CMP',
+          keyboardType: TextInputType.number,
         ),
       ],
     );

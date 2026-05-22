@@ -87,6 +87,8 @@ class AppTranslations extends Translations {
           // Profile
           'profile_label': 'PROFILE',
           'client_role': 'Client',
+          'vet_role': 'Veterinarian',
+          'license_number': 'LICENSE NUMBER',
           'contact_info': 'CONTACT INFORMATION',
           'full_name': 'FULL NAME',
           'document_id': 'DOCUMENT',
@@ -206,6 +208,8 @@ class AppTranslations extends Translations {
           // Profile
           'profile_label': 'PERFIL',
           'client_role': 'Cliente',
+          'vet_role': 'Veterinario',
+          'license_number': 'NÚMERO DE LICENCIA',
           'contact_info': 'INFORMACIÓN DE CONTACTO',
           'full_name': 'NOMBRE COMPLETO',
           'document_id': 'DOCUMENTO',

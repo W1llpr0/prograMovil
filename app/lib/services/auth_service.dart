@@ -89,7 +89,10 @@ class AuthService {
 
       try {
         if (role == 'veterinarian') {
-          await _sb.from('veterinarians').upsert({'user_id': uid}, onConflict: 'user_id');
+          await _sb.from('veterinarians').upsert({
+            'user_id': uid,
+            if (document != null && document.isNotEmpty) 'license_number': document,
+          }, onConflict: 'user_id');
         } else {
           await _sb.from('clients').upsert({'user_id': uid}, onConflict: 'user_id');
         }
@@ -137,7 +140,7 @@ class AuthService {
   Future<AppUser> _fetchProfile(String uid) async {
     final data = await _sb
         .from('users')
-        .select()
+        .select('*, veterinarians(license_number, years_experience)')
         .eq('id', uid)
         .maybeSingle();
     if (data == null) throw Exception('Profile not found for uid $uid');

@@ -41,7 +41,12 @@ class ProfilePage extends StatelessWidget {
                 child: Obx(() {
                   final u = ctrl.appCtrl.currentUser.value;
                   final firstName = u?.firstName ?? 'User';
-                  final initials = u != null ? '${u.firstName[0]}${u.lastName[0]}'.toUpperCase() : 'MF';
+                  final fn = u?.firstName ?? '';
+                  final ln = u?.lastName ?? '';
+                  final initials = fn.isNotEmpty && ln.isNotEmpty
+                      ? '${fn[0]}${ln[0]}'.toUpperCase()
+                      : fn.isNotEmpty ? fn[0].toUpperCase() : 'U';
+                  final isVet = u?.role == 'veterinarian';
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -93,9 +98,10 @@ class ProfilePage extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('client_role'.tr,
-                                      style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
-                                          color: fg.withValues(alpha: 0.55))),
+                                  Text(
+                                    isVet ? 'vet_role'.tr : 'client_role'.tr,
+                                    style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
+                                        color: fg.withValues(alpha: 0.55))),
                                   const SizedBox(height: 6),
                                   Text('$firstName.',
                                       style: GoogleFonts.spaceGrotesk(fontSize: 30, fontWeight: FontWeight.w700,
@@ -143,19 +149,29 @@ class ProfilePage extends StatelessWidget {
                         value: u?.phone ?? '',
                         onEdit: (val) => ctrl.updateUserField('phone', val),
                       ),
-                      _InfoRow(
-                        label: 'document_id'.tr,
-                        fieldName: 'document',
-                        value: u?.document ?? '',
-                        onEdit: (val) => ctrl.updateUserField('document', val),
-                      ),
-                      _InfoRow(
-                        label: 'address'.tr,
-                        fieldName: 'address',
-                        value: u?.address ?? '',
-                        onEdit: (val) => ctrl.updateUserField('address', val),
-                        isLast: true,
-                      ),
+                      if (isVet) ...[
+                        _InfoRow(
+                          label: 'license_number'.tr,
+                          fieldName: 'document',
+                          value: u?.licenseNumber ?? u?.document ?? '',
+                          onEdit: (val) => ctrl.updateUserField('document', val),
+                          isLast: true,
+                        ),
+                      ] else ...[
+                        _InfoRow(
+                          label: 'document_id'.tr,
+                          fieldName: 'document',
+                          value: u?.document ?? '',
+                          onEdit: (val) => ctrl.updateUserField('document', val),
+                        ),
+                        _InfoRow(
+                          label: 'address'.tr,
+                          fieldName: 'address',
+                          value: u?.address ?? '',
+                          onEdit: (val) => ctrl.updateUserField('address', val),
+                          isLast: true,
+                        ),
+                      ],
 
                       // ── Preferences ───────────────────────────
                       Padding(

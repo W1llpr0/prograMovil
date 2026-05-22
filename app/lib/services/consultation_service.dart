@@ -22,11 +22,19 @@ class ConsultationService {
     }
   }
 
-  Future<GenericResponse<List<Consultation>>> fetchForVet(String vetId) async {
+  Future<GenericResponse<List<Consultation>>> fetchForVet(String userId) async {
     try {
+      // Resolve user UUID → veterinarians.id (int FK used in consultations)
+      final vetRow = await _sb
+          .from('veterinarians')
+          .select('id')
+          .eq('user_id', userId)
+          .maybeSingle();
+      if (vetRow == null) return const GenericResponse(success: true, data: []);
+      final vetId = vetRow['id'];
       final data = await _sb
           .from('consultations')
-          .select('*, pets(name)')
+          .select('*, pets(name, clients(users(first_name, last_name)))')
           .eq('veterinarian_id', vetId)
           .order('scheduled_at', ascending: false);
       final list = (data as List).map((e) => Consultation.fromJson(e)).toList();
