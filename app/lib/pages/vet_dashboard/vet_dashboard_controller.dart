@@ -5,7 +5,9 @@ import '../../components/app_controller.dart';
 import '../../configs/app_routes.dart';
 import '../../configs/generic_response.dart';
 import '../../models/consultation.dart';
+import '../../services/auth_service.dart';
 import '../../services/consultation_service.dart';
+import '../sign_in/sign_in_controller.dart';
 
 class VetDashboardController extends GetxController {
   final AppController appCtrl = Get.find<AppController>();
@@ -170,5 +172,11 @@ class VetDashboardController extends GetxController {
 
   void goToRegister(Consultation c) =>
       Get.toNamed(AppRoutes.registerMedical, arguments: c)?.then((_) => loadAgenda());
+
+  Future<void> signOut() async {
+    await AuthService().signOut();
+    Get.delete<SignInController>(force: true);
+    Get.offAllNamed(AppRoutes.signIn);
+  }
 }
 

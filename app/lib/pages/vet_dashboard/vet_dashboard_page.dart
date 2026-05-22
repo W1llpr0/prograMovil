@@ -17,6 +17,8 @@ class VetDashboardPage extends StatefulWidget {
 class _VetDashboardPageState extends State<VetDashboardPage> {
   int _tab = 0;
   late VetDashboardController ctrl;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _dateScrollCtrl = ScrollController();
 
   @override
   void initState() {
@@ -24,6 +26,22 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
     ctrl = Get.isRegistered<VetDashboardController>()
         ? Get.find<VetDashboardController>()
         : Get.put(VetDashboardController());
+    // Auto-scroll date strip to today after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final today = DateTime.now();
+      final todayIndex = today.day - 1; // 0-based index in month list
+      const itemWidth = 60.0; // 52 chip + 8 margin
+      if (_dateScrollCtrl.hasClients) {
+        _dateScrollCtrl.jumpTo((todayIndex * itemWidth).clamp(
+            0.0, _dateScrollCtrl.position.maxScrollExtent));
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _dateScrollCtrl.dispose();
+    super.dispose();
   }
 
   @override
@@ -31,7 +49,9 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
     final fg = Theme.of(context).colorScheme.onSurface;
     final bg = Theme.of(context).colorScheme.surface;
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: bg,
+      drawer: _buildDrawer(context, fg, bg),
       body: IndexedStack(
         index: _tab,
         children: [
@@ -42,6 +62,111 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
         ],
       ),
       bottomNavigationBar: _buildBottomNav(fg, bg),
+    );
+  }
+
+  // ── Side drawer ───────────────────────────────────────────────────
+  Widget _buildDrawer(BuildContext context, Color fg, Color bg) {
+    return Drawer(
+      backgroundColor: bg,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header – avatar + name + license
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
+              child: Obx(() {
+                final u = ctrl.appCtrl.currentUser.value;
+                final fn = u?.firstName ?? '';
+                final ln = u?.lastName ?? '';
+                final initials = fn.isNotEmpty && ln.isNotEmpty
+                    ? '${fn[0]}${ln[0]}'.toUpperCase()
+                    : 'V';
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 56,
+                      height: 56,
+                      decoration:
+                          BoxDecoration(color: fg, shape: BoxShape.circle),
+                      child: Center(
+                        child: Text(initials,
+                            style: GoogleFonts.spaceGrotesk(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 20,
+                                color: bg)),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+                    Text('Dr. $fn $ln',
+                        style: GoogleFonts.spaceGrotesk(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: fg)),
+                    if (ctrl.licenseNumber.value.isNotEmpty)
+                      Text('CMP-${ctrl.licenseNumber.value}',
+                          style: GoogleFonts.jetBrainsMono(
+                              fontSize: 10,
+                              letterSpacing: 0.18,
+                              color: fg.withValues(alpha: 0.55))),
+                  ],
+                );
+              }),
+            ),
+            Divider(color: fg.withValues(alpha: 0.15), height: 1),
+            const SizedBox(height: 8),
+            // Navigation items
+            _drawerNavItem(Icons.calendar_today_outlined, 'AGENDA', 0, fg, bg),
+            _drawerNavItem(Icons.pets_outlined, 'PATIENTS', 1, fg, bg),
+            _drawerNavItem(
+                Icons.bar_chart_outlined, 'REPORTS & SCHEDULE', 2, fg, bg),
+            _drawerNavItem(Icons.person_outline, 'PROFILE', 3, fg, bg),
+            const Spacer(),
+            Divider(color: fg.withValues(alpha: 0.15), height: 1),
+            // Sign out
+            ListTile(
+              leading: Icon(Icons.logout,
+                  color: fg.withValues(alpha: 0.55), size: 20),
+              title: Text('SIGN OUT',
+                  style: GoogleFonts.jetBrainsMono(
+                      fontSize: 11,
+                      letterSpacing: 0.18,
+                      color: fg.withValues(alpha: 0.55))),
+              onTap: () {
+                Navigator.pop(context);
+                ctrl.signOut();
+              },
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _drawerNavItem(
+      IconData icon, String label, int index, Color fg, Color bg) {
+    final selected = _tab == index;
+    return ListTile(
+      leading: Icon(icon,
+          color: selected ? fg : fg.withValues(alpha: 0.55), size: 20),
+      title: Text(label,
+          style: GoogleFonts.jetBrainsMono(
+              fontSize: 11,
+              letterSpacing: 0.18,
+              color: selected ? fg : fg.withValues(alpha: 0.55),
+              fontWeight:
+                  selected ? FontWeight.w700 : FontWeight.w400)),
+      selected: selected,
+      selectedTileColor: fg.withValues(alpha: 0.06),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      onTap: () {
+        Navigator.pop(context);
+        if (index == 2 && _tab != 2) ctrl.loadAvailability();
+        setState(() => _tab = index);
+      },
     );
   }
 
@@ -108,7 +233,10 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
                   decoration: BoxDecoration(
                       border: Border.all(color: fg),
                       borderRadius: BorderRadius.circular(999)),
-                  child: Icon(Icons.menu, size: 18, color: fg),
+                  child: GestureDetector(
+                    onTap: () => _scaffoldKey.currentState?.openDrawer(),
+                    child: Icon(Icons.menu, size: 18, color: fg),
+                  ),
                 ),
                 const VcWordmark(),
                 Obx(() {
@@ -234,15 +362,19 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
                           ),
                         )),
 
-                    // Date strip (current week)
+                    // Date strip – all days in current month, scrolled to today
                     Obx(() {
                       final today = DateTime.now();
-                      final monday = today.subtract(Duration(days: today.weekday - 1));
-                      final days = List.generate(7, (i) => monday.add(Duration(days: i)));
+                      final firstOfMonth = DateTime(today.year, today.month, 1);
+                      final lastOfMonth = DateTime(today.year, today.month + 1, 0);
+                      final days = List.generate(
+                          lastOfMonth.day,
+                          (i) => firstOfMonth.add(Duration(days: i)));
                       final selectedD = ctrl.selectedDate.value;
                       return SizedBox(
                         height: 88,
                         child: ListView.builder(
+                          controller: _dateScrollCtrl,
                           scrollDirection: Axis.horizontal,
                           padding: const EdgeInsets.fromLTRB(22, 12, 22, 12),
                           itemCount: days.length,

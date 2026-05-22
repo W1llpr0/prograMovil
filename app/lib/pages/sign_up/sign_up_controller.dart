@@ -66,13 +66,17 @@ class SignUpController extends GetxController {
 
   @override
   void onClose() {
-    firstNameCtrl.dispose();
-    lastNameCtrl.dispose();
-    documentCtrl.dispose();
-    emailCtrl.dispose();
-    phoneCtrl.dispose();
-    passwordCtrl.dispose();
-    confirmCtrl.dispose();
+    // Defer disposal so in-flight page-exit animations finish before the
+    // controllers are released (prevents "used after disposed" errors).
+    final controllers = [
+      firstNameCtrl, lastNameCtrl, documentCtrl,
+      emailCtrl, phoneCtrl, passwordCtrl, confirmCtrl,
+    ];
+    Future.microtask(() {
+      for (final c in controllers) {
+        c.dispose();
+      }
+    });
     super.onClose();
   }
 }

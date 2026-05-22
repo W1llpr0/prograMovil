@@ -41,8 +41,12 @@ class SignInController extends GetxController {
 
   @override
   void onClose() {
-    emailCtrl.dispose();
-    passwordCtrl.dispose();
+    final controllers = [emailCtrl, passwordCtrl];
+    Future.microtask(() {
+      for (final c in controllers) {
+        c.dispose();
+      }
+    });
     super.onClose();
   }
 }
