@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../components/line_input.dart';
 import '../../components/monochrome_button.dart';
+import '../../models/species.dart';
 import 'add_pet_controller.dart';
 
 class AddPetPage extends StatelessWidget {
@@ -18,7 +19,6 @@ class AddPetPage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // ── Top nav ─────────────────────────────────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(22, 8, 22, 0),
               child: Row(
@@ -28,16 +28,19 @@ class AddPetPage extends StatelessWidget {
                     onTap: () => Get.back(),
                     child: Container(
                       width: 38, height: 38,
-                      decoration: BoxDecoration(border: Border.all(color: fg), borderRadius: BorderRadius.circular(999)),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: fg),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
                       child: Icon(Icons.chevron_left, size: 18, color: fg),
                     ),
                   ),
-                  Text('NEW PET · 03 / 03', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg)),
+                  Text('new_pet'.tr, style: GoogleFonts.jetBrainsMono(
+                      fontSize: 10, letterSpacing: 0.18, color: fg)),
                   const SizedBox(width: 38),
                 ],
               ),
             ),
-
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(22, 0, 22, 40),
@@ -45,21 +48,30 @@ class AddPetPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-                    Text('ADD PET', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
+                    Text('add_pet_title'.tr, style: GoogleFonts.jetBrainsMono(
+                        fontSize: 10, letterSpacing: 0.18,
                         color: fg.withValues(alpha: 0.55))),
                     const SizedBox(height: 12),
                     RichText(
                       text: TextSpan(children: [
-                        TextSpan(text: 'Tell us\nabout ', style: GoogleFonts.spaceGrotesk(fontSize: 38, fontWeight: FontWeight.w700,
-                            letterSpacing: -0.04 * 38, height: 0.92, color: fg)),
-                        TextSpan(text: 'your pet.', style: GoogleFonts.instrumentSerif(fontSize: 36, fontStyle: FontStyle.italic,
-                            fontWeight: FontWeight.w400, letterSpacing: -0.02 * 36, height: 1.0, color: fg)),
+                        TextSpan(
+                          text: 'tell_about_pet'.tr,
+                          style: GoogleFonts.spaceGrotesk(
+                              fontSize: 38, fontWeight: FontWeight.w700,
+                              letterSpacing: -0.04 * 38, height: 0.92, color: fg),
+                        ),
+                        TextSpan(
+                          text: 'your_pet'.tr,
+                          style: GoogleFonts.instrumentSerif(
+                              fontSize: 36, fontStyle: FontStyle.italic,
+                              fontWeight: FontWeight.w400,
+                              letterSpacing: -0.02 * 36, height: 1.0, color: fg),
+                        ),
                       ]),
                     ),
-
                     const SizedBox(height: 28),
 
-                    // ── Photo upload ─────────────────────────────
+                    // Photo upload
                     GestureDetector(
                       onTap: ctrl.pickPhoto,
                       child: Obx(() => Container(
@@ -78,48 +90,46 @@ class AddPetPage extends StatelessWidget {
                             : Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.add_photo_alternate_outlined, size: 32, color: fg.withValues(alpha: 0.4)),
+                                  Icon(Icons.add_photo_alternate_outlined,
+                                      size: 32, color: fg.withValues(alpha: 0.4)),
                                   const SizedBox(height: 10),
-                                  Text('TAP TO UPLOAD PHOTO', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.22,
-                                      color: fg.withValues(alpha: 0.4))),
+                                  Text('tap_upload_photo'.tr,
+                                      style: GoogleFonts.jetBrainsMono(
+                                          fontSize: 10, letterSpacing: 0.22,
+                                          color: fg.withValues(alpha: 0.4))),
                                 ],
                               ),
                       )),
                     ),
-
                     const SizedBox(height: 24),
 
-                    // Name field
-                    LineInput(label: 'PET NAME', hint: 'e.g. Luna', controller: ctrl.nameCtrl),
+                    // Name
+                    LineInput(label: 'pet_name'.tr, hint: 'e.g. Luna', controller: ctrl.nameCtrl),
                     const SizedBox(height: 22),
 
-                    // Species selector
-                    Text('ESPECIE', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.22,
+                    // Species autocomplete
+                    Text('species'.tr, style: GoogleFonts.jetBrainsMono(
+                        fontSize: 9, letterSpacing: 0.22,
                         color: fg.withValues(alpha: 0.55))),
                     const SizedBox(height: 8),
                     Obx(() {
                       if (ctrl.speciesList.isEmpty) {
-                        return Text('Cargando especies...', style: GoogleFonts.spaceGrotesk(fontSize: 12, color: Colors.grey));
+                        return Text('loading_species'.tr,
+                            style: GoogleFonts.spaceGrotesk(fontSize: 12, color: Colors.grey));
                       }
-                      return Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          for (final species in ctrl.speciesList)
-                            _SelectChip(
-                              label: species.name.toUpperCase(),
-                              selected: ctrl.selectedSpecies.value?.id == species.id,
-                              onTap: () => ctrl.selectedSpecies.value = species,
-                              fg: fg, bg: bg,
-                            ),
-                        ],
+                      return _SearchDropdown<Species>(
+                        hint: 'search_species'.tr,
+                        options: ctrl.speciesList.toList(),
+                        displayString: (s) => s.name,
+                        onSelected: (s) => ctrl.selectedSpecies.value = s,
+                        fg: fg, bg: bg,
                       );
                     }),
-
                     const SizedBox(height: 22),
 
-                    // Sex selector - with Unknown option
-                    Text('SEXO', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.22,
+                    // Sex
+                    Text('sex'.tr, style: GoogleFonts.jetBrainsMono(
+                        fontSize: 9, letterSpacing: 0.22,
                         color: fg.withValues(alpha: 0.55))),
                     const SizedBox(height: 8),
                     Obx(() => Row(
@@ -139,9 +149,12 @@ class AddPetPage extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(999),
                                   ),
                                   child: Center(
-                                    child: Text(s == 'Unknown' ? 'N/A' : s == 'Male' ? 'MACHO' : 'HEMBRA',
-                                        style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16,
-                                            color: ctrl.selectedSex.value == s ? bg : fg)),
+                                    child: Text(
+                                      s == 'Unknown' ? 'N/A' : s == 'Male' ? 'MACHO' : 'HEMBRA',
+                                      style: GoogleFonts.jetBrainsMono(
+                                          fontSize: 9, letterSpacing: 0.16,
+                                          color: ctrl.selectedSex.value == s ? bg : fg),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -149,85 +162,79 @@ class AddPetPage extends StatelessWidget {
                           ),
                       ],
                     )),
-
                     const SizedBox(height: 22),
 
-                    // Breed selector
-                    Text('RAZA', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.22,
+                    // Breed autocomplete
+                    Text('breed'.tr, style: GoogleFonts.jetBrainsMono(
+                        fontSize: 9, letterSpacing: 0.22,
                         color: fg.withValues(alpha: 0.55))),
                     const SizedBox(height: 8),
                     Obx(() {
                       if (ctrl.selectedSpecies.value == null) {
-                        return Text('Selecciona una especie primero', style: GoogleFonts.spaceGrotesk(fontSize: 12, color: Colors.grey));
+                        return Text('select_species_first'.tr,
+                            style: GoogleFonts.spaceGrotesk(fontSize: 12, color: Colors.grey));
                       }
+                      final sid = ctrl.selectedSpecies.value!.id;
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (ctrl.breedsList.isNotEmpty)
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: [
-                                for (final breed in ctrl.breedsList)
-                                  _SelectChip(
-                                    label: breed.name.toUpperCase(),
-                                    selected: ctrl.selectedBreed.value?.id == breed.id && !ctrl.showCustomBreed.value,
-                                    onTap: () {
-                                      ctrl.selectedBreed.value = breed;
-                                      ctrl.showCustomBreed.value = false;
-                                    },
-                                    fg: fg, bg: bg,
-                                  ),
-                                _SelectChip(
-                                  label: 'OTRO',
-                                  selected: ctrl.showCustomBreed.value,
-                                  onTap: () {
-                                    ctrl.showCustomBreed.value = true;
-                                    ctrl.selectedBreed.value = null;
-                                  },
-                                  fg: fg, bg: bg,
-                                ),
-                              ],
-                            )
-                          else
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: [
-                                _SelectChip(
-                                  label: 'OTRO / ESCRIBIR',
-                                  selected: ctrl.showCustomBreed.value,
-                                  onTap: () => ctrl.showCustomBreed.value = true,
-                                  fg: fg, bg: bg,
-                                ),
-                              ],
-                            ),
-                          if (ctrl.showCustomBreed.value) ...
-                            [
-                              const SizedBox(height: 10),
-                              TextField(
-                                controller: ctrl.customBreedCtrl,
-                                decoration: InputDecoration(
-                                  hintText: 'Escribe la raza...',
-                                  hintStyle: GoogleFonts.spaceGrotesk(fontSize: 13, color: Colors.grey),
-                                  border: OutlineInputBorder(borderSide: BorderSide(color: fg)),
-                                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: fg)),
-                                  focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: fg, width: 2)),
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                                ),
-                                style: GoogleFonts.spaceGrotesk(fontSize: 14, color: fg),
+                          _SearchDropdown<Breed>(
+                            key: ValueKey('breeds_$sid'),
+                            hint: 'search_breed'.tr,
+                            options: ctrl.breedsList.toList(),
+                            displayString: (b) => b.name,
+                            onSelected: (b) {
+                              ctrl.selectedBreed.value = b;
+                              ctrl.showCustomBreed.value = false;
+                            },
+                            fg: fg, bg: bg,
+                          ),
+                          const SizedBox(height: 8),
+                          Obx(() => GestureDetector(
+                            onTap: () {
+                              ctrl.showCustomBreed.value = !ctrl.showCustomBreed.value;
+                              if (ctrl.showCustomBreed.value) ctrl.selectedBreed.value = null;
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: ctrl.showCustomBreed.value ? fg : bg,
+                                border: Border.all(color: fg),
+                                borderRadius: BorderRadius.circular(999),
                               ),
-                            ],
+                              child: Text('other'.tr,
+                                  style: GoogleFonts.jetBrainsMono(
+                                      fontSize: 10, letterSpacing: 0.18,
+                                      color: ctrl.showCustomBreed.value ? bg : fg)),
+                            ),
+                          )),
+                          Obx(() => ctrl.showCustomBreed.value
+                              ? Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: TextField(
+                                    controller: ctrl.customBreedCtrl,
+                                    decoration: InputDecoration(
+                                      hintText: 'write_breed'.tr,
+                                      hintStyle: GoogleFonts.spaceGrotesk(fontSize: 13, color: Colors.grey),
+                                      border: OutlineInputBorder(borderSide: BorderSide(color: fg)),
+                                      enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: fg)),
+                                      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: fg, width: 2)),
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                    ),
+                                    style: GoogleFonts.spaceGrotesk(fontSize: 14, color: fg),
+                                  ),
+                                )
+                              : const SizedBox.shrink()),
                         ],
                       );
                     }),
-
                     const SizedBox(height: 22),
-                    
-                    // Date picker instead of text input
-                    Text('FECHA DE NACIMIENTO',
-                        style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.22,
-                            color: fg.withValues(alpha: 0.55))),
+
+                    // Birth date
+                    Text('birth_date'.tr, style: GoogleFonts.jetBrainsMono(
+                        fontSize: 9, letterSpacing: 0.22,
+                        color: fg.withValues(alpha: 0.55))),
                     const SizedBox(height: 8),
                     Obx(() => GestureDetector(
                       onTap: () => ctrl.pickDate(context),
@@ -243,7 +250,7 @@ class AddPetPage extends StatelessWidget {
                               child: Text(
                                 ctrl.birthDate.value != null
                                     ? '${ctrl.birthDate.value!.month}/${ctrl.birthDate.value!.year}'
-                                    : 'Seleccionar fecha',
+                                    : 'select_birth_date'.tr,
                                 style: GoogleFonts.spaceGrotesk(
                                   fontSize: 14,
                                   color: ctrl.birthDate.value != null ? fg : Colors.grey,
@@ -255,42 +262,40 @@ class AddPetPage extends StatelessWidget {
                         ),
                       ),
                     )),
-
                     const SizedBox(height: 22),
 
-                    // Weight - optional
-                      Text('PESO (KG)',
-                          style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.22,
-                              color: fg.withValues(alpha: 0.55))),
-                      const SizedBox(height: 4),
-                      Text('Opcional',
-                        style: GoogleFonts.spaceGrotesk(fontSize: 10, color: Colors.grey)),
+                    // Weight
+                    Text('weight'.tr, style: GoogleFonts.jetBrainsMono(
+                        fontSize: 9, letterSpacing: 0.22,
+                        color: fg.withValues(alpha: 0.55))),
+                    const SizedBox(height: 4),
+                    Text('optional'.tr, style: GoogleFonts.spaceGrotesk(fontSize: 10, color: Colors.grey)),
                     const SizedBox(height: 4),
                     LineInput(label: '', hint: '0.0', controller: ctrl.weightCtrl, keyboardType: TextInputType.number),
                     const SizedBox(height: 22),
-                    
-                    LineInput(label: 'MICROCHIP / ID', hint: 'Optional', controller: ctrl.microchipCtrl),
 
+                    LineInput(label: 'microchip'.tr, hint: 'Optional', controller: ctrl.microchipCtrl),
                     const SizedBox(height: 40),
 
-                      Obx(() => ctrl.message.value.isNotEmpty
-                          ? Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.red.withValues(alpha: 0.1),
-                                  border: Border.all(color: Colors.red),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text(ctrl.message.value,
-                                    style: GoogleFonts.spaceGrotesk(fontSize: 13, color: Colors.red)),
+                    // Error
+                    Obx(() => ctrl.message.value.isNotEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.red.withValues(alpha: 0.1),
+                                border: Border.all(color: Colors.red),
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                            )
-                          : const SizedBox.shrink()),
+                              child: Text(ctrl.message.value,
+                                  style: GoogleFonts.spaceGrotesk(fontSize: 13, color: Colors.red)),
+                            ),
+                          )
+                        : const SizedBox.shrink()),
 
-                      Obx(() => MonochromeButton(
-                        label: ctrl.isLoading.value ? 'REGISTRANDO...' : 'REGISTRAR MASCOTA →',
+                    Obx(() => MonochromeButton(
+                      label: ctrl.isLoading.value ? 'uploading'.tr : 'register_pet_btn'.tr,
                       filled: true,
                       onPressed: ctrl.isLoading.value ? null : ctrl.submit,
                     )),
@@ -305,29 +310,78 @@ class AddPetPage extends StatelessWidget {
   }
 }
 
-class _SelectChip extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
+/// Generic searchable autocomplete dropdown — no extra packages needed.
+class _SearchDropdown<T extends Object> extends StatelessWidget {
+  final String hint;
+  final List<T> options;
+  final String Function(T) displayString;
+  final void Function(T) onSelected;
   final Color fg;
   final Color bg;
-  const _SelectChip({required this.label, required this.selected, required this.onTap, required this.fg, required this.bg});
+
+  const _SearchDropdown({
+    super.key,
+    required this.hint,
+    required this.options,
+    required this.displayString,
+    required this.onSelected,
+    required this.fg,
+    required this.bg,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected ? fg : bg,
-          border: Border.all(color: fg),
-          borderRadius: BorderRadius.circular(999),
+    return Autocomplete<T>(
+      optionsBuilder: (TextEditingValue tv) {
+        if (tv.text.isEmpty) return options;
+        final q = tv.text.toLowerCase();
+        return options.where((o) => displayString(o).toLowerCase().contains(q));
+      },
+      displayStringForOption: displayString,
+      onSelected: onSelected,
+      fieldViewBuilder: (ctx, fieldCtrl, focusNode, onSubmit) => TextField(
+        controller: fieldCtrl,
+        focusNode: focusNode,
+        style: GoogleFonts.spaceGrotesk(fontSize: 14, color: fg),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: GoogleFonts.spaceGrotesk(fontSize: 13, color: Colors.grey),
+          border: OutlineInputBorder(borderSide: BorderSide(color: fg)),
+          enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: fg)),
+          focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: fg, width: 2)),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          suffixIcon: Icon(Icons.search, size: 18, color: fg.withValues(alpha: 0.5)),
         ),
-        child: Text(label,
-            style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
-                color: selected ? bg : fg)),
+      ),
+      optionsViewBuilder: (ctx, onSel, opts) => Align(
+        alignment: Alignment.topLeft,
+        child: Material(
+          elevation: 4,
+          color: bg,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: BorderSide(color: fg.withValues(alpha: 0.15)),
+          ),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 220),
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              itemCount: opts.length,
+              itemBuilder: (ctx, i) {
+                final opt = opts.elementAt(i);
+                return InkWell(
+                  onTap: () => onSel(opt),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    child: Text(displayString(opt),
+                        style: GoogleFonts.spaceGrotesk(fontSize: 14, color: fg)),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
       ),
     );
   }

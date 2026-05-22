@@ -23,7 +23,7 @@ class ProfilePage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('PROFILE', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg)),
+                  Text('profile_label'.tr, style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg)),
                   GestureDetector(
                     onTap: () => Get.toNamed(AppRoutes.settings),
                     child: Container(
@@ -93,7 +93,7 @@ class ProfilePage extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Client',
+                                  Text('client_role'.tr,
                                       style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
                                           color: fg.withValues(alpha: 0.55))),
                                   const SizedBox(height: 6),
@@ -112,11 +112,11 @@ class ProfilePage extends StatelessWidget {
                       // ── Contact info ───────────────────────────
                       Padding(
                         padding: const EdgeInsets.fromLTRB(22, 22, 22, 8),
-                        child: Text('CONTACT INFORMATION',
+                        child: Text('contact_info'.tr,
                             style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg)),
                       ),
                       _InfoRow(
-                        label: 'FULL NAME',
+                        label: 'full_name'.tr,
                         fieldName: 'firstName',
                         value: '${u?.firstName ?? ''} ${u?.lastName ?? ''}',
                         onEdit: (val) {
@@ -132,25 +132,25 @@ class ProfilePage extends StatelessWidget {
                         },
                       ),
                       _InfoRow(
-                        label: 'EMAIL',
+                        label: 'email'.tr,
                         fieldName: 'email',
                         value: u?.email ?? '',
                         onEdit: (val) => Get.snackbar('Info', 'Email cannot be changed here', snackPosition: SnackPosition.BOTTOM),
                       ),
                       _InfoRow(
-                        label: 'PHONE',
+                        label: 'phone'.tr,
                         fieldName: 'phone',
                         value: u?.phone ?? '',
                         onEdit: (val) => ctrl.updateUserField('phone', val),
                       ),
                       _InfoRow(
-                        label: 'DOCUMENT',
+                        label: 'document_id'.tr,
                         fieldName: 'document',
                         value: u?.document ?? '',
                         onEdit: (val) => ctrl.updateUserField('document', val),
                       ),
                       _InfoRow(
-                        label: 'ADDRESS',
+                        label: 'address'.tr,
                         fieldName: 'address',
                         value: u?.address ?? '',
                         onEdit: (val) => ctrl.updateUserField('address', val),
@@ -160,12 +160,12 @@ class ProfilePage extends StatelessWidget {
                       // ── Preferences ───────────────────────────
                       Padding(
                         padding: const EdgeInsets.fromLTRB(22, 22, 22, 8),
-                        child: Text('PREFERENCES',
+                        child: Text('preferences'.tr,
                             style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg)),
                       ),
-                      Obx(() => _ToggleRow(title: 'Push notifications', value: ctrl.pushNotifs.value, onTap: () => ctrl.pushNotifs.toggle())),
-                      Obx(() => _ToggleRow(title: 'Geofence alerts', value: ctrl.geofenceAlerts.value, onTap: () => ctrl.geofenceAlerts.toggle())),
-                      Obx(() => _ToggleRow(title: 'Ledger broadcasts', value: ctrl.ledgerBroadcasts.value, onTap: () => ctrl.ledgerBroadcasts.toggle(), isLast: true)),
+                      Obx(() => _ToggleRow(title: 'push_notifications'.tr, value: ctrl.pushNotifs.value, onTap: () => ctrl.pushNotifs.toggle())),
+                      Obx(() => _ToggleRow(title: 'geofence_alerts'.tr, value: ctrl.geofenceAlerts.value, onTap: () => ctrl.geofenceAlerts.toggle())),
+                      Obx(() => _ToggleRow(title: 'ledger_broadcasts'.tr, value: ctrl.ledgerBroadcasts.value, onTap: () => ctrl.ledgerBroadcasts.toggle(), isLast: true)),
 
                       // ── Sign out ──────────────────────────────
                       Padding(
@@ -174,7 +174,7 @@ class ProfilePage extends StatelessWidget {
                           width: double.infinity,
                           child: OutlinedButton(
                             onPressed: ctrl.signOut,
-                            child: Text('SIGN OUT', style: GoogleFonts.jetBrainsMono(fontSize: 11, letterSpacing: 0.26)),
+                            child: Text('sign_out'.tr, style: GoogleFonts.jetBrainsMono(fontSize: 11, letterSpacing: 0.26)),
                           ),
                         ),
                       ),
@@ -288,7 +288,7 @@ class _InfoRowState extends State<_InfoRow> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
               decoration: BoxDecoration(border: Border.all(color: fg), borderRadius: BorderRadius.circular(999)),
-              child: Text('EDIT', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16, color: fg)),
+              child: Text('edit'.tr, style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16, color: fg)),
             ),
           ),
         ],
