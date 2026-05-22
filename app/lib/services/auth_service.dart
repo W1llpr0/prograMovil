@@ -72,9 +72,8 @@ class AuthService {
       if (uid == null) {
         return const GenericResponse(success: false, message: 'Registration failed.');
       }
-      // The DB trigger handle_new_auth_user inserts the profile rows automatically.
-      // We also insert here as a reliable fallback — all upserts use explicit
-      // onConflict targets so they never throw on duplicates.
+      // Insert/update profile rows. If an email-conflict exists (orphaned row
+      // from a previously deleted auth account), delete it first then retry.
       try {
         await _sb.from('users').upsert({
           'id': uid,
@@ -85,7 +84,21 @@ class AuthService {
           if (document != null && document.isNotEmpty) 'document': document,
           if (phone != null && phone.isNotEmpty) 'phone': phone,
         }, onConflict: 'id');
-      } catch (_) {}
+      } catch (_) {
+        // Orphaned row with the same email but a different id — clean it up.
+        try {
+          await _sb.from('users').delete().eq('email', email.trim()).neq('id', uid);
+          await _sb.from('users').upsert({
+            'id': uid,
+            'email': email.trim(),
+            'first_name': firstName,
+            'last_name': lastName,
+            'role': role,
+            if (document != null && document.isNotEmpty) 'document': document,
+            if (phone != null && phone.isNotEmpty) 'phone': phone,
+          }, onConflict: 'id');
+        } catch (_) {}
+      }
 
       try {
         if (role == 'veterinarian') {

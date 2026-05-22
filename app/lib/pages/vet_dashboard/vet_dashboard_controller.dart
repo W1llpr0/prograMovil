@@ -81,6 +81,7 @@ class VetDashboardController extends GetxController {
     super.onInit();
     _loadVetProfile();
     loadAgenda();
+    loadAvailability();
   }
 
   Future<void> _loadVetProfile() async {
@@ -151,13 +152,27 @@ class VetDashboardController extends GetxController {
     isSaving.value = true;
     try {
       final uid = appCtrl.currentUser.value?.id;
-      if (uid == null) return false;
+      if (uid == null) {
+        debugPrint('saveAvailabilitySlot: uid is null');
+        Get.snackbar('Error', 'No hay sesión activa',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 4),
+            margin: const EdgeInsets.all(16));
+        return false;
+      }
       final vetRow = await _sb
           .from('veterinarians')
           .select('id')
           .eq('user_id', uid)
           .maybeSingle();
-      if (vetRow == null) return false;
+      if (vetRow == null) {
+        debugPrint('saveAvailabilitySlot: no vet row for uid=$uid');
+        Get.snackbar('Error', 'No se encontró perfil de veterinario (uid=$uid)',
+            snackPosition: SnackPosition.BOTTOM,
+            duration: const Duration(seconds: 5),
+            margin: const EdgeInsets.all(16));
+        return false;
+      }
       final vetId = vetRow['id'];
       await _sb.from('veterinarian_availability').upsert({
         'veterinarian_id': vetId,
