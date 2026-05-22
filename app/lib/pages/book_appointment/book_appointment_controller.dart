@@ -6,23 +6,19 @@ import '../../models/consultation.dart';
 import '../../models/pet.dart';
 import '../../models/veterinarian.dart';
 import '../../services/consultation_service.dart';
+import '../../services/pet_service.dart';
 
 class BookAppointmentController extends GetxController {
   final AppController appCtrl = Get.find<AppController>();
   final ConsultationService _consultationService = ConsultationService();
+  final PetService _petService = PetService();
 
   final reasonCtrl = TextEditingController();
   final timeCtrl = TextEditingController();
 
-  // Aliases for page compatibility
-  RxInt get step => currentStep;
-  RxList<Pet> get pets => pet.value != null ? <Pet>[pet.value!].obs : <Pet>[].obs;
-  final RxInt selectedPetId = 0.obs;
-
-  Future<void> submit() => book();
-
-  final Rx<Pet?> pet = Rx<Pet?>(null);
+  final RxList<Pet> clientPets = <Pet>[].obs;
   final RxList<Veterinarian> vets = <Veterinarian>[].obs;
+  final Rx<Pet?> pet = Rx<Pet?>(null);
   final Rx<Veterinarian?> selectedVet = Rx<Veterinarian?>(null);
   final Rx<DateTime?> selectedDate = Rx<DateTime?>(null);
   final Rx<TimeOfDay?> selectedTime = Rx<TimeOfDay?>(null);
@@ -33,13 +29,30 @@ class BookAppointmentController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    pet.value = Get.arguments as Pet?;
     _loadVets();
+    _loadClientPets();
   }
 
   Future<void> _loadVets() async {
     final res = await _consultationService.fetchVeterinarians();
     if (res.success && res.data != null) vets.assignAll(res.data!);
+  }
+
+  Future<void> _loadClientPets() async {
+    final uid = appCtrl.currentUser.value?.id;
+    if (uid == null) return;
+    final res = await _petService.fetchPets(uid);
+    if (res.success && res.data != null) clientPets.assignAll(res.data!);
+  }
+
+  void selectVet(Veterinarian v) {
+    selectedVet.value = v;
+    nextStep();
+  }
+
+  void selectPet(Pet p) {
+    pet.value = p;
+    message.value = '';
   }
 
   Future<void> pickDate(BuildContext context) async {
@@ -64,7 +77,7 @@ class BookAppointmentController extends GetxController {
   }
 
   void nextStep() {
-    if (currentStep.value < 3) currentStep.value++;
+    if (currentStep.value < 2) currentStep.value++;
   }
 
   void prevStep() {

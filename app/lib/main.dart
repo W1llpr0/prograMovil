@@ -17,6 +17,7 @@ import 'pages/home/home_page.dart';
 import 'pages/add_pet/add_pet_page.dart';
 import 'pages/pet_profile/pet_profile_page.dart';
 import 'pages/book_appointment/book_appointment_page.dart';
+import 'pages/book_appointment/book_appointment_controller.dart';
 import 'pages/clinical_history/clinical_history_page.dart';
 import 'pages/medication_adherence/medication_adherence_page.dart';
 import 'pages/epidemiological_map/epidemiological_map_page.dart';
@@ -85,7 +86,16 @@ class VetCareApp extends StatelessWidget {
         GetPage(name: AppRoutes.homeClient, page: () => HomePage()),
         GetPage(name: AppRoutes.addPet, page: () => AddPetPage()),
         GetPage(name: AppRoutes.petProfile, page: () => PetProfilePage()),
-        GetPage(name: AppRoutes.bookAppointment, page: () => BookAppointmentPage()),
+        GetPage(
+          name: AppRoutes.bookAppointment,
+          page: () => const BookAppointmentPage(),
+          binding: BindingsBuilder(
+            () => Get.lazyPut<BookAppointmentController>(
+              () => BookAppointmentController(),
+              fenix: true,
+            ),
+          ),
+        ),
         GetPage(name: AppRoutes.clinicalHistory, page: () => ClinicalHistoryPage()),
         GetPage(name: AppRoutes.medicationAdherence, page: () => MedicationAdherencePage()),
         GetPage(name: AppRoutes.epidemiologicalMap, page: () => EpidemiologicalMapPage()),

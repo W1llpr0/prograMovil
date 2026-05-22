@@ -161,7 +161,7 @@ class HomeController extends GetxController {
           .from('consultations')
           .select(
               '*, pets(name), veterinarians(users(first_name, last_name))')
-          .inFilter('pet_id', petIds as List<int>)
+          .inFilter('pet_id', List<int>.from(petIds))
           .eq('status', 'scheduled')
           .gte('scheduled_at', now.toIso8601String())
           .order('scheduled_at', ascending: true)
@@ -174,7 +174,7 @@ class HomeController extends GetxController {
           'time': _formatTime(scheduled),
           'title': appt['reason'] ?? 'Consultation',
           'petName': appt['pets']['name'] ?? 'Pet',
-          'vetName': 'Dr. ${appt['veterinarians']['users']['last_name'] ?? 'Vet'}',
+          'vetName': 'Dr. ${(appt['veterinarians']?['users'])?['last_name'] ?? 'Vet'}',  
           'status': appt['status'] ?? 'scheduled',
         };
       }).toList();

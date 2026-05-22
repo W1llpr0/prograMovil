@@ -230,79 +230,81 @@ class _HomePageState extends State<HomePage> {
                     color: fg,
                   )),
               const SizedBox(height: 20),
-              if (ctrl.pets.isEmpty) ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 40),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Icon(Icons.pets_outlined, size: 64, color: fg.withValues(alpha: 0.2)),
-                        const SizedBox(height: 16),
-                        Text('no_pets_yet_appt'.tr,
-                            style: GoogleFonts.spaceGrotesk(
-                                fontSize: 16, fontWeight: FontWeight.w600, color: fg.withValues(alpha: 0.6))),
-                        const SizedBox(height: 8),
-                        Text('no_pets_appt_hint'.tr,
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.jetBrainsMono(fontSize: 11, color: fg.withValues(alpha: 0.4))),
-                      ],
-                    ),
+              // Book new appointment button
+              GestureDetector(
+                onTap: () => Get.toNamed(AppRoutes.bookAppointment)
+                    ?.then((_) => ctrl.loadUpcomingAppointments()),
+                child: Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: fg, width: 1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: fg.withValues(alpha: 0.08),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.add, color: fg, size: 22),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('book_new_appt'.tr,
+                                style: GoogleFonts.spaceGrotesk(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.2,
+                                    color: fg)),
+                            const SizedBox(height: 3),
+                            Text('select_vet'.tr,
+                                style: GoogleFonts.jetBrainsMono(
+                                    fontSize: 10,
+                                    letterSpacing: 0.12,
+                                    color: fg.withValues(alpha: 0.55))),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.chevron_right, color: fg, size: 20),
+                    ],
                   ),
                 ),
-              ] else ...[
-                if (ctrl.vets.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 40),
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Icon(Icons.medical_services_outlined, size: 64, color: fg.withValues(alpha: 0.2)),
-                          const SizedBox(height: 16),
-                          Text('no_vets_available'.tr,
-                              style: GoogleFonts.spaceGrotesk(
-                                  fontSize: 16, fontWeight: FontWeight.w600, color: fg.withValues(alpha: 0.6))),
-                        ],
-                      ),
-                    ),
-                  )
-                else ...[
-                  Text('select_pet_appointment'.tr,
-                      style: GoogleFonts.jetBrainsMono(
-                          fontSize: 10, letterSpacing: 0.18, color: fg.withValues(alpha: 0.55))),
-                  const SizedBox(height: 12),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: ctrl.pets.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (ctx, i) {
-                      final pet = ctrl.pets[i];
-                      final birthDate = pet.birthDate ?? DateTime.now();
-                      final ageYears = DateTime.now().year - birthDate.year;
-                      final ageMonths = (DateTime.now().month - birthDate.month).abs();
-                      return GestureDetector(
-                        onTap: () => Get.toNamed(
-                          AppRoutes.bookAppointment,
-                          arguments: pet,
-                        )?.then((_) => ctrl.loadUpcomingAppointments()),
-                        child: PetCard(
-                          name: pet.name,
-                          species: pet.speciesName ?? '',
-                          breed: pet.breedName ?? pet.speciesName ?? '',
-                          sex: pet.sexCode ?? '?',
-                          ageYears: ageYears,
-                          ageMonths: ageMonths > 0 ? ageMonths : 0,
-                          status: 'active',
-                          onTap: () => Get.toNamed(
-                            AppRoutes.bookAppointment,
-                            arguments: pet,
-                          )?.then((_) => ctrl.loadUpcomingAppointments()),
-                        ),
-                      );
-                    },
+              ),
+              const SizedBox(height: 28),
+              Text('upcoming'.tr,
+                  style: GoogleFonts.jetBrainsMono(
+                      fontSize: 10, letterSpacing: 0.18, color: fg.withValues(alpha: 0.55))),
+              const SizedBox(height: 12),
+              if (ctrl.upcomingAppointments.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Center(
+                    child: Text('no_appointments'.tr,
+                        style: GoogleFonts.spaceGrotesk(
+                            fontSize: 13, color: fg.withValues(alpha: 0.5))),
                   ),
-                ],
-              ],
+                )
+              else
+                Column(
+                  children: [
+                    for (int i = 0; i < ctrl.upcomingAppointments.length; i++)
+                      _buildAppointmentRow(
+                        context: context,
+                        date: ctrl.upcomingAppointments[i]['date'],
+                        time: ctrl.upcomingAppointments[i]['time'],
+                        title:
+                            '${ctrl.upcomingAppointments[i]['title']} · ${ctrl.upcomingAppointments[i]['petName']}',
+                        doctor: ctrl.upcomingAppointments[i]['vetName'],
+                        isLast: i == ctrl.upcomingAppointments.length - 1,
+                      ),
+                  ],
+                ),
             ],
           ),
         ),

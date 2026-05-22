@@ -56,11 +56,13 @@ class AppTranslations extends Translations {
           'cancel': 'CANCEL',
           // Consultation
           'book_appointment': 'BOOK APPOINTMENT',
+          'book_new_appt': 'BOOK NEW APPOINTMENT',
           'select_vet': 'SELECT VETERINARIAN',
           'select_date': 'SELECT DATE',
           'select_time': 'SELECT TIME',
           'reason': 'REASON',
           'confirm': 'CONFIRM',
+          'next': 'NEXT',
           // Clinical history
           'clinical_history': 'CLINICAL HISTORY',
           'integrity_verified': 'RECORD INTEGRITY VERIFIED',
@@ -210,11 +212,13 @@ class AppTranslations extends Translations {
           'cancel': 'CANCELAR',
           // Consultation
           'book_appointment': 'AGENDAR CITA',
+          'book_new_appt': 'AGENDAR NUEVA CITA',
           'select_vet': 'SELECCIONAR VETERINARIO',
           'select_date': 'SELECCIONAR FECHA',
           'select_time': 'SELECCIONAR HORA',
           'reason': 'MOTIVO',
           'confirm': 'CONFIRMAR',
+          'next': 'SIGUIENTE',
           // Clinical history
           'clinical_history': 'HISTORIAL CLÍNICO',
           'integrity_verified': 'INTEGRIDAD DEL REGISTRO VERIFICADA',
