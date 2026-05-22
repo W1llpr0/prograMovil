@@ -28,7 +28,10 @@ class SignUpController extends GetxController {
     final password = passwordCtrl.text;
     final confirm = confirmCtrl.text;
 
-    if (firstName.isEmpty || lastName.isEmpty || document.isEmpty || email.isEmpty || password.isEmpty) {
+    final isVet = selectedRole.value == 'veterinarian';
+
+    if (firstName.isEmpty || lastName.isEmpty || email.isEmpty || password.isEmpty ||
+        (!isVet && document.isEmpty)) {
       message.value = 'error_empty_fields'.tr;
       return;
     }
