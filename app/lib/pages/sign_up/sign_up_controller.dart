@@ -4,6 +4,7 @@ import '../../configs/app_routes.dart';
 import '../../configs/generic_response.dart';
 import '../../models/app_user.dart';
 import '../../services/auth_service.dart';
+import '../sign_in/sign_in_controller.dart';
 
 class SignUpController extends GetxController {
   final firstNameCtrl = TextEditingController();
@@ -56,7 +57,8 @@ class SignUpController extends GetxController {
     isLoading.value = false;
 
     if (res.success && res.data != null) {
-      // Email confirmation is disabled in Supabase, so navigate directly to Sign In
+      // Delete stale SignInController so the page gets a fresh instance
+      Get.delete<SignInController>(force: true);
       Get.offAllNamed(AppRoutes.signIn);
     } else {
       message.value = res.message;
