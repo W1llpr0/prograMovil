@@ -34,10 +34,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-        <!-- Google Maps — pega el API key aquí (pídelo al líder del grupo) -->
+        <!-- Google Maps — pega el API key en android/local.properties como: GOOGLE_MAPS_KEY=AIza... -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="PEGAR_API_KEY_AQUI"/>
+            android:value="${googleMapsKey}"/>
     </application>
     <queries>
         <intent>

@@ -1,0 +1,3 @@
+// Copia este archivo como GoogleMapsKey.xcconfig y pega el key real
+// Pide el key al líder del grupo (NO va en el repo)
+GOOGLE_MAPS_KEY = PEGAR_API_KEY_AQUI
