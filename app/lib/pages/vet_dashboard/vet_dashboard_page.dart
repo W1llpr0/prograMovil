@@ -1219,13 +1219,15 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
                           onPressed: ctrl.isSaving.value
                               ? null
                               : () async {
-                                  Navigator.pop(ctx);
-                                  await ctrl.saveAvailabilitySlot(
+                                  final start = startCtrl.text.trim();
+                                  final end = endCtrl.text.trim();
+                                  final ok = await ctrl.saveAvailabilitySlot(
                                     dayOfWeek: dayOfWeek,
-                                    startTime: startCtrl.text.trim(),
-                                    endTime: endCtrl.text.trim(),
+                                    startTime: start,
+                                    endTime: end,
                                     slotDuration: selectedSlot,
                                   );
+                                  if (ok && ctx.mounted) Navigator.pop(ctx);
                                 },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: fg,

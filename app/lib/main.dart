@@ -35,6 +35,9 @@ Future<void> main() async {
   );
 
   runApp(const VetCareApp());
+  // Force GetX locale so translations resolve correctly after hot reload
+  WidgetsBinding.instance.addPostFrameCallback(
+      (_) => Get.updateLocale(const Locale('es', 'ES')));
 }
 
 class VetCareApp extends StatelessWidget {

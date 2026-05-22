@@ -24,3 +24,32 @@ BEGIN
       UNIQUE (veterinarian_id, day_of_week);
   END IF;
 END $$;
+
+-- 4. RLS policies so vets can read/write their own availability rows.
+--    Without these, every INSERT/UPDATE is blocked even for the row owner.
+DO $$ BEGIN
+  CREATE POLICY vets_select_own_availability
+    ON public.veterinarian_availability FOR SELECT
+    USING (veterinarian_id IN (
+      SELECT id FROM public.veterinarians WHERE user_id = auth.uid()
+    ));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE POLICY vets_insert_own_availability
+    ON public.veterinarian_availability FOR INSERT
+    WITH CHECK (veterinarian_id IN (
+      SELECT id FROM public.veterinarians WHERE user_id = auth.uid()
+    ));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$ BEGIN
+  CREATE POLICY vets_update_own_availability
+    ON public.veterinarian_availability FOR UPDATE
+    USING (veterinarian_id IN (
+      SELECT id FROM public.veterinarians WHERE user_id = auth.uid()
+    ))
+    WITH CHECK (veterinarian_id IN (
+      SELECT id FROM public.veterinarians WHERE user_id = auth.uid()
+    ));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
