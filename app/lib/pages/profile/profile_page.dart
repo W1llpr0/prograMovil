@@ -11,8 +11,9 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fg = Theme.of(context).colorScheme.onSurface;
+    final bg = Theme.of(context).colorScheme.surface;
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -22,13 +23,13 @@ class ProfilePage extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('PROFILE', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
+                  Text('PROFILE', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg)),
                   GestureDetector(
                     onTap: () => Get.toNamed(AppRoutes.settings),
                     child: Container(
                       width: 38, height: 38,
-                      decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
-                      child: const Icon(Icons.settings, size: 18, color: Colors.black),
+                      decoration: BoxDecoration(border: Border.all(color: fg), borderRadius: BorderRadius.circular(999)),
+                      child: Icon(Icons.settings, size: 18, color: fg),
                     ),
                   ),
                 ],
@@ -55,9 +56,9 @@ class ProfilePage extends StatelessWidget {
                                 Container(
                                   width: 96, height: 96,
                                   decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.black),
+                                    border: Border.all(color: fg),
                                     borderRadius: BorderRadius.circular(999),
-                                    color: Colors.grey.shade100,
+                                    color: fg.withValues(alpha: 0.06),
                                   ),
                                   child: u?.profilePicture != null && u!.profilePicture!.isNotEmpty
                                       ? ClipRRect(
@@ -67,7 +68,7 @@ class ProfilePage extends StatelessWidget {
                                       : Center(
                                           child: Text(initials,
                                               style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700, fontSize: 38,
-                                                  letterSpacing: -0.04 * 38, color: Colors.black)),
+                                                  letterSpacing: -0.04 * 38, color: fg)),
                                         ),
                                 ),
                                 Positioned(
@@ -77,11 +78,11 @@ class ProfilePage extends StatelessWidget {
                                     child: Container(
                                       width: 26, height: 26,
                                       decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(color: Colors.black),
+                                        color: bg,
+                                        border: Border.all(color: fg),
                                         borderRadius: BorderRadius.circular(999),
                                       ),
-                                      child: const Icon(Icons.add, size: 14, color: Colors.black),
+                                      child: Icon(Icons.add, size: 14, color: fg),
                                     ),
                                   ),
                                 ),
@@ -94,11 +95,11 @@ class ProfilePage extends StatelessWidget {
                                 children: [
                                   Text('Client',
                                       style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
-                                          color: Colors.black.withValues(alpha: 0.55))),
+                                          color: fg.withValues(alpha: 0.55))),
                                   const SizedBox(height: 6),
                                   Text('$firstName.',
                                       style: GoogleFonts.spaceGrotesk(fontSize: 30, fontWeight: FontWeight.w700,
-                                          letterSpacing: -0.04 * 30, color: Colors.black)),
+                                          letterSpacing: -0.04 * 30, color: fg)),
                                 ],
                               ),
                             ),
@@ -112,7 +113,7 @@ class ProfilePage extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(22, 22, 22, 8),
                         child: Text('CONTACT INFORMATION',
-                            style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
+                            style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg)),
                       ),
                       _InfoRow(
                         label: 'FULL NAME',
@@ -160,7 +161,7 @@ class ProfilePage extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.fromLTRB(22, 22, 22, 8),
                         child: Text('PREFERENCES',
-                            style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
+                            style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg)),
                       ),
                       Obx(() => _ToggleRow(title: 'Push notifications', value: ctrl.pushNotifs.value, onTap: () => ctrl.pushNotifs.toggle())),
                       Obx(() => _ToggleRow(title: 'Geofence alerts', value: ctrl.geofenceAlerts.value, onTap: () => ctrl.geofenceAlerts.toggle())),
@@ -224,41 +225,47 @@ class _InfoRowState extends State<_InfoRow> {
   void _showEditDialog() {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Colors.white,
-        title: Text('Edit ${widget.label}', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w600)),
-        content: TextField(
-          controller: _controller,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black)),
-            hintText: 'Add ${widget.label.toLowerCase()}',
+      builder: (ctx) {
+        final fg = Theme.of(ctx).colorScheme.onSurface;
+        final bg = Theme.of(ctx).colorScheme.surface;
+        return AlertDialog(
+          backgroundColor: bg,
+          title: Text('Edit ${widget.label}', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w600, color: fg)),
+          content: TextField(
+            controller: _controller,
+            style: TextStyle(color: fg),
+            decoration: InputDecoration(
+              border: OutlineInputBorder(borderSide: BorderSide(color: fg)),
+              hintText: 'Add ${widget.label.toLowerCase()}',
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text('CANCEL', style: GoogleFonts.jetBrainsMono(fontSize: 10)),
-          ),
-          TextButton(
-            onPressed: () {
-              widget.onEdit(_controller.text);
-              Navigator.pop(ctx);
-            },
-            child: Text('SAVE', style: GoogleFonts.jetBrainsMono(fontSize: 10)),
-          ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text('CANCEL', style: GoogleFonts.jetBrainsMono(fontSize: 10, color: fg)),
+            ),
+            TextButton(
+              onPressed: () {
+                widget.onEdit(_controller.text);
+                Navigator.pop(ctx);
+              },
+              child: Text('SAVE', style: GoogleFonts.jetBrainsMono(fontSize: 10, color: fg)),
+            ),
+          ],
+        );
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final fg = Theme.of(context).colorScheme.onSurface;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
       decoration: BoxDecoration(
         border: Border(
-          top: const BorderSide(color: Colors.black),
-          bottom: widget.isLast ? const BorderSide(color: Colors.black) : BorderSide.none,
+          top: BorderSide(color: fg),
+          bottom: widget.isLast ? BorderSide(color: fg) : BorderSide.none,
         ),
       ),
       child: Row(
@@ -269,10 +276,10 @@ class _InfoRowState extends State<_InfoRow> {
               children: [
                 Text(widget.label,
                     style: GoogleFonts.jetBrainsMono(
-                        fontSize: 9, letterSpacing: 0.16, color: Colors.black.withValues(alpha: 0.55))),
+                        fontSize: 9, letterSpacing: 0.16, color: fg.withValues(alpha: 0.55))),
                 const SizedBox(height: 4),
                 Text(widget.value,
-                    style: GoogleFonts.spaceGrotesk(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black)),
+                    style: GoogleFonts.spaceGrotesk(fontSize: 15, fontWeight: FontWeight.w500, color: fg)),
               ],
             ),
           ),
@@ -280,8 +287,8 @@ class _InfoRowState extends State<_InfoRow> {
             onTap: _showEditDialog,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-              decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
-              child: Text('EDIT', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16, color: Colors.black)),
+              decoration: BoxDecoration(border: Border.all(color: fg), borderRadius: BorderRadius.circular(999)),
+              child: Text('EDIT', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16, color: fg)),
             ),
           ),
         ],
@@ -299,26 +306,28 @@ class _ToggleRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fg = Theme.of(context).colorScheme.onSurface;
+    final bg = Theme.of(context).colorScheme.surface;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
         decoration: BoxDecoration(
           border: Border(
-            top: const BorderSide(color: Colors.black),
-            bottom: isLast ? const BorderSide(color: Colors.black) : BorderSide.none,
+            top: BorderSide(color: fg),
+            bottom: isLast ? BorderSide(color: fg) : BorderSide.none,
           ),
         ),
         child: Row(
           children: [
-            Expanded(child: Text(title, style: GoogleFonts.spaceGrotesk(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black))),
+            Expanded(child: Text(title, style: GoogleFonts.spaceGrotesk(fontSize: 15, fontWeight: FontWeight.w500, color: fg))),
             AnimatedContainer(
               duration: const Duration(milliseconds: 240),
               width: 50, height: 28,
               padding: const EdgeInsets.all(3),
               decoration: BoxDecoration(
-                color: value ? Colors.black : Colors.white,
-                border: Border.all(color: Colors.black),
+                color: value ? fg : bg,
+                border: Border.all(color: fg),
                 borderRadius: BorderRadius.circular(999),
               ),
               child: AnimatedAlign(
@@ -328,7 +337,7 @@ class _ToggleRow extends StatelessWidget {
                 child: Container(
                   width: 20, height: 20,
                   decoration: BoxDecoration(
-                    color: value ? Colors.white : Colors.black,
+                    color: value ? bg : fg,
                     shape: BoxShape.circle,
                   ),
                 ),

@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Sensitive native config files — keep locally, never commit real API keys
+ios/Runner/Info.plist
+android/app/src/main/AndroidManifest.xml

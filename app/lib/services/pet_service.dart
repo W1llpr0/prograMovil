@@ -35,7 +35,7 @@ class PetService {
       final res = await _sb.from('pets').insert(insertData).select().single();
       return GenericResponse(success: true, data: Pet.fromJson(res), message: 'Pet added.');
     } catch (e) {
-      return GenericResponse(success: false, message: 'Could not add pet.', error: e.toString());
+      return GenericResponse(success: false, message: 'No se pudo agregar: ${e.toString()}', error: e.toString());
     }
   }
 
@@ -58,7 +58,7 @@ class PetService {
       final list = (data as List).map((e) => Species.fromJson(e)).toList();
       return GenericResponse(success: true, data: list);
     } catch (e) {
-      return GenericResponse(success: false, message: 'Could not load species.', error: e.toString());
+      return GenericResponse(success: false, message: 'Error cargando especies: ${e.toString()}', error: e.toString());
     }
   }
 
@@ -68,7 +68,7 @@ class PetService {
       final list = (data as List).map((e) => Breed.fromJson(e)).toList();
       return GenericResponse(success: true, data: list);
     } catch (e) {
-      return GenericResponse(success: false, message: 'Could not load breeds.', error: e.toString());
+      return GenericResponse(success: false, message: 'Error cargando razas: ${e.toString()}', error: e.toString());
     }
   }
 

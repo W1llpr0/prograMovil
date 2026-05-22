@@ -1,6 +1,6 @@
 class EpidemiologicalAlert {
   final int? id;
-  final int consultationId;
+  final int? consultationId;
   final String disease;
   final double? latitude;
   final double? longitude;
@@ -10,7 +10,7 @@ class EpidemiologicalAlert {
 
   const EpidemiologicalAlert({
     this.id,
-    required this.consultationId,
+    this.consultationId,
     required this.disease,
     this.latitude,
     this.longitude,
@@ -22,7 +22,7 @@ class EpidemiologicalAlert {
   factory EpidemiologicalAlert.fromJson(Map<String, dynamic> json) =>
       EpidemiologicalAlert(
         id: json['id'] as int?,
-        consultationId: json['consultation_id'] as int,
+        consultationId: json['consultation_id'] as int?,
         disease: json['disease'] as String,
         latitude: (json['latitude'] as num?)?.toDouble(),
         longitude: (json['longitude'] as num?)?.toDouble(),

@@ -52,6 +52,9 @@ class AddPetController extends GetxController {
     final res = await _petService.fetchSpecies();
     if (res.success && res.data != null) {
       speciesList.assignAll(res.data!);
+    } else {
+      message.value = res.message;
+      print('loadSpecies error: ${res.error}');
     }
   }
 
@@ -137,6 +140,7 @@ class AddPetController extends GetxController {
       Get.back(result: true);
     } else {
       message.value = res.message.isNotEmpty ? res.message : 'Error al registrar mascota.';
+      print('addPet error: ${res.error}');
     }
   }
 

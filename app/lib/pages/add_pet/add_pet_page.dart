@@ -66,9 +66,9 @@ class AddPetPage extends StatelessWidget {
                         height: 160,
                         width: double.infinity,
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black, style: ctrl.imageFile.value == null ? BorderStyle.solid : BorderStyle.solid),
+                          border: Border.all(color: fg),
                           borderRadius: BorderRadius.circular(16),
-                          color: Colors.grey.shade50,
+                          color: fg.withValues(alpha: 0.04),
                         ),
                         child: ctrl.imageFile.value != null
                             ? ClipRRect(
