@@ -16,7 +16,7 @@ class SignInPage extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: cs.surface,
       body: Column(
         children: [
           Expanded(
