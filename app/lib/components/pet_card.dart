@@ -25,26 +25,28 @@ class PetCard extends StatelessWidget {
     this.photoUrl,
   });
 
-  Color _getStatusColor() {
+  Color _getStatusColor(Color fallback) {
     switch (status) {
       case 'vaccinating':
         return const Color(0xFFFF9500);
       case 'pending':
         return const Color(0xFFFF3B30);
       default:
-        return Colors.black;
+        return fallback;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final fg = Theme.of(context).colorScheme.onSurface;
+    final bg = Theme.of(context).colorScheme.surface;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.black, width: 1),
+          border: Border.all(color: fg, width: 1),
           borderRadius: BorderRadius.circular(12),
-          color: Colors.white,
+          color: bg,
         ),
         child: Stack(
           children: [
@@ -58,9 +60,9 @@ class PetCard extends StatelessWidget {
                     width: 60,
                     height: 60,
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black, width: 1),
+                      border: Border.all(color: fg, width: 1),
                       borderRadius: BorderRadius.circular(8),
-                      color: Colors.grey.withValues(alpha: 0.1),
+                      color: fg.withValues(alpha: 0.08),
                     ),
                     child: photoUrl != null
                         ? ClipRRect(
@@ -88,7 +90,7 @@ class PetCard extends StatelessWidget {
                           '$breed · $sex',
                           style: GoogleFonts.jetBrainsMono(
                             fontSize: 9,
-                            color: Colors.black.withValues(alpha: 0.55),
+                            color: fg.withValues(alpha: 0.55),
                             letterSpacing: 0.08,
                           ),
                         ),
@@ -96,7 +98,7 @@ class PetCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black, width: 0.5),
+                            border: Border.all(color: fg, width: 0.5),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
@@ -127,14 +129,14 @@ class PetCard extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Colors.black,
+                  color: fg,
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
                   ageYears > 0 ? '$ageYears' : '${ageMonths}m',
                   style: GoogleFonts.jetBrainsMono(
                     fontSize: 8,
-                    color: Colors.white,
+                    color: bg,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 0.1,
                   ),
@@ -150,18 +152,18 @@ class PetCard extends StatelessWidget {
                 width: 12,
                 height: 12,
                 decoration: BoxDecoration(
-                  color: _getStatusColor(),
+                  color: _getStatusColor(fg),
                   borderRadius: BorderRadius.circular(6),
                   boxShadow: [
                     BoxShadow(
-                      color: _getStatusColor().withValues(alpha: 0.5),
+                      color: _getStatusColor(fg).withValues(alpha: 0.5),
                       blurRadius: 4,
                       spreadRadius: 1,
                     ),
                   ],
                 ),
                 child: status != 'active'
-                    ? _buildPulseAnimation()
+                    ? _buildPulseAnimation(fg)
                     : null,
               ),
             ),
@@ -171,7 +173,7 @@ class PetCard extends StatelessWidget {
     );
   }
 
-  Widget _buildPulseAnimation() {
+  Widget _buildPulseAnimation(Color color) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0, end: 1),
       duration: const Duration(seconds: 2),
@@ -183,7 +185,7 @@ class PetCard extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: _getStatusColor(),
+                  color: color,
                   width: 0.5,
                 ),
                 borderRadius: BorderRadius.circular(6),

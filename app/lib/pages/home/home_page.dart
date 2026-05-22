@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                           Text('${'next_dose'.tr} · ${ctrl.nextDoseTime.value}', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18)),
                           const SizedBox(height: 10),
                           Text(
@@ -110,7 +110,8 @@ class _HomePageState extends State<HomePage> {
                             style: GoogleFonts.spaceGrotesk(fontSize: 22, fontWeight: FontWeight.w600)),
                           const SizedBox(height: 6),
                           Text(ctrl.nextDoseDetails.value, style: GoogleFonts.spaceGrotesk(fontSize: 12, color: fg.withValues(alpha: 0.6))),
-                        ]),
+                        ])),
+                        const SizedBox(width: 12),
                         Container(width: 44, height: 44, decoration: BoxDecoration(border: Border.all(color: fg, width: 1), borderRadius: BorderRadius.circular(999)), child: Icon(Icons.medication_outlined, size: 20, color: fg)),
                       ]),
                       if (!medEmpty) ...[

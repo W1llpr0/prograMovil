@@ -7,6 +7,7 @@ import '../../components/app_controller.dart';
 import '../../configs/app_routes.dart';
 import '../../models/app_user.dart';
 import '../../services/auth_service.dart';
+import '../sign_in/sign_in_controller.dart';
 
 class ProfileController extends GetxController {
   final AppController appCtrl = Get.find<AppController>();
@@ -144,6 +145,8 @@ class ProfileController extends GetxController {
   Future<void> signOut() async {
     await _authService.signOut();
     appCtrl.setUser(null);
+    // Delete stale controller so SignInPage always gets a fresh instance
+    Get.delete<SignInController>(force: true);
     Get.offAllNamed(AppRoutes.signIn);
   }
 
