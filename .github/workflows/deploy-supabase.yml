@@ -3,46 +3,29 @@ name: Deploy to Supabase
 on:
   push:
     branches: [main, develop]
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-      
+        uses: actions/checkout@v4
+
       - name: Install Supabase CLI
         uses: supabase/setup-cli@v1
         with:
           version: latest
 
-      - name: Verify Supabase project
-        run: supabase projects list
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      
       - name: Apply migrations
-        run: |
-          # Get all SQL files from migrations directory
-          for migration in supabase/migrations/*.sql; do
-            echo "Applying: $migration"
-            # Execute migration via Supabase CLI
-            supabase migration up --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
-          done
+        run: supabase db push --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
-      
-      - name: Verify schema
-        run: |
-          echo "Migration completed successfully!"
-          echo "Verify in Supabase Dashboard → Database → Tables"
-      
+
       - name: Notify on failure
         if: failure()
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const issue_number = context.issue?.number || context.payload?.pull_request?.number;
