@@ -48,9 +48,14 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: '❌ Supabase migration failed! Check GitHub Actions logs.'
-            })
+            const issue_number = context.issue?.number || context.payload?.pull_request?.number;
+            if (issue_number) {
+              await github.rest.issues.createComment({
+                issue_number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '❌ Supabase migration failed! Check GitHub Actions logs.'
+              });
+            } else {
+              core.warning('❌ Supabase migration failed! No PR/issue to comment on — check Actions logs.');
+            }
