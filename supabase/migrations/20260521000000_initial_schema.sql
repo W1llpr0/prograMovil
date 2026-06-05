@@ -1,9 +1,13 @@
 -- Migration: 20260521000000_initial_schema
 -- Description: Initial VetCare database schema with users, pets, species, breeds, and alerts
 
--- 1. Add missing 'document' column to users table
+-- 1. Add missing 'document' column to users table (only if table exists)
 ALTER TABLE IF EXISTS users ADD COLUMN IF NOT EXISTS document text;
-CREATE INDEX IF NOT EXISTS idx_users_document ON users(document);
+DO $$ BEGIN
+  IF EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'users') THEN
+    CREATE INDEX IF NOT EXISTS idx_users_document ON users(document);
+  END IF;
+END $$;
 
 -- 2. Create species table if it doesn't exist
 CREATE TABLE IF NOT EXISTS public.species (
