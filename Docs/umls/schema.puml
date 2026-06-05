@@ -12,22 +12,23 @@ entity "sexes" {
 }
 
 entity "users" {
-  * id : int
+  * id : uuid <<PK>>
   --
   * sex_id : int <<FK>>
   * role : varchar
   * email : varchar
-  * password : varchar
   * first_name : varchar
   * last_name : varchar
   phone : varchar
   photo_url : varchar
+  latitude : decimal
+  longitude : decimal
 }
 
 entity "clients" {
   * id : int
   --
-  * user_id : int <<FK>>
+  * user_id : uuid <<FK>>
   address : text
   * identity_document : varchar
 }
@@ -35,7 +36,7 @@ entity "clients" {
 entity "veterinarians" {
   * id : int
   --
-  * user_id : int <<FK>>
+  * user_id : uuid <<FK>>
   * license_number : varchar
   years_experience : int
   default_appointment_duration_minutes : int
@@ -45,6 +46,7 @@ entity "species" {
   * id : int
   --
   * name : varchar
+  is_exotic : boolean
 }
 
 entity "breeds" {
@@ -86,7 +88,9 @@ entity "consultations" {
   * consultation_time : time
   * reason : text
   diagnosis : text
+  is_contagious : boolean
   prescribed_treatment : text
+  integrity_hash : varchar
   rating : int
   review_comment : text
   review_datetime : datetime
@@ -116,6 +120,66 @@ entity "consultation_specialties" {
   * specialty_id : int <<FK>>
 }
 
+' --- NUEVAS TABLAS ---
+
+entity "medication_schedules" {
+  * id : int
+  --
+  * consultation_id : int <<FK>>
+  * medication_name : varchar
+  * dose : varchar
+  * frequency_hours : int
+  * start_datetime : datetime
+  * end_datetime : datetime
+  created_by_trigger : boolean
+}
+
+entity "treatment_adherence" {
+  * id : int
+  --
+  * medication_schedule_id : int <<FK>>
+  * client_id : int <<FK>>
+  * scheduled_datetime : datetime
+  confirmed_at : datetime
+  status : varchar
+}
+
+entity "epidemiological_alerts" {
+  * id : int
+  --
+  * consultation_id : int <<FK>>
+  * disease_name : varchar
+  * origin_latitude : decimal
+  * origin_longitude : decimal
+  * radius_km : decimal
+  * active : boolean
+  * created_at : datetime
+  resolved_at : datetime
+}
+
+entity "morphological_records" {
+  * id : int
+  --
+  * pet_id : int <<FK>>
+  * photo_url : varchar
+  * recorded_at : date
+  weight_grams : decimal
+  length_cm : decimal
+  notes : text
+}
+
+entity "legal_documents" {
+  * id : int
+  --
+  * pet_id : int <<FK>>
+  * document_type : varchar
+  * file_url : varchar
+  * issued_by : varchar
+  * issued_date : date
+  cites_appendix : varchar
+  notes : text
+}
+
 ' Relaciones de Autenticación y Perfil Único
 sexes ||--o{ users
 sexes ||--o{ pets
@@ -134,5 +198,13 @@ veterinarians ||--o{ veterinarian_availability
 consultations ||--o{ consultation_documents
 consultations ||--o{ consultation_specialties
 specialties ||--o{ consultation_specialties
+
+' Nuevas relaciones
+consultations ||--o{ medication_schedules
+medication_schedules ||--o{ treatment_adherence
+clients ||--o{ treatment_adherence
+consultations ||--o| epidemiological_alerts
+pets ||--o{ morphological_records
+pets ||--o{ legal_documents
 
 @enduml

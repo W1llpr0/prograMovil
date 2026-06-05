@@ -1,0 +1,52 @@
+name: vetcare_app
+description: "VetCare — Veterinary management app for pets."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.4.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State management + DI (professor's pattern)
+  get: ^4.6.6
+
+  # BaaS
+  supabase_flutter: ^2.5.6
+
+  # Maps
+  google_maps_flutter: ^2.10.0
+
+  # SHA-256 for consultation integrity hash
+  crypto: ^3.0.3
+
+  # Media picking
+  image_picker: ^1.1.2
+  file_picker: ^8.0.7
+
+  # Fonts
+  google_fonts: ^6.2.1
+
+  # Animations
+  flutter_animate: ^4.5.0
+
+  # HTTP for external APIs (TheDogAPI, TheCatAPI)
+  http: ^1.2.2
+
+  # Utilities
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/

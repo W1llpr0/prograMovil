@@ -1,0 +1,56 @@
+name: Deploy to Supabase
+
+on:
+  push:
+    branches: [main, develop]
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install Supabase CLI
+        run: npm install -g @supabase/cli
+      
+      - name: Verify Supabase project
+        run: supabase projects list
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      
+      - name: Apply migrations
+        run: |
+          # Get all SQL files from migrations directory
+          for migration in supabase/migrations/*.sql; do
+            echo "Applying: $migration"
+            # Execute migration via Supabase CLI
+            supabase migration up --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
+          done
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+      
+      - name: Verify schema
+        run: |
+          echo "Migration completed successfully!"
+          echo "Verify in Supabase Dashboard → Database → Tables"
+      
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ Supabase migration failed! Check GitHub Actions logs.'
+            })
