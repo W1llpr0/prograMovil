@@ -4,12 +4,11 @@ class Pet {
   final String name;
   final int speciesId;
   final int? breedId;
-  final String? sexCode; // 'M' | 'F'
+  final int? sexId;
   final DateTime? birthDate;
   final double? weightKg;
   final String? microchip;
   final String? photoUrl;
-  final bool isExotic;
   // joined
   final String? speciesName;
   final String? breedName;
@@ -20,12 +19,11 @@ class Pet {
     required this.name,
     required this.speciesId,
     this.breedId,
-    this.sexCode,
+    this.sexId,
     this.birthDate,
     this.weightKg,
     this.microchip,
     this.photoUrl,
-    this.isExotic = false,
     this.speciesName,
     this.breedName,
   });
@@ -47,14 +45,13 @@ class Pet {
         name: json['name'] as String,
         speciesId: json['species_id'] as int,
         breedId: json['breed_id'] as int?,
-        sexCode: json['sex_code'] as String?,
+        sexId: json['sex_id'] as int,
         birthDate: json['birth_date'] != null
             ? DateTime.parse(json['birth_date'] as String)
             : null,
         weightKg: (json['weight_kg'] as num?)?.toDouble(),
         microchip: json['microchip'] as String?,
         photoUrl: json['photo_url'] as String?,
-        isExotic: json['is_exotic'] as bool? ?? false,
         speciesName: json['species']?['name'] as String?,
         breedName: json['breeds']?['name'] as String?,
       );
@@ -64,11 +61,10 @@ class Pet {
         'name': name,
         'species_id': speciesId,
         if (breedId != null) 'breed_id': breedId,
-        if (sexCode != null) 'sex_code': sexCode,
+        if (sexId != null) 'sex_id': sexId,
         if (birthDate != null) 'birth_date': birthDate!.toIso8601String().split('T').first,
         if (weightKg != null) 'weight_kg': weightKg,
         if (microchip != null) 'microchip': microchip,
         if (photoUrl != null) 'photo_url': photoUrl,
-        'is_exotic': isExotic,
       };
 }

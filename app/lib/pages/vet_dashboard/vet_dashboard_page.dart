@@ -8,7 +8,7 @@ import '../profile/profile_page.dart';
 import 'vet_dashboard_controller.dart';
 
 class VetDashboardPage extends StatefulWidget {
-  VetDashboardPage({super.key});
+  const VetDashboardPage({super.key});
 
   @override
   State<VetDashboardPage> createState() => _VetDashboardPageState();

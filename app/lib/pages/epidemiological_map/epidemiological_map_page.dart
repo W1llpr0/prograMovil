@@ -80,8 +80,8 @@ class EpidemiologicalMapPage extends StatelessWidget {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Obx(() => GoogleMap(
-                              initialCameraPosition: CameraPosition(
-                                target: const LatLng(-12.0464, -77.0428), // Lima, Peru
+                              initialCameraPosition: const CameraPosition(
+                                target: LatLng(-12.0464, -77.0428), // Lima, Peru
                                 zoom: 12,
                               ),
                               onMapCreated: ctrl.onMapCreated,

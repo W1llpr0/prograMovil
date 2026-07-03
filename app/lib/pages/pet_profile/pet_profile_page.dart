@@ -133,7 +133,7 @@ class PetProfilePage extends StatelessWidget {
                                         style: GoogleFonts.spaceGrotesk(fontSize: 28, fontWeight: FontWeight.w700,
                                             letterSpacing: -0.04 * 28, color: Colors.white)),
                                     const SizedBox(height: 4),
-                                    Text('${pet.speciesName ?? ''} · ${pet.sexCode ?? '?'}',
+                                    Text('${pet.speciesName ?? ''} · ${pet.sexId ?? '?'}',
                                         style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.1,
                                             color: Colors.white.withValues(alpha: 0.7))),
                                   ],
@@ -151,7 +151,7 @@ class PetProfilePage extends StatelessWidget {
                             children: [
                               _StatCell(value: '${pet.ageYears}Y', label: 'AGE', isLast: false, fg: fg),
                               _StatCell(value: pet.weightKg != null ? '${pet.weightKg!.toStringAsFixed(1)} KG' : '—', label: 'WEIGHT', isLast: false, fg: fg),
-                              _StatCell(value: pet.isExotic ? 'EXOTIC' : 'DOMESTIC', label: 'TYPE', isLast: true, fg: fg),
+                              _StatCell(value: pet.breedName ?? '—', label: 'BREED', isLast: true, fg: fg),
                             ],
                           ),
                         ),
@@ -239,8 +239,16 @@ class _StatCell extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(value, style: GoogleFonts.spaceGrotesk(fontSize: 18, fontWeight: FontWeight.w700,
-                letterSpacing: -0.03 * 18, color: fg)),
+            Text(
+              value,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.spaceGrotesk(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.03 * 16,
+                color: fg,
+              ),
+            ),
             const SizedBox(height: 2),
             Text(label, style: GoogleFonts.jetBrainsMono(fontSize: 8, letterSpacing: 0.16,
                 color: fg.withValues(alpha: 0.55))),
@@ -318,5 +326,3 @@ class _StripePainter extends CustomPainter {
   @override
   bool shouldRepaint(_) => false;
 }
-
-

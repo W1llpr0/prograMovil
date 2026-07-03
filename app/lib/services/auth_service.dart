@@ -57,6 +57,7 @@ class AuthService {
     String role = 'client',
   }) async {
     try {
+      // 1. Solo registramos la autenticación y enviamos la metadata
       final res = await _sb.auth.signUp(
         email: email.trim(),
         password: password,
@@ -68,65 +69,29 @@ class AuthService {
           if (phone != null && phone.isNotEmpty) 'phone': phone,
         },
       );
+
       final uid = res.user?.id;
       if (uid == null) {
         return const GenericResponse(success: false, message: 'Registration failed.');
       }
-      // Insert/update profile rows. If an email-conflict exists (orphaned row
-      // from a previously deleted auth account), delete it first then retry.
-      try {
-        await _sb.from('users').upsert({
-          'id': uid,
-          'email': email.trim(),
-          'first_name': firstName,
-          'last_name': lastName,
-          'role': role,
-          if (document != null && document.isNotEmpty) 'document': document,
-          if (phone != null && phone.isNotEmpty) 'phone': phone,
-        }, onConflict: 'id');
-      } catch (_) {
-        // Orphaned row with the same email but a different id — clean it up.
-        try {
-          await _sb.from('users').delete().eq('email', email.trim()).neq('id', uid);
-          await _sb.from('users').upsert({
-            'id': uid,
-            'email': email.trim(),
-            'first_name': firstName,
-            'last_name': lastName,
-            'role': role,
-            if (document != null && document.isNotEmpty) 'document': document,
-            if (phone != null && phone.isNotEmpty) 'phone': phone,
-          }, onConflict: 'id');
-        } catch (_) {}
-      }
 
-      try {
-        if (role == 'veterinarian') {
-          await _sb.from('veterinarians').upsert({
-            'user_id': uid,
-            if (document != null && document.isNotEmpty) 'license_number': document,
-          }, onConflict: 'user_id');
-        } else {
-          await _sb.from('clients').upsert({'user_id': uid}, onConflict: 'user_id');
-        }
-      } catch (_) {}
+      // 2. ¡NO HACEMOS UPSERT MANUAL AQUÍ!
+      // Confiamos en que el Trigger SQL de tu base de datos tomó la metadata
+      // de arriba y ya insertó al usuario en tus tablas de forma segura.
 
-      // Fetch profile; fall back to constructing AppUser from signup data if the
-      // row is not yet visible (trigger timing, RLS, etc.).
-      AppUser profile;
-      try {
-        profile = await _fetchProfile(uid);
-      } catch (_) {
-        profile = AppUser(
-          id: uid,
-          email: email.trim(),
-          firstName: firstName,
-          lastName: lastName,
-          phone: (phone != null && phone.isNotEmpty) ? phone : null,
-          role: role,
-        );
-      }
+      // 3. Devolvemos el perfil temporal para que la UI sepa que tuvo éxito.
+      // Cuando el usuario inicie sesión (signIn), el sistema traerá los datos reales.
+      final profile = AppUser(
+        id: uid,
+        email: email.trim(),
+        firstName: firstName,
+        lastName: lastName,
+        phone: (phone != null && phone.isNotEmpty) ? phone : null,
+        role: role,
+      );
+
       return GenericResponse(success: true, data: profile, message: 'Account created.');
+
     } on AuthException catch (e) {
       return GenericResponse(success: false, message: e.message, error: e.toString());
     } catch (e) {

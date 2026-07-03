@@ -168,6 +168,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildPetsListTab(BuildContext context) {
+    String sexCode='?';
     final fg = Theme.of(context).colorScheme.onSurface;
     final bg = Theme.of(context).colorScheme.surface;
     return SingleChildScrollView(
@@ -192,11 +193,16 @@ class _HomePageState extends State<HomePage> {
                 final birthDate = pet.birthDate ?? DateTime.now();
                 final ageYears = DateTime.now().year - birthDate.year;
                 final ageMonths = (DateTime.now().month - birthDate.month).abs();
+                if (pet.sexId==1){
+                sexCode='M';   
+                }else{
+                sexCode='F';  
+                }
                 return PetCard(
                   name: pet.name ?? 'Unknown',
                   species: pet.speciesName ?? 'Unknown',
                   breed: (pet.breedName ?? pet.speciesName ?? 'Unknown'),
-                  sex: pet.sexCode ?? '?',
+                  sex: sexCode,
                   ageYears: ageYears,
                   ageMonths: ageMonths > 0 ? ageMonths : 0,
                   status: 'active',

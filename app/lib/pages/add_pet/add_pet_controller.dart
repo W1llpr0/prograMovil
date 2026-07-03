@@ -27,7 +27,6 @@ class AddPetController extends GetxController {
   final Rx<Breed?> selectedBreed = Rx<Breed?>(null);
   final RxString selectedSex = ''.obs;
   final Rx<DateTime?> birthDate = Rx<DateTime?>(null);
-  final RxBool isExotic = false.obs;
   final Rx<File?> photoFile = Rx<File?>(null);
   final RxBool showCustomBreed = false.obs;
   final customBreedCtrl = TextEditingController();
@@ -149,15 +148,14 @@ class AddPetController extends GetxController {
       name: nameCtrl.text.trim(),
       speciesId: selectedSpecies.value!.id,
       breedId: breedId,
-      sexCode: selectedSex.value == 'Male'
-          ? 'M'
+      sexId: selectedSex.value == 'Male'
+          ? 1
           : selectedSex.value == 'Female'
-              ? 'F'
+              ? 2
               : null,
       birthDate: birthDate.value,
       weightKg: double.tryParse(weightCtrl.text),
       microchip: microchipCtrl.text.trim().isEmpty ? null : microchipCtrl.text.trim(),
-      isExotic: isExotic.value || (selectedSpecies.value?.isExotic ?? false),
     );
 
     final GenericResponse<Pet> res = await _petService.addPet(pet, photo: imageFile.value);

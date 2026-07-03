@@ -120,7 +120,7 @@ class HomeController extends GetxController {
       }
 
       // Use the first active medication
-      final med = medRes.first as Map<String, dynamic>;
+      final med = medRes.first;
       final petName = med['consultations']['pets']['name'] ?? 'Pet';
       nextDoseId.value = med['id'] as int;
       nextDoseMedication.value = med['medication_name'] ?? 'Medication';
