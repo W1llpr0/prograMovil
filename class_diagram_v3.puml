@@ -1,0 +1,275 @@
+@startuml
+' Diagrama de Clases v3 — VetCare (Arquitectura Supabase BaaS - Nivel Producción)
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+' ===========================
+' ENUMERADORES (NUEVO)
+' ===========================
+enum UserRole {
+  CLIENT
+  VET
+  ADMIN
+}
+
+enum ConsultationStatus {
+  PROGRAMADA
+  EN_CURSO
+  COMPLETADA
+  CANCELADA
+}
+
+enum AdherenceStatus {
+  PENDIENTE
+  CONFIRMADA
+  OMITIDA
+}
+
+' ===========================
+' AUTENTICACIÓN Y PERFIL
+' ===========================
+
+class Sex {
+  +id: int
+  +name: varchar
+}
+
+class User {
+  +id: uuid
+  +sex_id: int
+  +role: UserRole
+  +email: varchar
+  +first_name: varchar
+  +last_name: varchar
+  +phone: varchar
+  +photo_url: varchar
+  +latitude: decimal
+  +longitude: decimal
+  +created_at: datetime
+  +updated_at: datetime
+  +deleted_at: datetime
+}
+
+class Client {
+  +id: int
+  +user_id: uuid
+  +address: text
+  +identity_document: varchar
+  +created_at: datetime
+  +updated_at: datetime
+  +deleted_at: datetime
+}
+
+class Veterinarian {
+  +id: int
+  +user_id: uuid
+  +license_number: varchar
+  +years_experience: int
+  +default_appointment_duration_minutes: int
+  +created_at: datetime
+  +updated_at: datetime
+  +deleted_at: datetime
+}
+
+' ===========================
+' CATÁLOGO DE ANIMALES
+' ===========================
+
+class Species {
+  +id: int
+  +name: varchar
+  +is_exotic: boolean
+  +created_at: datetime
+  +updated_at: datetime
+}
+
+class Breed {
+  +id: int
+  +species_id: int
+  +name: varchar
+  +description: text
+  +reference_image_url: varchar
+  +created_at: datetime
+  +updated_at: datetime
+}
+
+class Pet {
+  +id: int
+  +client_id: int
+  +breed_id: int
+  +sex_id: int
+  +name: varchar
+  +birth_date: date
+  +current_weight: decimal
+  +photo_url: varchar
+  +created_at: datetime
+  +updated_at: datetime
+  +deleted_at: datetime
+}
+
+' ===========================
+' MÓDULO DE CONSULTAS
+' ===========================
+
+class Specialty {
+  +id: int
+  +name: varchar
+  +description: text
+  +icon_url: varchar
+  +created_at: datetime
+  +updated_at: datetime
+}
+
+class Consultation {
+  +id: int
+  +pet_id: int
+  +veterinarian_id: int
+  +status: ConsultationStatus
+  +consultation_datetime: timestamptz
+  +reason: text
+  +diagnosis: text
+  +is_contagious: boolean
+  +prescribed_treatment: text
+  +integrity_hash: varchar
+  +rating: int
+  +review_comment: text
+  +review_datetime: datetime
+  +created_at: datetime
+  +updated_at: datetime
+  +deleted_at: datetime
+}
+
+class ConsultationDocument {
+  +id: int
+  +consultation_id: int
+  +file_url: varchar
+  +document_type: varchar
+  +created_at: datetime
+}
+
+class ConsultationSpecialty {
+  +id: int
+  +consultation_id: int
+  +specialty_id: int
+}
+
+class VeterinarianAvailability {
+  +id: int
+  +veterinarian_id: int
+  +day_of_week: int
+  +start_time: time
+  +end_time: time
+  +slot_duration_minutes: int
+  +is_active: boolean
+  +created_at: datetime
+  +updated_at: datetime
+}
+
+' ===========================
+' MÓDULO DE ADHERENCIA (CU11)
+' ===========================
+
+class MedicationSchedule {
+  +id: int
+  +consultation_id: int
+  +medication_name: varchar
+  +dose: varchar
+  +frequency_hours: int
+  +start_datetime: datetime
+  +end_datetime: datetime
+  +created_by_trigger: boolean
+  +created_at: datetime
+  +updated_at: datetime
+}
+
+class TreatmentAdherence {
+  +id: int
+  +medication_schedule_id: int
+  +scheduled_datetime: datetime
+  +confirmed_at: datetime
+  +status: AdherenceStatus
+  +created_at: datetime
+  +updated_at: datetime
+}
+
+' ===========================
+' MÓDULO EPIDEMIOLÓGICO (CU12)
+' ===========================
+
+class EpidemiologicalAlert {
+  +id: int
+  +consultation_id: int
+  +disease_name: varchar
+  +origin_latitude: decimal
+  +origin_longitude: decimal
+  +radius_km: decimal
+  +active: boolean
+  +created_at: datetime
+  +updated_at: datetime
+  +resolved_at: datetime
+}
+
+' ===========================
+' MÓDULO ESPECIES EXÓTICAS (CU04)
+' ===========================
+
+class MorphologicalRecord {
+  +id: int
+  +pet_id: int
+  +photo_url: varchar
+  +recorded_at: date
+  +weight_grams: decimal
+  +length_cm: decimal
+  +notes: text
+  +created_at: datetime
+  +updated_at: datetime
+}
+
+class LegalDocument {
+  +id: int
+  +pet_id: int
+  +document_type: varchar
+  +file_url: varchar
+  +issued_by: varchar
+  +issued_date: date
+  +cites_appendix: varchar
+  +notes: text
+  +created_at: datetime
+  +updated_at: datetime
+}
+
+' ===========================
+' RELACIONES
+' ===========================
+
+' Auth y perfil
+Sex "1" -- "0..*" User
+User "1" -- "0..1" Client
+User "1" -- "0..1" Veterinarian
+
+' Catálogo
+Species "1" -- "0..*" Breed
+Breed "1" -- "0..*" Pet
+Client "1" -- "0..*" Pet
+Sex "1" -- "0..*" Pet
+
+' Consultas
+Pet "1" -- "0..*" Consultation
+Veterinarian "1" -- "0..*" Consultation
+Veterinarian "1" -- "0..*" VeterinarianAvailability
+Consultation "1" -- "0..*" ConsultationDocument
+Consultation "1" -- "0..*" ConsultationSpecialty
+Specialty "1" -- "0..*" ConsultationSpecialty
+
+' Adherencia
+Consultation "1" -- "0..*" MedicationSchedule
+MedicationSchedule "1" -- "0..*" TreatmentAdherence
+
+' Epidemiología
+Consultation "1" -- "0..1" EpidemiologicalAlert
+
+' Módulo exóticos
+Pet "1" -- "0..*" MorphologicalRecord
+Pet "1" -- "0..*" LegalDocument
+
+@enduml

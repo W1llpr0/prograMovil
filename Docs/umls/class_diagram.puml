@@ -1,0 +1,173 @@
+@startuml
+' Diagrama de clases derivado del schema
+skinparam classAttributeIconSize 0
+
+class Sex {
+  +id: int
+  +name: varchar
+}
+
+
+class User {
+  +id: int
+  +sex_id: int
+  +role: varchar
+  +email: varchar
+  +password: varchar
+  +first_name: varchar
+  +last_name: varchar
+  +phone: varchar
+  +photo_url: varchar
+  --
+  +register(params: Map): User
+  +login(email: varchar, password: varchar): Token
+  +updateProfile(params: Map): boolean
+  +changePassword(oldPassword: varchar, newPassword: varchar): boolean
+  +findById(id: int): User
+}
+
+class Client {
+  +id: int
+  +user_id: int
+  +address: text
+  +identity_document: varchar
+  --
+  +listPets(): List<Pet>
+  +createPet(params: Map): Pet
+  +updateProfile(params: Map): boolean
+  +findById(id: int): Client
+}
+
+class Veterinarian {
+  +id: int
+  +user_id: int
+  +license_number: varchar
+  +years_experience: int
+  +default_appointment_duration_minutes: int
+  --
+  +listConsultations(status?: varchar): List<Consultation>
+  +updateConsultationStatus(consultationId: int, status: varchar): boolean
+  +listAvailability(dayOfWeek?: int): List<VeterinarianAvailability>
+  +getAvailableSlots(date: date): List<time>
+  +findById(id: int): Veterinarian
+}
+
+class Species {
+  +id: int
+  +name: varchar
+  --
+  +listAll(): List<Species>
+  +findById(id: int): Species
+}
+
+class Breed {
+  +id: int
+  +species_id: int
+  +name: varchar
+  +description: text
+  +reference_image_url: varchar
+  --
+  +getSpecies(): Species
+  +listBySpecies(speciesId: int): List<Breed>
+  +findById(id: int): Breed
+}
+
+class Pet {
+  +id: int
+  +client_id: int
+  +breed_id: int
+  +sex_id: int
+  +name: varchar
+  +birth_date: date
+  +current_weight: decimal
+  +photo_url: varchar
+  --
+  +getAge(): int
+  +updateProfile(params: Map): boolean
+  +findById(id: int): Pet
+}
+
+class Specialty {
+  +id: int
+  +name: varchar
+  +description: text
+  +icon_url: varchar
+  --
+  +listAll(): List<Specialty>
+  +findById(id: int): Specialty
+}
+
+class Consultation {
+  +id: int
+  +pet_id: int
+  +veterinarian_id: int
+  +status: varchar
+  +consultation_date: date
+  +consultation_time: time
+  +reason: text
+  +diagnosis: text
+  +prescribed_treatment: text
+  +rating: int
+  +review_comment: text
+  +review_datetime: datetime
+  --
+  +create(params: Map): Consultation
+  +confirm(): boolean
+  +cancel(reason: varchar): boolean
+  +complete(diagnosis: text, treatment: text): boolean
+  +attachDocument(doc: ConsultationDocument): boolean
+  +addSpecialty(specialtyId: int): boolean
+  +rate(rating: int, comment: varchar): boolean
+  +findById(id: int): Consultation
+}
+
+class ConsultationDocument {
+  +id: int
+  +consultation_id: int
+  +file_url: varchar
+  +document_type: varchar
+  --
+  +upload(file: File): ConsultationDocument
+  +delete(): boolean
+  +findById(id: int): ConsultationDocument
+}
+
+class ConsultationSpecialty {
+  +consultation_id: int
+  +specialty_id: int
+  --
+  +add(consultationId: int, specialtyId: int): ConsultationSpecialty
+  +remove(consultationId: int, specialtyId: int): boolean
+}
+
+class VeterinarianAvailability {
+  +id: int
+  +veterinarian_id: int
+  +day_of_week: int
+  +start_time: time
+  +end_time: time
+  +slot_duration_minutes: int
+  +is_active: boolean
+  --
+  +listForVeterinarian(vetId: int): List<VeterinarianAvailability>
+  +activate(): boolean
+  +deactivate(): boolean
+  +findById(id: int): VeterinarianAvailability
+}
+
+' Relaciones
+User "1" -- "0..*" Client : has
+User "1" -- "0..1" Veterinarian : has
+Sex "1" -- "0..*" User : relates
+Sex "1" -- "0..*" Pet : relates
+Species "1" -- "0..*" Breed : contains
+Breed "1" -- "0..*" Pet : contains
+Client "1" -- "0..*" Pet : owns
+Pet "1" -- "0..*" Consultation : has
+Veterinarian "1" -- "0..*" Consultation : attends
+Consultation "1" -- "0..*" ConsultationDocument : attaches
+Consultation "1" -- "0..*" ConsultationSpecialty : classifies
+Specialty "1" -- "0..*" ConsultationSpecialty : referenced
+Veterinarian "1" -- "0..*" VeterinarianAvailability : defines
+
+@enduml

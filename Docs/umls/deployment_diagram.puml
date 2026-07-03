@@ -1,0 +1,39 @@
+@startuml
+left to right direction
+skinparam DefaultTextAlignment center
+
+node "Dispositivo Móvil (Smartphone/Tablet)\n<<RNF07: Interfaz Responsive>>\n<<RNF04: Rendimiento < 3s>>" as Mobile {
+
+    component "Aplicación VetCare\n(Flutter + Dart)" as AppFlutter
+
+    component "Módulo de Compresión\nde Imágenes\n<<RNF05: Optimización>>" as Compressor
+
+    storage "Keychain / Keystore\n<<RNF03: Autenticación>>" as Keystore {
+        artifact "Token JWT\n(Supabase Auth)" as JWT
+    }
+
+    AppFlutter ..> Compressor : "Comprime antes\nde subir"
+    AppFlutter ..> Keystore : "Lee / Guarda JWT"
+}
+
+node "Supabase Cloud (BaaS)\n<<RNF06: Alta Disponibilidad 99.9%>>" as Cloud {
+
+    component "Supabase Auth\n(JWT + Row Level Security)\n<<RNF01, RNF02, RNF03>>" as Auth
+
+    database "Supabase PostgreSQL\n(Base de Datos Relacional)" as DB {
+        component "Database Triggers\n(Cronogramas, Alertas,\nHashes de autenticidad)" as Triggers
+    }
+
+    storage "Supabase Storage\n(Imágenes, Docs médicos,\nCertificados CITES)" as Storage
+
+    component "Edge Functions\n(Serverless: Hashes SHA-256,\nNotificaciones Push)" as EdgeFn
+
+    Auth --> DB : "RLS policies"
+    Triggers --> EdgeFn : "Invoca lógica\nserverless"
+}
+
+AppFlutter ====> Auth : " HTTPS — Supabase SDK \n (Authorization: Bearer JWT)"
+AppFlutter ====> DB : " HTTPS — Supabase SDK \n (PostgREST / Realtime)"
+AppFlutter ====> Storage : " HTTPS — Supabase SDK \n (Upload / Download)"
+
+@enduml
