@@ -21,31 +21,39 @@ class VetDashboardController extends GetxController {
   final RxString licenseNumber = ''.obs;
   final RxInt yearsExperience = 0.obs;
   final Rx<DateTime> selectedDate = DateTime.now().obs;
-  final RxList<Map<String, dynamic>> availability = <Map<String, dynamic>>[].obs;
+  final RxList<Map<String, dynamic>> availability =
+      <Map<String, dynamic>>[].obs;
 
   // ── Date-filtered helpers ────────────────────────────────────────
 
   List<Consultation> get todayConsultations {
     final today = DateTime.now();
-    return agenda.where((c) =>
-        c.scheduledAt.year == today.year &&
-        c.scheduledAt.month == today.month &&
-        c.scheduledAt.day == today.day).toList();
+    return agenda
+        .where((c) =>
+            c.scheduledAt.year == today.year &&
+            c.scheduledAt.month == today.month &&
+            c.scheduledAt.day == today.day)
+        .toList();
   }
 
   List<Consultation> get selectedDateConsultations {
     final d = selectedDate.value;
-    return agenda.where((c) =>
-        c.scheduledAt.year == d.year &&
-        c.scheduledAt.month == d.month &&
-        c.scheduledAt.day == d.day).toList();
+    return agenda
+        .where((c) =>
+            c.scheduledAt.year == d.year &&
+            c.scheduledAt.month == d.month &&
+            c.scheduledAt.day == d.day)
+        .toList();
   }
 
   int get todayTotal => todayConsultations.length;
-  int get completedCount => todayConsultations.where((c) => c.status == 'completed').length;
-  int get inProgressCount => todayConsultations.where((c) => c.status == 'in_progress').length;
-  int get pendingCount => todayConsultations.where((c) =>
-      c.status == 'scheduled' || c.status == 'pending').length;
+  int get completedCount =>
+      todayConsultations.where((c) => c.status == 'completed').length;
+  int get inProgressCount =>
+      todayConsultations.where((c) => c.status == 'in_progress').length;
+  int get pendingCount => todayConsultations
+      .where((c) => c.status == 'scheduled' || c.status == 'pending')
+      .length;
 
   // ── All-time stats ───────────────────────────────────────────────
 
@@ -63,18 +71,47 @@ class VetDashboardController extends GetxController {
           'petName': c.petName ?? 'Unknown',
           'ownerName': c.ownerName ?? '—',
           'consultationCount': 1,
+          'completedCount': c.status == 'completed' ? 1 : 0,
+          'pendingConsultationCount':
+              c.status == 'completed' || c.status == 'cancelled' ? 0 : 1,
           'lastDate': c.scheduledAt,
+          'actionConsultation': c,
         };
       } else {
-        petMap[c.petId]!['consultationCount'] =
-            (petMap[c.petId]!['consultationCount'] as int) + 1;
-        if (c.scheduledAt.isAfter(petMap[c.petId]!['lastDate'] as DateTime)) {
-          petMap[c.petId]!['lastDate'] = c.scheduledAt;
+        final patient = petMap[c.petId]!;
+        patient['consultationCount'] =
+            (patient['consultationCount'] as int) + 1;
+        if (c.status == 'completed') {
+          patient['completedCount'] = (patient['completedCount'] as int) + 1;
+        } else if (c.status != 'cancelled') {
+          patient['pendingConsultationCount'] =
+              (patient['pendingConsultationCount'] as int) + 1;
+        }
+        if (c.scheduledAt.isAfter(patient['lastDate'] as DateTime)) {
+          patient['lastDate'] = c.scheduledAt;
+        }
+        final current = patient['actionConsultation'] as Consultation;
+        final candidatePriority = _patientActionPriority(c.status);
+        final currentPriority = _patientActionPriority(current.status);
+        if (candidatePriority > currentPriority ||
+            (candidatePriority == currentPriority &&
+                c.scheduledAt.isAfter(current.scheduledAt))) {
+          patient['actionConsultation'] = c;
         }
       }
     }
-    return petMap.values.toList();
+    final result = petMap.values.toList();
+    result.sort((a, b) =>
+        (b['lastDate'] as DateTime).compareTo(a['lastDate'] as DateTime));
+    return result;
   }
+
+  int _patientActionPriority(String status) => switch (status) {
+        'in_progress' => 3,
+        'scheduled' || 'pending' || 'confirmed' => 2,
+        'completed' => 1,
+        _ => 0,
+      };
 
   @override
   void onInit() {
@@ -200,8 +237,14 @@ class VetDashboardController extends GetxController {
     }
   }
 
-  void goToRegister(Consultation c) =>
-      Get.toNamed(AppRoutes.registerMedical, arguments: c)?.then((_) => loadAgenda());
+  void goToRegister(Consultation c) {
+    final route = switch (c.status) {
+      'completed' => AppRoutes.clinicalHistory,
+      'in_progress' => AppRoutes.registerMedical,
+      _ => AppRoutes.preConsultation,
+    };
+    Get.toNamed(route, arguments: c)?.then((_) => loadAgenda());
+  }
 
   Future<void> signOut() async {
     await AuthService().signOut();
@@ -209,4 +252,3 @@ class VetDashboardController extends GetxController {
     Get.offAllNamed(AppRoutes.signIn);
   }
 }
-

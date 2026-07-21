@@ -27,7 +27,8 @@ class HomeController extends GetxController {
   final RxInt nextDoseId = 0.obs;
 
   // Appointments data
-  final RxList<Map<String, dynamic>> upcomingAppointments = <Map<String, dynamic>>[].obs;
+  final RxList<Map<String, dynamic>> upcomingAppointments =
+      <Map<String, dynamic>>[].obs;
 
   @override
   void onInit() {
@@ -53,7 +54,7 @@ class HomeController extends GetxController {
         loadVets(),
       ]);
     } catch (e) {
-      errorMessage.value = 'Error loading data: $e';
+      errorMessage.value = 'No se pudieron cargar los datos.';
       debugPrint('❌ HomeController: $e');
     }
   }
@@ -79,7 +80,7 @@ class HomeController extends GetxController {
       }
     } catch (e) {
       isLoading.value = false;
-      errorMessage.value = 'Error: $e';
+      errorMessage.value = 'No se pudieron cargar las mascotas.';
       debugPrint('❌ Exception loading pets: $e');
     }
   }
@@ -100,19 +101,27 @@ class HomeController extends GetxController {
         return;
       }
 
-      final petIds = (petsRes as List).map((p) => p['id']).toList();
+      final petIds =
+          (petsRes as List).map((p) => (p['id'] as num).toInt()).toList();
+      final consultationRows = await Supabase.instance.client
+          .from('consultations')
+          .select('id')
+          .inFilter('pet_id', petIds);
+      final consultationIds = (consultationRows as List)
+          .map((row) => (row['id'] as num).toInt())
+          .toList();
+      if (consultationIds.isEmpty) {
+        nextDoseMedication.value = 'No active medications';
+        return;
+      }
 
-      // Get active medication schedules for these pets
-      final medRes = await Supabase.instance.client.from('medication_schedules')
-          .select('*, consultations(*, pets(name, species_id))')
+      final medRes = await Supabase.instance.client
+          .from('medication_schedules')
+          .select('*, consultations(pets(name))')
           .eq('is_active', true)
-          .inFilter('consultation_id', [
-        for (final petId in petIds)
-          (await Supabase.instance.client
-              .from('consultations')
-              .select('id')
-              .eq('pet_id', petId)) as List
-      ].expand((e) => e.map((c) => c['id'])).toList());
+          .inFilter('consultation_id', consultationIds)
+          .order('next_dose_at')
+          .limit(1);
 
       if ((medRes as List).isEmpty) {
         nextDoseMedication.value = 'No active medications';
@@ -120,7 +129,7 @@ class HomeController extends GetxController {
       }
 
       // Use the first active medication
-      final med = medRes.first as Map<String, dynamic>;
+      final med = medRes.first;
       final petName = med['consultations']['pets']['name'] ?? 'Pet';
       nextDoseId.value = med['id'] as int;
       nextDoseMedication.value = med['medication_name'] ?? 'Medication';
@@ -159,10 +168,9 @@ class HomeController extends GetxController {
       final now = DateTime.now();
       final apptRes = await Supabase.instance.client
           .from('consultations')
-          .select(
-              '*, pets(name), veterinarians(users(first_name, last_name))')
+          .select('*, pets(name), veterinarians(users(first_name, last_name))')
           .inFilter('pet_id', List<int>.from(petIds))
-          .eq('status', 'scheduled')
+          .inFilter('status', ['pending', 'scheduled', 'confirmed'])
           .gte('scheduled_at', now.toIso8601String())
           .order('scheduled_at', ascending: true)
           .limit(3);
@@ -174,7 +182,8 @@ class HomeController extends GetxController {
           'time': _formatTime(scheduled),
           'title': appt['reason'] ?? 'Consultation',
           'petName': appt['pets']['name'] ?? 'Pet',
-          'vetName': 'Dr. ${(appt['veterinarians']?['users'])?['last_name'] ?? 'Vet'}',  
+          'vetName':
+              'Dr. ${(appt['veterinarians']?['users'])?['last_name'] ?? 'Vet'}',
           'status': appt['status'] ?? 'scheduled',
         };
       }).toList();
@@ -187,8 +196,20 @@ class HomeController extends GetxController {
   }
 
   String _formatDate(DateTime date) {
-    final days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-    return '${date.day} ${['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'][date.month - 1]}';
+    return '${date.day} ${[
+      'JAN',
+      'FEB',
+      'MAR',
+      'APR',
+      'MAY',
+      'JUN',
+      'JUL',
+      'AUG',
+      'SEP',
+      'OCT',
+      'NOV',
+      'DEC'
+    ][date.month - 1]}';
   }
 
   String _formatTime(DateTime date) {
@@ -196,10 +217,12 @@ class HomeController extends GetxController {
   }
 
   void goToAddPet() => Get.toNamed(AppRoutes.addPet)?.then((_) async {
-        await Future.wait([loadPets(), loadNextDose(), loadUpcomingAppointments()]);
+        await Future.wait(
+            [loadPets(), loadNextDose(), loadUpcomingAppointments()]);
       });
 
-  void goToPetProfile(Pet pet) => Get.toNamed(AppRoutes.petProfile, arguments: pet);
+  void goToPetProfile(Pet pet) =>
+      Get.toNamed(AppRoutes.petProfile, arguments: pet);
 
   void goToProfile() => Get.toNamed(AppRoutes.profile);
 

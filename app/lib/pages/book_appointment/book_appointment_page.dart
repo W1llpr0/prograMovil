@@ -1,459 +1,358 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+
+import '../../components/line_input.dart';
+import '../../configs/theme.dart';
+import '../../models/pet.dart';
+import '../../models/specialty.dart';
+import '../../models/veterinarian.dart';
 import 'book_appointment_controller.dart';
 
 class BookAppointmentPage extends GetView<BookAppointmentController> {
   const BookAppointmentPage({super.key});
 
-  String _stepTitle(int step) {
-    switch (step) {
-      case 0:
-        return 'select_vet'.tr;
-      case 1:
-        return 'select_date'.tr;
-      case 2:
-        return 'select_pet_appointment'.tr;
-      default:
-        return 'book_appointment'.tr;
-    }
-  }
-
   @override
-  Widget build(BuildContext context) {
-    final fg = Theme.of(context).colorScheme.onSurface;
-    final bg = Theme.of(context).colorScheme.surface;
-
-    return Scaffold(
-      backgroundColor: bg,
-      appBar: AppBar(
-        backgroundColor: bg,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: fg),
-          onPressed: () {
-            if (controller.currentStep.value > 0) {
-              controller.prevStep();
-            } else {
-              Get.back();
-            }
-          },
-        ),
-        title: Obx(() => Text(
-              _stepTitle(controller.currentStep.value),
-              style: GoogleFonts.spaceGrotesk(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                letterSpacing: -0.02 * 16,
-                color: fg,
-              ),
-            )),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(1),
-          child: Container(height: 1, color: fg.withValues(alpha: 0.15)),
-        ),
-      ),
-      body: Column(
-        children: [
-          _buildStepDots(fg),
-          Expanded(
-            child: Obx(() {
-              switch (controller.currentStep.value) {
-                case 0:
-                  return _buildVetStep(fg);
-                case 1:
-                  return _buildDateTimeStep(context, fg);
-                case 2:
-                  return _buildPetStep(fg);
-                default:
-                  return const SizedBox.shrink();
-              }
-            }),
+  Widget build(BuildContext context) => Obx(() => Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(controller.currentStep.value == 0
+                ? Icons.close
+                : Icons.arrow_back),
+            onPressed: controller.currentStep.value == 0
+                ? Get.back
+                : controller.prevStep,
           ),
-          _buildBottomBar(context, fg, bg),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStepDots(Color fg) {
-    return Obx(() {
-      final step = controller.currentStep.value;
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(3, (i) {
-            final active = i == step;
-            final done = i < step;
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                width: active ? 24 : 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: (active || done) ? fg : fg.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-            );
-          }),
-        ),
-      );
-    });
-  }
-
-  Widget _buildVetStep(Color fg) {
-    return Obx(() {
-      if (controller.vets.isEmpty) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.medical_services_outlined, size: 64, color: fg.withValues(alpha: 0.2)),
-              const SizedBox(height: 16),
-              Text('no_vets_available'.tr,
-                  style: GoogleFonts.spaceGrotesk(
-                      fontSize: 16, fontWeight: FontWeight.w600, color: fg.withValues(alpha: 0.6))),
-            ],
-          ),
-        );
-      }
-      return ListView.separated(
-        padding: const EdgeInsets.all(22),
-        itemCount: controller.vets.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (ctx, i) {
-          final vet = controller.vets[i];
-          return Obx(() {
-            final isSelected = controller.selectedVet.value?.id == vet.id;
-            return GestureDetector(
-              onTap: () => controller.selectVet(vet),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: isSelected ? fg : fg.withValues(alpha: 0.25),
-                    width: isSelected ? 2 : 1,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: fg.withValues(alpha: 0.08),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(Icons.person_outline, color: fg, size: 22),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            vet.fullName.trim().isEmpty ? 'Veterinario' : 'Dr. ${vet.fullName}',
-                            style: GoogleFonts.spaceGrotesk(
-                                fontSize: 15, fontWeight: FontWeight.w600, color: fg),
-                          ),
-                          if (vet.licenseNumber != null) ...[
-                            const SizedBox(height: 3),
-                            Text(
-                              'Reg. ${vet.licenseNumber}',
-                              style: GoogleFonts.jetBrainsMono(
-                                  fontSize: 10,
-                                  letterSpacing: 0.12,
-                                  color: fg.withValues(alpha: 0.55)),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    if (isSelected) Icon(Icons.check_circle, color: fg, size: 22),
-                  ],
-                ),
-              ),
-            );
-          });
-        },
-      );
-    });
-  }
-
-  Widget _buildDateTimeStep(BuildContext context, Color fg) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(22),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('select_date'.tr,
-              style: GoogleFonts.jetBrainsMono(
-                  fontSize: 10, letterSpacing: 0.18, color: fg.withValues(alpha: 0.55))),
-          const SizedBox(height: 8),
-          Obx(() => GestureDetector(
-                onTap: () => controller.pickDate(context),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: controller.selectedDate.value != null
-                          ? fg
-                          : fg.withValues(alpha: 0.3),
-                      width: controller.selectedDate.value != null ? 2 : 1,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.calendar_today_outlined, color: fg, size: 20),
-                      const SizedBox(width: 12),
-                      Text(
-                        controller.selectedDate.value != null
-                            ? DateFormat('EEEE, d MMM yyyy', 'es_ES')
-                                .format(controller.selectedDate.value!)
-                            : 'Seleccionar fecha',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: controller.selectedDate.value != null
-                              ? fg
-                              : fg.withValues(alpha: 0.45),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )),
-          const SizedBox(height: 20),
-          Text('select_time'.tr,
-              style: GoogleFonts.jetBrainsMono(
-                  fontSize: 10, letterSpacing: 0.18, color: fg.withValues(alpha: 0.55))),
-          const SizedBox(height: 8),
-          Obx(() => GestureDetector(
-                onTap: () => controller.pickTime(context),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: controller.selectedTime.value != null
-                          ? fg
-                          : fg.withValues(alpha: 0.3),
-                      width: controller.selectedTime.value != null ? 2 : 1,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.access_time_outlined, color: fg, size: 20),
-                      const SizedBox(width: 12),
-                      Text(
-                        controller.selectedTime.value != null
-                            ? controller.selectedTime.value!.format(context)
-                            : 'Seleccionar hora',
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: controller.selectedTime.value != null
-                              ? fg
-                              : fg.withValues(alpha: 0.45),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )),
-          const SizedBox(height: 20),
-          Text('reason'.tr,
-              style: GoogleFonts.jetBrainsMono(
-                  fontSize: 10, letterSpacing: 0.18, color: fg.withValues(alpha: 0.55))),
-          const SizedBox(height: 8),
-          TextField(
-            controller: controller.reasonCtrl,
-            style: GoogleFonts.spaceGrotesk(fontSize: 14, color: fg),
-            maxLines: 3,
-            decoration: InputDecoration(
-              hintText: 'Motivo de consulta (opcional)',
-              hintStyle: GoogleFonts.spaceGrotesk(
-                  fontSize: 13, color: fg.withValues(alpha: 0.35)),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: fg.withValues(alpha: 0.3)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: fg, width: 2),
-              ),
+          title: Text(controller.currentStep.value == 0
+              ? 'Nueva cita'
+              : 'Fecha y doctor'),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(3),
+            child: LinearProgressIndicator(
+              value: controller.currentStep.value == 0 ? .5 : 1,
+              minHeight: 3,
+              backgroundColor: AppColors.surfaceContainer,
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPetStep(Color fg) {
-    return Obx(() {
-      if (controller.clientPets.isEmpty) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.pets_outlined, size: 64, color: fg.withValues(alpha: 0.2)),
-              const SizedBox(height: 16),
-              Text('no_pets_yet_appt'.tr,
-                  style: GoogleFonts.spaceGrotesk(
-                      fontSize: 16, fontWeight: FontWeight.w600, color: fg.withValues(alpha: 0.6))),
-              const SizedBox(height: 8),
-              Text('no_pets_appt_hint'.tr,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.jetBrainsMono(
-                      fontSize: 11, color: fg.withValues(alpha: 0.4))),
-            ],
-          ),
-        );
-      }
-      return ListView.separated(
-        padding: const EdgeInsets.all(22),
-        itemCount: controller.clientPets.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (ctx, i) {
-          final p = controller.clientPets[i];
-          return Obx(() {
-            final isSelected = controller.pet.value?.id == p.id;
-            return GestureDetector(
-              onTap: () => controller.selectPet(p),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: isSelected ? fg : fg.withValues(alpha: 0.25),
-                    width: isSelected ? 2 : 1,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: fg.withValues(alpha: 0.08),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(Icons.pets, color: fg, size: 22),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            p.name,
-                            style: GoogleFonts.spaceGrotesk(
-                                fontSize: 15, fontWeight: FontWeight.w600, color: fg),
-                          ),
-                          if (p.speciesName != null) ...[
-                            const SizedBox(height: 3),
-                            Text(
-                              '${p.speciesName}${p.breedName != null ? ' · ${p.breedName}' : ''}',
-                              style: GoogleFonts.jetBrainsMono(
-                                  fontSize: 10,
-                                  letterSpacing: 0.12,
-                                  color: fg.withValues(alpha: 0.55)),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    if (isSelected) Icon(Icons.check_circle, color: fg, size: 22),
-                  ],
-                ),
-              ),
-            );
-          });
-        },
-      );
-    });
-  }
-
-  Widget _buildBottomBar(BuildContext context, Color fg, Color bg) {
-    return Obx(() {
-      final step = controller.currentStep.value;
-      final isLastStep = step == 2;
-      final enabled = _buttonEnabled();
-      return Container(
-        padding: const EdgeInsets.fromLTRB(22, 12, 22, 28),
-        decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: fg.withValues(alpha: 0.15))),
-          color: bg,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (controller.message.value.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Text(controller.message.value,
-                    style: GoogleFonts.jetBrainsMono(fontSize: 10, color: Colors.red)),
-              ),
-            GestureDetector(
-              onTap: enabled
-                  ? () {
-                      controller.message.value = '';
-                      if (isLastStep) {
-                        controller.book();
-                      } else {
-                        controller.nextStep();
-                      }
-                    }
-                  : null,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                height: 52,
-                decoration: BoxDecoration(
-                  color: enabled ? fg : fg.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                alignment: Alignment.center,
-                child: controller.isLoading.value
-                    ? SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(color: bg, strokeWidth: 2))
-                    : Text(
-                        isLastStep ? 'confirm'.tr : 'next'.tr,
-                        style: GoogleFonts.spaceGrotesk(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.5,
-                          color: bg,
-                        ),
+        body: controller.isLoading.value
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  Expanded(
+                    child: controller.currentStep.value == 0
+                        ? _SelectionStep(controller: controller)
+                        : _ScheduleStep(controller: controller),
+                  ),
+                  if (controller.message.value.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: Text(
+                        controller.message.value,
+                        style: const TextStyle(color: AppColors.error),
+                        textAlign: TextAlign.center,
                       ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(30, 12, 30, 24),
+                    child: ElevatedButton.icon(
+                      onPressed: controller.currentStep.value == 0
+                          ? controller.nextStep
+                          : controller.book,
+                      icon: Icon(controller.currentStep.value == 0
+                          ? Icons.arrow_forward
+                          : Icons.check_circle),
+                      label: Text(controller.currentStep.value == 0
+                          ? 'Continuar'
+                          : 'Confirmar'),
+                    ),
+                  ),
+                ],
               ),
+      ));
+}
+
+class _SelectionStep extends StatelessWidget {
+  final BookAppointmentController controller;
+  const _SelectionStep({required this.controller});
+
+  @override
+  Widget build(BuildContext context) => SingleChildScrollView(
+        padding: const EdgeInsets.all(30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Selecciona la mascota',
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 14),
+            if (controller.clientPets.isEmpty)
+              const _EmptyCard(message: 'Primero registra una mascota.')
+            else
+              SizedBox(
+                height: 96,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: controller.clientPets.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  itemBuilder: (_, index) => Obx(() {
+                    final pet = controller.clientPets[index];
+                    return _PetChoice(
+                      pet: pet,
+                      selected: controller.pet.value?.id == pet.id,
+                      onTap: () => controller.selectPet(pet),
+                    );
+                  }),
+                ),
+              ),
+            const SizedBox(height: 28),
+            Text('Especialidad',
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 12),
+            ...controller.specialties.map((item) => Obx(() => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _SpecialtyChoice(
+                    specialty: item,
+                    selected: controller.specialty.value?.id == item.id,
+                    onTap: () => controller.selectSpecialty(item),
+                  ),
+                ))),
+          ],
+        ),
+      );
+}
+
+class _ScheduleStep extends StatelessWidget {
+  final BookAppointmentController controller;
+  const _ScheduleStep({required this.controller});
+
+  @override
+  Widget build(BuildContext context) => SingleChildScrollView(
+        padding: const EdgeInsets.all(30),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Veterinario asignado',
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 12),
+            if (controller.matchingVets.isEmpty)
+              const _EmptyCard(
+                  message: 'No hay veterinarios para esta especialidad.')
+            else
+              ...controller.matchingVets.map((vet) => Obx(() => Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: _VetChoice(
+                      vet: vet,
+                      selected: controller.selectedVet.value?.id == vet.id,
+                      onTap: () => controller.selectVet(vet),
+                    ),
+                  ))),
+            const SizedBox(height: 22),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Fecha', style: Theme.of(context).textTheme.titleMedium),
+                TextButton.icon(
+                  onPressed: () => controller.pickDate(context),
+                  icon: const Icon(Icons.calendar_month),
+                  label: const Text('Ver calendario'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 68,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: 7,
+                separatorBuilder: (_, __) => const SizedBox(width: 10),
+                itemBuilder: (_, index) {
+                  final date = DateTime.now().add(Duration(days: index + 1));
+                  return Obx(() => ChoiceChip(
+                        selected: DateUtils.isSameDay(
+                            controller.selectedDate.value, date),
+                        label: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(DateFormat('EEE', 'es_ES')
+                                .format(date)
+                                .toUpperCase()),
+                            Text('${date.day}',
+                                style: const TextStyle(fontSize: 18)),
+                          ],
+                        ),
+                        onSelected: (_) {
+                          controller.selectedDate.value = date;
+                          controller.selectedSlot.value = null;
+                          controller.loadSlots();
+                        },
+                      ));
+                },
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text('Horas disponibles',
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 12),
+            Obx(() {
+              if (controller.selectedVet.value == null) {
+                return const Text('Selecciona un veterinario.');
+              }
+              if (controller.isLoadingSlots.value) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (controller.availableSlots.isEmpty) {
+                return const _EmptyCard(
+                    message: 'No hay horarios libres en esta fecha.');
+              }
+              return Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: controller.availableSlots
+                    .map((slot) => ChoiceChip(
+                          selected: controller.selectedSlot.value == slot,
+                          label: Text(DateFormat('hh:mm a').format(slot)),
+                          onSelected: (_) =>
+                              controller.selectedSlot.value = slot,
+                        ))
+                    .toList(),
+              );
+            }),
+            const SizedBox(height: 24),
+            LineInput(
+              controller: controller.reasonCtrl,
+              label: 'Motivo de la consulta',
+              hint: 'Describe brevemente el motivo de la visita',
+              prefixIcon: Icons.format_quote,
+              maxLines: 3,
+              textCapitalization: TextCapitalization.sentences,
             ),
           ],
         ),
       );
-    });
-  }
-
-  bool _buttonEnabled() {
-    switch (controller.currentStep.value) {
-      case 0:
-        return controller.selectedVet.value != null;
-      case 1:
-        return controller.selectedDate.value != null && controller.selectedTime.value != null;
-      case 2:
-        return controller.pet.value != null;
-      default:
-        return false;
-    }
-  }
 }
 
+class _PetChoice extends StatelessWidget {
+  final Pet pet;
+  final bool selected;
+  final VoidCallback onTap;
+  const _PetChoice(
+      {required this.pet, required this.selected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          width: 145,
+          decoration: BoxDecoration(
+            color: selected ? AppColors.primaryContainer : AppColors.surface,
+            border: Border.all(
+                color: selected ? AppColors.primary : AppColors.outline),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 160),
+                child: Icon(
+                  selected ? Icons.check_circle : Icons.pets,
+                  key: ValueKey(selected),
+                  color: AppColors.primary,
+                  size: 30,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(pet.name,
+                  style: const TextStyle(fontWeight: FontWeight.w700)),
+              if (selected)
+                const Text(
+                  'Seleccionada',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      );
+}
+
+class _SpecialtyChoice extends StatelessWidget {
+  final Specialty specialty;
+  final bool selected;
+  final VoidCallback onTap;
+  const _SpecialtyChoice(
+      {required this.specialty, required this.selected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) => ListTile(
+        onTap: onTap,
+        leading: Icon(
+          specialty.name.toLowerCase().contains('cirug')
+              ? Icons.content_cut
+              : Icons.medical_services,
+          color: selected ? AppColors.primary : AppColors.outline,
+        ),
+        title: Text(specialty.name),
+        trailing: Icon(
+          selected ? Icons.radio_button_checked : Icons.radio_button_off,
+          color: selected ? AppColors.primary : AppColors.outline,
+        ),
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+              color: selected ? AppColors.primary : AppColors.outline),
+          borderRadius: BorderRadius.circular(14),
+        ),
+      );
+}
+
+class _VetChoice extends StatelessWidget {
+  final Veterinarian vet;
+  final bool selected;
+  final VoidCallback onTap;
+  const _VetChoice(
+      {required this.vet, required this.selected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) => ListTile(
+        onTap: onTap,
+        tileColor: selected ? AppColors.surfaceContainer : null,
+        leading: CircleAvatar(child: Text(_initials(vet.fullName))),
+        title: Text('Dr. ${vet.fullName}'),
+        subtitle: Text(vet.reviewCount == 0
+            ? 'Sin reseñas todavía'
+            : '⭐ ${vet.rating.toStringAsFixed(1)} (${vet.reviewCount} reseñas)'),
+        trailing: selected
+            ? const Icon(Icons.check_circle, color: AppColors.primary)
+            : const Icon(Icons.chevron_right),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      );
+
+  String _initials(String name) => name
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((part) => part.isNotEmpty)
+      .take(2)
+      .map((part) => part[0].toUpperCase())
+      .join();
+}
+
+class _EmptyCard extends StatelessWidget {
+  final String message;
+  const _EmptyCard({required this.message});
+
+  @override
+  Widget build(BuildContext context) => Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceContainer,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Text(message),
+      );
+}

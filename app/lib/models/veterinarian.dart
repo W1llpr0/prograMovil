@@ -4,6 +4,10 @@ class Veterinarian {
   final String? licenseNumber;
   final String firstName;
   final String lastName;
+  final int yearsExperience;
+  final double rating;
+  final int reviewCount;
+  final List<int> specialtyIds;
 
   const Veterinarian({
     required this.id,
@@ -11,17 +15,43 @@ class Veterinarian {
     this.licenseNumber,
     required this.firstName,
     required this.lastName,
+    this.yearsExperience = 0,
+    this.rating = 0,
+    this.reviewCount = 0,
+    this.specialtyIds = const [],
   });
 
   String get fullName => '$firstName $lastName';
 
-  factory Veterinarian.fromJson(Map<String, dynamic> json) => Veterinarian(
-        id: json['id'] as String,
-        userId: json['user_id'] as String,
-        licenseNumber: json['license_number'] as String?,
-        firstName: json['users']?['first_name'] as String? ?? '',
-        lastName: json['users']?['last_name'] as String? ?? '',
-      );
+  factory Veterinarian.fromJson(Map<String, dynamic> json) {
+    final specialties = json['veterinarian_specialties'];
+    final reviews = json['reviews'];
+    final reviewRows = reviews is List ? reviews : const [];
+    final ratings = reviewRows
+        .map(
+            (item) => item is Map ? (item['rating'] as num?)?.toDouble() : null)
+        .whereType<double>()
+        .toList();
+    return Veterinarian(
+      id: json['id'] as String,
+      userId: json['user_id'] as String,
+      licenseNumber: json['license_number'] as String?,
+      firstName: json['users']?['first_name'] as String? ?? '',
+      lastName: json['users']?['last_name'] as String? ?? '',
+      yearsExperience: (json['years_experience'] as num?)?.toInt() ?? 0,
+      rating: ratings.isEmpty
+          ? 0
+          : ratings.reduce((a, b) => a + b) / ratings.length,
+      reviewCount: ratings.length,
+      specialtyIds: specialties is List
+          ? specialties
+              .map((item) =>
+                  item is Map ? (item['specialty_id'] as num?)?.toInt() : null)
+              .whereType<int>()
+              .toList()
+          : const [],
+    );
+  }
 }
 
 class VeterinarianAvailability {

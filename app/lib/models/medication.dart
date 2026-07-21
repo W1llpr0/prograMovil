@@ -4,8 +4,10 @@ class MedicationSchedule {
   final String medicationName;
   final String? dosage;
   final String? frequency;
+  final int? frequencyHours;
   final DateTime startDate;
   final DateTime? endDate;
+  final DateTime? nextDoseAt;
   final bool isActive;
 
   const MedicationSchedule({
@@ -14,8 +16,10 @@ class MedicationSchedule {
     required this.medicationName,
     this.dosage,
     this.frequency,
+    this.frequencyHours,
     required this.startDate,
     this.endDate,
+    this.nextDoseAt,
     this.isActive = true,
   });
 
@@ -26,10 +30,12 @@ class MedicationSchedule {
         medicationName: json['medication_name'] as String,
         dosage: json['dosage'] as String?,
         frequency: json['frequency'] as String?,
+        frequencyHours: (json['frequency_hours'] as num?)?.toInt(),
         startDate: DateTime.parse(json['start_date'] as String),
         endDate: json['end_date'] != null
             ? DateTime.parse(json['end_date'] as String)
             : null,
+        nextDoseAt: DateTime.tryParse(json['next_dose_at']?.toString() ?? ''),
         isActive: json['is_active'] as bool? ?? true,
       );
 }

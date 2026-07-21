@@ -15,7 +15,8 @@ class StatusBadge extends StatefulWidget {
   State<StatusBadge> createState() => _StatusBadgeState();
 }
 
-class _StatusBadgeState extends State<StatusBadge> with SingleTickerProviderStateMixin {
+class _StatusBadgeState extends State<StatusBadge>
+    with SingleTickerProviderStateMixin {
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
 

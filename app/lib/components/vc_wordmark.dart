@@ -25,7 +25,8 @@ class VcWordmark extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           'VetCare',
-          style: GoogleFonts.spaceGrotesk(fontSize: size * 0.82,
+          style: GoogleFonts.spaceGrotesk(
+            fontSize: size * 0.82,
             fontWeight: FontWeight.w700,
             letterSpacing: -0.04 * size,
             color: fg,

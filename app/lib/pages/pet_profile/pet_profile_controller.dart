@@ -56,20 +56,24 @@ class PetProfileController extends GetxController {
   }
 
   void goToBookAppointment() =>
-      Get.toNamed(AppRoutes.bookAppointment, arguments: pet.value)?.then((_) => loadConsultations());
+      Get.toNamed(AppRoutes.bookAppointment, arguments: pet.value)
+          ?.then((_) => loadConsultations());
 
   void goToHistory(Consultation c) =>
       Get.toNamed(AppRoutes.clinicalHistory, arguments: c);
 
   Future<void> deletePet() async {
     if (pet.value?.id == null) return;
-    final GenericResponse<void> res = await _petService.deletePet(pet.value!.id!);
+    final GenericResponse<void> res =
+        await _petService.deletePet(pet.value!.id!);
     if (res.success) {
       try {
         Get.find<HomeController>().loadPets();
       } catch (_) {}
       Get.back();
-      Get.snackbar('pet_deleted'.tr, '', snackPosition: SnackPosition.BOTTOM, duration: const Duration(seconds: 2));
+      Get.snackbar('pet_deleted'.tr, '',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 2));
     } else {
       Get.snackbar('Error', res.message, snackPosition: SnackPosition.BOTTOM);
     }
@@ -79,10 +83,12 @@ class PetProfileController extends GetxController {
     if (pet.value?.id == null) return;
     try {
       final picker = ImagePicker();
-      final xFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+      final xFile =
+          await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
       if (xFile == null) return;
       isLoading.value = true;
-      final res = await _petService.updatePet(pet.value!.id!, {}, photo: File(xFile.path));
+      final res = await _petService.updatePet(pet.value!.id!, {},
+          photo: File(xFile.path));
       isLoading.value = false;
       if (res.success && res.data != null) {
         pet.value = res.data;
@@ -94,7 +100,8 @@ class PetProfileController extends GetxController {
       }
     } catch (e) {
       isLoading.value = false;
-      Get.snackbar('Error', e.toString(), snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar('Error', 'No se pudo actualizar la foto.',
+          snackPosition: SnackPosition.BOTTOM);
     }
   }
 }

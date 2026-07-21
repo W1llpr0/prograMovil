@@ -1,335 +1,364 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
-import '../../components/swipe_to_confirm.dart';
-import '../../components/pet_card.dart';
+
 import '../../configs/app_routes.dart';
-import '../../pages/profile/profile_page.dart';
-import '../../pages/epidemiological_map/epidemiological_map_page.dart';
+import '../../configs/theme.dart';
+import '../../models/pet.dart';
+import '../profile/profile_page.dart';
 import 'home_controller.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  late HomeController ctrl;
-  int _selectedTabIndex = 0;
+  late final HomeController ctrl = Get.put(HomeController());
+  int selectedIndex = 0;
 
   @override
-  void initState() {
-    super.initState();
-    ctrl = Get.put(HomeController());
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: IndexedStack(
-          index: _selectedTabIndex,
-          children: [
-            _buildDashboardTab(context),
-            _buildPetsListTab(context),
-            _buildAppointmentTab(context),
-            EpidemiologicalMapPage(),
-            ProfilePage(),
-          ],
-        ),
-      ),
-      bottomNavigationBar: Builder(builder: (ctx) {
-        final scheme = Theme.of(ctx).colorScheme;
-        return Container(
-          decoration: BoxDecoration(
-            border: Border(top: BorderSide(color: scheme.onSurface, width: 1)),
-            color: scheme.surface,
-          ),
-          child: BottomNavigationBar(
-            currentIndex: _selectedTabIndex,
-            onTap: (index) => setState(() => _selectedTabIndex = index),
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: scheme.surface,
-            selectedItemColor: scheme.onSurface,
-            unselectedItemColor: scheme.onSurface.withValues(alpha: 0.45),
-            showUnselectedLabels: true,
-            elevation: 0,
-            items: [
-              BottomNavigationBarItem(icon: const Icon(Icons.home_outlined), activeIcon: const Icon(Icons.home), label: 'dashboard'.tr),
-              BottomNavigationBarItem(icon: const Icon(Icons.pets), label: 'my_pets'.tr),
-              BottomNavigationBarItem(icon: const Icon(Icons.calendar_today), label: 'book'.tr),
-              BottomNavigationBarItem(icon: const Icon(Icons.location_on_outlined), label: 'map'.tr),
-              BottomNavigationBarItem(icon: const Icon(Icons.person_outline), label: 'profile'.tr),
+  Widget build(BuildContext context) => Scaffold(
+        body: SafeArea(
+          child: IndexedStack(
+            index: selectedIndex,
+            children: [
+              _Dashboard(controller: ctrl),
+              _Pets(controller: ctrl),
+              _Appointments(controller: ctrl),
+              ProfilePage(),
             ],
           ),
-        );
-      }),
-    );
-  }
+        ),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: selectedIndex,
+          onDestinationSelected: (index) =>
+              setState(() => selectedIndex = index),
+          destinations: const [
+            NavigationDestination(icon: Icon(Icons.home), label: 'Inicio'),
+            NavigationDestination(icon: Icon(Icons.pets), label: 'Mascotas'),
+            NavigationDestination(
+                icon: Icon(Icons.calendar_month), label: 'Citas'),
+            NavigationDestination(icon: Icon(Icons.person), label: 'Perfil'),
+          ],
+        ),
+      );
+}
 
-  Widget _buildDashboardTab(BuildContext context) {
-    final fg = Theme.of(context).colorScheme.onSurface;
-    final bg = Theme.of(context).colorScheme.surface;
-    return Obx(() {
-      final user = ctrl.appCtrl.currentUser.value;
-      final error = ctrl.errorMessage.value;
-      return SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(22, 16, 22, 100),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                DateFormat('EEEE · d MMM', Get.locale?.toLanguageTag() == 'es' ? 'es_ES' : 'en_US')
-                    .format(DateTime.now()),
-                style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg.withValues(alpha: 0.55)),
-              ),
-              const SizedBox(height: 8),
-              if (user != null) Text('${'good_morning'.tr}, ${user.firstName}.', style: GoogleFonts.spaceGrotesk(fontSize: 32, fontWeight: FontWeight.w700, letterSpacing: -0.04 * 32, color: fg)),
-              const SizedBox(height: 20),
-              if (error.isNotEmpty) Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: Colors.orange.withValues(alpha: 0.1), border: Border.all(color: Colors.orange), borderRadius: BorderRadius.circular(8)), child: Text('⚠️ $error')),
-              Obx(() {
-                final med = ctrl.nextDoseMedication.value;
-                final medEmpty = med == 'No active medications' || med == 'No pets registered yet';
-                return Container(
-                  decoration: BoxDecoration(border: Border.all(color: fg, width: 1), borderRadius: BorderRadius.circular(20)),
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text('${'next_dose'.tr} · ${ctrl.nextDoseTime.value}', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18)),
-                          const SizedBox(height: 10),
-                          Text(
-                            med == 'No active medications' ? 'no_active_meds'.tr
-                              : med == 'No pets registered yet' ? 'no_pets_meds'.tr
-                              : med,
-                            style: GoogleFonts.spaceGrotesk(fontSize: 22, fontWeight: FontWeight.w600)),
-                          const SizedBox(height: 6),
-                          Text(ctrl.nextDoseDetails.value, style: GoogleFonts.spaceGrotesk(fontSize: 12, color: fg.withValues(alpha: 0.6))),
-                        ])),
-                        const SizedBox(width: 12),
-                        Container(width: 44, height: 44, decoration: BoxDecoration(border: Border.all(color: fg, width: 1), borderRadius: BorderRadius.circular(999)), child: Icon(Icons.medication_outlined, size: 20, color: fg)),
-                      ]),
-                      if (!medEmpty) ...[
-                        const SizedBox(height: 18),
-                        SizedBox(height: 28, child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                          for (final h in [0.6, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 0.0, 0.8, 1.0, 1.0, 1.0, 1.0, 0.7]) ...[
-                            Expanded(child: Align(alignment: Alignment.bottomCenter, child: FractionallySizedBox(heightFactor: h < 0.06 ? 0.06 : h, child: Container(decoration: BoxDecoration(color: h == 0 ? Colors.transparent : fg, border: h == 0 ? Border.all(color: fg, width: 1) : null, borderRadius: BorderRadius.circular(1)))))),          
-                            const SizedBox(width: 3),
-                          ]
-                        ])),
-                        const SizedBox(height: 6),
-                        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                          Text('adherence_14'.tr, style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.18, color: fg.withValues(alpha: 0.55))),
-                          Text('92%', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.06)),
-                        ]),
-                        const SizedBox(height: 18),
-                        SwipeToConfirm(onConfirmed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('✅ Dose recorded successfully')))),
-                      ],
-                    ],
+class _Dashboard extends StatelessWidget {
+  final HomeController controller;
+  const _Dashboard({required this.controller});
+
+  @override
+  Widget build(BuildContext context) => RefreshIndicator(
+        onRefresh: () async => Future.wait([
+          controller.loadPets(),
+          controller.loadUpcomingAppointments(),
+          controller.loadNextDose(),
+        ]),
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(30, 20, 30, 32),
+          children: [
+            Row(
+              children: [
+                Obx(() {
+                  final user = controller.appCtrl.currentUser.value;
+                  return CircleAvatar(
+                    radius: 24,
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    child: Text(_initials(user?.fullName ?? 'Usuario')),
+                  );
+                }),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Obx(() => Text(
+                        'Hola, ${controller.appCtrl.currentUser.value?.firstName ?? ''}',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      )),
+                ),
+                IconButton(
+                  tooltip: 'Alertas epidemiológicas',
+                  onPressed: controller.goToAlerts,
+                  icon: const Icon(Icons.notifications),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Obx(() => controller.upcomingAppointments.isEmpty
+                ? _AppointmentHero.empty(
+                    onTap: () => Get.toNamed(AppRoutes.bookAppointment))
+                : _AppointmentHero(
+                    appointment: controller.upcomingAppointments.first,
+                    onTap: () => Get.toNamed(AppRoutes.bookAppointment),
+                  )),
+            const SizedBox(height: 24),
+            Text('Servicios', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _ServiceCard(
+                    icon: Icons.event_available,
+                    label: 'Agendar cita',
+                    onTap: () => Get.toNamed(AppRoutes.bookAppointment)
+                        ?.then((_) => controller.loadUpcomingAppointments()),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _ServiceCard(
+                    icon: Icons.medication,
+                    label: 'Medicamentos',
+                    onTap: controller.goToMedication,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Mis mascotas',
+                    style: Theme.of(context).textTheme.titleMedium),
+                TextButton(
+                    onPressed: controller.goToAddPet,
+                    child: const Text('Añadir')),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Obx(() => SizedBox(
+                  height: 105,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: controller.pets.length + 1,
+                    separatorBuilder: (_, __) => const SizedBox(width: 14),
+                    itemBuilder: (_, index) {
+                      if (index == controller.pets.length) {
+                        return _PetBubble.add(onTap: controller.goToAddPet);
+                      }
+                      final pet = controller.pets[index];
+                      return _PetBubble(
+                        pet: pet,
+                        onTap: () => controller.goToPetProfile(pet),
+                      );
+                    },
+                  ),
+                )),
+          ],
+        ),
+      );
+
+  static String _initials(String name) => name
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((part) => part.isNotEmpty)
+      .take(2)
+      .map((part) => part[0].toUpperCase())
+      .join();
+}
+
+class _Pets extends StatelessWidget {
+  final HomeController controller;
+  const _Pets({required this.controller});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Mis mascotas')),
+        body: Obx(() {
+          if (controller.isLoading.value && controller.pets.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (controller.pets.isEmpty) {
+            return const Center(
+                child: Text('Todavía no registraste mascotas.'));
+          }
+          return RefreshIndicator(
+            onRefresh: controller.loadPets,
+            child: ListView.separated(
+              padding: const EdgeInsets.all(24),
+              itemCount: controller.pets.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 14),
+              itemBuilder: (_, index) {
+                final pet = controller.pets[index];
+                return Card(
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(14),
+                    leading: const CircleAvatar(
+                      radius: 28,
+                      backgroundColor: Color(0xFFFFE0B2),
+                      child: Icon(Icons.pets, color: Colors.deepOrange),
+                    ),
+                    title: Text(pet.name,
+                        style: const TextStyle(fontWeight: FontWeight.w700)),
+                    subtitle: Text(
+                        '${pet.breedName ?? pet.speciesName ?? 'Mascota'} · ${pet.ageYears} años'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => controller.goToPetProfile(pet),
                   ),
                 );
-              }),
-              const SizedBox(height: 24),
-              Text('upcoming'.tr, style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg.withValues(alpha: 0.55))),
-              const SizedBox(height: 12),
-              Obx(() {
-                if (ctrl.upcomingAppointments.isEmpty) {
-                  return Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Center(
-                      child: Text('no_appointments'.tr, style: GoogleFonts.spaceGrotesk(fontSize: 13, color: fg.withValues(alpha: 0.5))),
+              },
+            ),
+          );
+        }),
+        floatingActionButton: FloatingActionButton(
+          onPressed: controller.goToAddPet,
+          backgroundColor: AppColors.primaryContainer,
+          child: const Icon(Icons.add),
+        ),
+      );
+}
+
+class _Appointments extends StatelessWidget {
+  final HomeController controller;
+  const _Appointments({required this.controller});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Mis citas')),
+        body: Obx(() => controller.upcomingAppointments.isEmpty
+            ? const Center(child: Text('No tienes citas próximas.'))
+            : ListView.separated(
+                padding: const EdgeInsets.all(24),
+                itemCount: controller.upcomingAppointments.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 12),
+                itemBuilder: (_, index) {
+                  final item = controller.upcomingAppointments[index];
+                  return Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.calendar_month,
+                          color: AppColors.primary),
+                      title: Text('${item['title']} · ${item['petName']}'),
+                      subtitle: Text(
+                          '${item['date']} · ${item['time']}\n${item['vetName']}'),
+                      isThreeLine: true,
                     ),
                   );
-                }
-                return Column(
-                  children: [
-                    for (int i = 0; i < ctrl.upcomingAppointments.length; i++)
-                      _buildAppointmentRow(
-                        context: context,
-                        date: ctrl.upcomingAppointments[i]['date'],
-                        time: ctrl.upcomingAppointments[i]['time'],
-                        title: '${ctrl.upcomingAppointments[i]['title']} · ${ctrl.upcomingAppointments[i]['petName']}',
-                        doctor: ctrl.upcomingAppointments[i]['vetName'],
-                        isLast: i == ctrl.upcomingAppointments.length - 1,
-                      ),
-                  ],
-                );
-              }),
-            ],
-          ),
+                },
+              )),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => Get.toNamed(AppRoutes.bookAppointment)
+              ?.then((_) => controller.loadUpcomingAppointments()),
+          icon: const Icon(Icons.add),
+          label: const Text('Nueva cita'),
         ),
       );
-    });
-  }
+}
 
-  Widget _buildPetsListTab(BuildContext context) {
-    final fg = Theme.of(context).colorScheme.onSurface;
-    final bg = Theme.of(context).colorScheme.surface;
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(22, 16, 22, 100),
+class _AppointmentHero extends StatelessWidget {
+  final Map<String, dynamic>? appointment;
+  final VoidCallback onTap;
+  const _AppointmentHero({required this.appointment, required this.onTap});
+  const _AppointmentHero.empty({required this.onTap}) : appointment = null;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: appointment == null
+              ? const Row(
+                  children: [
+                    Icon(Icons.calendar_month, color: Colors.white),
+                    SizedBox(width: 12),
+                    Text('Agenda tu próxima consulta',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.w700)),
+                  ],
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: .18),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '${appointment!['date']} ${appointment!['time']}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        const Icon(Icons.event, color: Colors.white),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    Text('Consulta: ${appointment!['petName']}',
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700)),
+                    Text(
+                        '${appointment!['vetName']} · ${appointment!['title']}',
+                        style: const TextStyle(color: Colors.white)),
+                  ],
+                ),
+        ),
+      );
+}
+
+class _ServiceCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  const _ServiceCard(
+      {required this.icon, required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) => OutlinedButton(
+        onPressed: onTap,
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size.fromHeight(90),
+          foregroundColor: AppColors.primary,
+        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.end, children: [
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Obx(() => Text('${ctrl.pets.length.toString().padLeft(2, '0')} / ${ctrl.pets.length.toString().padLeft(2, '0')}', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg.withValues(alpha: 0.55)))),
-                Text('your_pets'.tr, style: GoogleFonts.spaceGrotesk(fontSize: 28, fontWeight: FontWeight.w700, letterSpacing: -0.04 * 28, color: fg)),
-              ]),
-              GestureDetector(onTap: ctrl.goToAddPet, child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6), decoration: BoxDecoration(border: Border.all(color: fg, width: 1), borderRadius: BorderRadius.circular(999)), child: Row(children: [Text('add'.tr, style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.12, color: fg)), const SizedBox(width: 6), Icon(Icons.add, size: 12, color: fg)]))),
-            ]),
-            const SizedBox(height: 20),
-            Obx(() {
-              if (ctrl.isLoading.value) return const Center(child: CircularProgressIndicator());
-              if (ctrl.pets.isEmpty) return Container(padding: const EdgeInsets.all(40), child: Center(child: Text('no_pets_yet'.tr, textAlign: TextAlign.center, style: GoogleFonts.spaceGrotesk(fontSize: 13, height: 1.6, color: fg.withValues(alpha: 0.45)))));
-              return ListView.separated(shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), itemCount: ctrl.pets.length, separatorBuilder: (_, __) => const SizedBox(height: 12), itemBuilder: (ctx, i) {
-                final pet = ctrl.pets[i];
-                final birthDate = pet.birthDate ?? DateTime.now();
-                final ageYears = DateTime.now().year - birthDate.year;
-                final ageMonths = (DateTime.now().month - birthDate.month).abs();
-                return PetCard(
-                  name: pet.name ?? 'Unknown',
-                  species: pet.speciesName ?? 'Unknown',
-                  breed: (pet.breedName ?? pet.speciesName ?? 'Unknown'),
-                  sex: pet.sexCode ?? '?',
-                  ageYears: ageYears,
-                  ageMonths: ageMonths > 0 ? ageMonths : 0,
-                  status: 'active',
-                  onTap: () => ctrl.goToPetProfile(pet),
-                );
-              });
-            }),
+            Icon(icon, size: 30),
+            const SizedBox(height: 6),
+            Text(label)
           ],
         ),
-      ),
-    );
-  }
+      );
+}
 
-  Widget _buildAppointmentTab(BuildContext context) {
-    final fg = Theme.of(context).colorScheme.onSurface;
-    return Obx(() {
-      if (ctrl.isLoading.value) {
-        return const Center(child: CircularProgressIndicator());
-      }
-      return SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(22, 16, 22, 100),
+class _PetBubble extends StatelessWidget {
+  final Pet? pet;
+  final VoidCallback onTap;
+  const _PetBubble({required this.pet, required this.onTap});
+  const _PetBubble.add({required this.onTap}) : pet = null;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(40),
+        child: SizedBox(
+          width: 66,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('book_appointment'.tr,
-                  style: GoogleFonts.spaceGrotesk(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.04 * 28,
-                    color: fg,
-                  )),
-              const SizedBox(height: 20),
-              // Book new appointment button
-              GestureDetector(
-                onTap: () => Get.toNamed(AppRoutes.bookAppointment)
-                    ?.then((_) => ctrl.loadUpcomingAppointments()),
-                child: Container(
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: fg, width: 1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: fg.withValues(alpha: 0.08),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(Icons.add, color: fg, size: 22),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('book_new_appt'.tr,
-                                style: GoogleFonts.spaceGrotesk(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    letterSpacing: 0.2,
-                                    color: fg)),
-                            const SizedBox(height: 3),
-                            Text('select_vet'.tr,
-                                style: GoogleFonts.jetBrainsMono(
-                                    fontSize: 10,
-                                    letterSpacing: 0.12,
-                                    color: fg.withValues(alpha: 0.55))),
-                          ],
-                        ),
-                      ),
-                      Icon(Icons.chevron_right, color: fg, size: 20),
-                    ],
-                  ),
-                ),
+              CircleAvatar(
+                radius: 30,
+                backgroundColor:
+                    pet == null ? AppColors.surface : const Color(0xFFFFE0B2),
+                child: Icon(pet == null ? Icons.add : Icons.pets,
+                    color: pet == null ? AppColors.outline : Colors.deepOrange),
               ),
-              const SizedBox(height: 28),
-              Text('upcoming'.tr,
-                  style: GoogleFonts.jetBrainsMono(
-                      fontSize: 10, letterSpacing: 0.18, color: fg.withValues(alpha: 0.55))),
-              const SizedBox(height: 12),
-              if (ctrl.upcomingAppointments.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Center(
-                    child: Text('no_appointments'.tr,
-                        style: GoogleFonts.spaceGrotesk(
-                            fontSize: 13, color: fg.withValues(alpha: 0.5))),
-                  ),
-                )
-              else
-                Column(
-                  children: [
-                    for (int i = 0; i < ctrl.upcomingAppointments.length; i++)
-                      _buildAppointmentRow(
-                        context: context,
-                        date: ctrl.upcomingAppointments[i]['date'],
-                        time: ctrl.upcomingAppointments[i]['time'],
-                        title:
-                            '${ctrl.upcomingAppointments[i]['title']} · ${ctrl.upcomingAppointments[i]['petName']}',
-                        doctor: ctrl.upcomingAppointments[i]['vetName'],
-                        isLast: i == ctrl.upcomingAppointments.length - 1,
-                      ),
-                  ],
-                ),
+              const SizedBox(height: 6),
+              Text(pet?.name ?? 'Añadir',
+                  maxLines: 1, overflow: TextOverflow.ellipsis),
             ],
           ),
         ),
       );
-    });
-  }
-
-  Widget _buildAppointmentRow({required BuildContext context, required String date, required String time, required String title, required String doctor, bool isLast = false}) {
-    final fg = Theme.of(context).colorScheme.onSurface;
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(border: Border(top: BorderSide(color: fg), bottom: isLast ? BorderSide(color: fg) : BorderSide.none)),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(date, style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.12, color: fg.withValues(alpha: 0.55))),
-          const SizedBox(height: 6),
-          Text(time, style: GoogleFonts.spaceGrotesk(fontSize: 16, fontWeight: FontWeight.w600, color: fg)),
-        ]),
-        Expanded(child: Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(title, style: GoogleFonts.spaceGrotesk(fontSize: 13, fontWeight: FontWeight.w600, color: fg)),
-          const SizedBox(height: 4),
-          Text(doctor, style: GoogleFonts.jetBrainsMono(fontSize: 9, color: fg.withValues(alpha: 0.55))),
-        ]))),
-        Icon(Icons.chevron_right, size: 16, color: fg),
-      ]),
-    );
-  }
 }

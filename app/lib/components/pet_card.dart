@@ -96,15 +96,14 @@ class PetCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
                             border: Border.all(color: fg, width: 0.5),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
-                            ageYears > 0
-                                ? '$ageYears y'
-                                : '${ageMonths}mo',
+                            ageYears > 0 ? '$ageYears y' : '${ageMonths}mo',
                             style: GoogleFonts.jetBrainsMono(
                               fontSize: 8,
                               fontWeight: FontWeight.w500,
@@ -162,9 +161,7 @@ class PetCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: status != 'active'
-                    ? _buildPulseAnimation(fg)
-                    : null,
+                child: status != 'active' ? _buildPulseAnimation(fg) : null,
               ),
             ),
           ],

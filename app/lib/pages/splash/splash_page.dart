@@ -24,13 +24,16 @@ class _SplashPageState extends State<SplashPage>
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(duration: const Duration(milliseconds: 2200), vsync: this);
-    _ring = Tween<double>(begin: 327, end: 0)
-        .animate(CurvedAnimation(parent: _ctrl, curve: const Interval(0.0, 0.5, curve: Curves.easeInOut)));
-    _cross = Tween<double>(begin: 60, end: 0)
-        .animate(CurvedAnimation(parent: _ctrl, curve: const Interval(0.15, 0.65, curve: Curves.easeInOut)));
-    _titleFade = Tween<double>(begin: 0, end: 1)
-        .animate(CurvedAnimation(parent: _ctrl, curve: const Interval(0.5, 1.0, curve: Curves.easeIn)));
+    _ctrl = AnimationController(
+        duration: const Duration(milliseconds: 2200), vsync: this);
+    _ring = Tween<double>(begin: 327, end: 0).animate(CurvedAnimation(
+        parent: _ctrl,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeInOut)));
+    _cross = Tween<double>(begin: 60, end: 0).animate(CurvedAnimation(
+        parent: _ctrl,
+        curve: const Interval(0.15, 0.65, curve: Curves.easeInOut)));
+    _titleFade = Tween<double>(begin: 0, end: 1).animate(CurvedAnimation(
+        parent: _ctrl, curve: const Interval(0.5, 1.0, curve: Curves.easeIn)));
 
     _ctrl.forward().then((_) => _checkSession());
   }
@@ -49,7 +52,9 @@ class _SplashPageState extends State<SplashPage>
 
       final session = Supabase.instance.client.auth.currentSession;
       if (session != null && user != null) {
-        Get.offAllNamed(user.role == 'veterinarian' ? AppRoutes.vetDashboard : AppRoutes.homeClient);
+        Get.offAllNamed(user.role == 'veterinarian'
+            ? AppRoutes.vetDashboard
+            : AppRoutes.homeClient);
       } else {
         Get.offAllNamed(AppRoutes.signIn);
       }
@@ -78,14 +83,16 @@ class _SplashPageState extends State<SplashPage>
               SizedBox(
                 width: 120,
                 height: 120,
-                child: CustomPaint(painter: _LogoPainter(_ring.value, _cross.value)),
+                child: CustomPaint(
+                    painter: _LogoPainter(_ring.value, _cross.value)),
               ),
               const SizedBox(height: 28),
               Opacity(
                 opacity: _titleFade.value,
                 child: Text(
                   'VetCare',
-                  style: GoogleFonts.spaceGrotesk(fontSize: 30,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 30,
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.04,
                     color: Colors.white,
@@ -97,7 +104,8 @@ class _SplashPageState extends State<SplashPage>
                 opacity: _titleFade.value * 0.55,
                 child: Text(
                   'SIGNED · DECENTRALIZED · v 4.2',
-                  style: GoogleFonts.jetBrainsMono(fontSize: 9,
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 9,
                     letterSpacing: 0.32,
                     color: Colors.white,
                   ),

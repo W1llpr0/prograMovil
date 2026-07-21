@@ -116,11 +116,13 @@ class AppTranslations extends Translations {
           'delete_pet': 'Delete pet',
           'change_photo': 'Change photo',
           'confirm_delete': 'Confirm delete',
-          'confirm_delete_pet_msg': 'Are you sure you want to delete this pet? This action cannot be undone.',
+          'confirm_delete_pet_msg':
+              'Are you sure you want to delete this pet? This action cannot be undone.',
           'pet_deleted': 'Pet deleted successfully.',
           // Appointments tab
           'no_pets_yet_appt': 'No pets registered',
-          'no_pets_appt_hint': 'Register a pet in the Pets tab to book an appointment.',
+          'no_pets_appt_hint':
+              'Register a pet in the Pets tab to book an appointment.',
           'no_vets_available': 'No veterinarians available at the moment.',
           'select_pet_appointment': 'SELECT YOUR PET TO BOOK AN APPOINTMENT',
           // Medication status
@@ -190,7 +192,8 @@ class AppTranslations extends Translations {
           'your_pets': 'Tus mascotas',
           'add': 'AGREGAR',
           'no_appointments': 'Sin próximas citas',
-          'no_pets_yet': 'Sin mascotas.\nToca AGREGAR para registrar la primera.',
+          'no_pets_yet':
+              'Sin mascotas.\nToca AGREGAR para registrar la primera.',
           'new_pet': 'NUEVA MASCOTA',
           'add_pet_title': 'AGREGAR MASCOTA',
           'tell_about_pet': 'Cuéntanos\nsobre ',
@@ -272,13 +275,17 @@ class AppTranslations extends Translations {
           'delete_pet': 'Eliminar mascota',
           'change_photo': 'Cambiar foto',
           'confirm_delete': 'Confirmar eliminación',
-          'confirm_delete_pet_msg': '¿Estás seguro que deseas eliminar esta mascota? Esta acción no se puede deshacer.',
+          'confirm_delete_pet_msg':
+              '¿Estás seguro que deseas eliminar esta mascota? Esta acción no se puede deshacer.',
           'pet_deleted': 'Mascota eliminada correctamente.',
           // Appointments tab
           'no_pets_yet_appt': 'Sin mascotas registradas',
-          'no_pets_appt_hint': 'Registra una mascota en la pestaña Mascotas para agendar una cita.',
-          'no_vets_available': 'No hay veterinarios disponibles en este momento.',
-          'select_pet_appointment': 'SELECCIONA TU MASCOTA PARA AGENDAR UNA CITA',
+          'no_pets_appt_hint':
+              'Registra una mascota en la pestaña Mascotas para agendar una cita.',
+          'no_vets_available':
+              'No hay veterinarios disponibles en este momento.',
+          'select_pet_appointment':
+              'SELECCIONA TU MASCOTA PARA AGENDAR UNA CITA',
           // Medication status
           'no_active_meds': 'Sin medicamentos activos',
           'no_pets_meds': 'Sin mascotas registradas aún',
@@ -314,7 +321,8 @@ class AppTranslations extends Translations {
           'vet_end_time': 'FIN',
           'vet_slot_duration': 'DURACIÓN POR CITA (min)',
           'vet_save_ok': 'Horario guardado.',
-          'vet_save_error': 'No se pudo guardar el horario. Inténtalo de nuevo.',
+          'vet_save_error':
+              'No se pudo guardar el horario. Inténtalo de nuevo.',
         },
       };
 }

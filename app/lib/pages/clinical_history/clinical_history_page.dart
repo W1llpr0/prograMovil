@@ -1,239 +1,230 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../../components/vc_wordmark.dart';
+import 'package:intl/intl.dart';
+
+import '../../components/app_controller.dart';
+import '../../configs/app_routes.dart';
+import '../../configs/theme.dart';
 import '../../models/consultation.dart';
-import 'clinical_history_controller.dart';
+import '../../models/consultation_document.dart';
+import '../../services/consultation_service.dart';
+import '../../services/document_service.dart';
+import '../../services/review_service.dart';
 
-class ClinicalHistoryPage extends StatelessWidget {
-  ClinicalHistoryPage({super.key});
+class ClinicalHistoryPage extends StatefulWidget {
+  const ClinicalHistoryPage({super.key});
 
-  final ClinicalHistoryController ctrl = Get.put(ClinicalHistoryController());
+  @override
+  State<ClinicalHistoryPage> createState() => _ClinicalHistoryPageState();
+}
+
+class _ClinicalHistoryPageState extends State<ClinicalHistoryPage> {
+  final documentService = DocumentService();
+  final consultationService = ConsultationService();
+  final reviewService = ReviewService();
+  List<ConsultationDocument> documents = const [];
+  bool reviewExists = false;
+  bool reviewStateLoaded = false;
+  bool canReview = false;
+
+  Consultation? get consultation => Get.arguments as Consultation?;
+
+  @override
+  void initState() {
+    super.initState();
+    loadDocuments();
+    loadReview();
+  }
+
+  Future<void> loadReview() async {
+    final item = consultation;
+    final isClient = Get.find<AppController>().isClient;
+    if (item?.id == null || item?.status != 'completed' || !isClient) {
+      if (mounted) {
+        setState(() {
+          reviewStateLoaded = true;
+          canReview = false;
+        });
+      }
+      return;
+    }
+    final result = await reviewService.fetchForConsultation(item!.id!);
+    if (mounted) {
+      setState(() {
+        reviewStateLoaded = true;
+        reviewExists = result.success && result.data != null;
+        canReview = result.success && result.data == null;
+      });
+    }
+  }
+
+  Future<void> openReview(Consultation item) async {
+    final submitted = await Get.toNamed(
+      AppRoutes.reviewConsultation,
+      arguments: item,
+    );
+    if (mounted && submitted == true) {
+      setState(() {
+        reviewExists = true;
+        canReview = false;
+      });
+    }
+  }
+
+  Future<void> loadDocuments() async {
+    final id = consultation?.id;
+    if (id == null) return;
+    final result = await documentService.fetchForConsultation(id);
+    if (mounted && result.success) {
+      setState(() => documents = result.data ?? []);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final Consultation? c = Get.arguments as Consultation?;
-
+    final item = consultation;
+    if (item == null) {
+      return const Scaffold(
+          body: Center(child: Text('Consulta no encontrada.')));
+    }
+    final verified = consultationService.verifyIntegrity(item);
     return Scaffold(
-      backgroundColor: Colors.white,
+      appBar: AppBar(
+        leading:
+            IconButton(onPressed: Get.back, icon: const Icon(Icons.arrow_back)),
+        title: const Text('Historia clínica'),
+      ),
       body: SafeArea(
-        child: Column(
+        top: false,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(30, 16, 30, 40),
           children: [
-            // ── Header nav ─────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(22, 8, 22, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () => Get.back(),
-                    child: Container(
-                      width: 38, height: 38,
-                      decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
-                      child: const Icon(Icons.chevron_left, size: 18, color: Colors.black),
-                    ),
+            Row(
+              children: [
+                const CircleAvatar(
+                  radius: 34,
+                  backgroundColor: Color(0xFFFFE0B2),
+                  child: Icon(Icons.pets, color: Colors.deepOrange, size: 34),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(item.petName ?? 'Paciente',
+                          style: Theme.of(context).textTheme.titleLarge),
+                      Text(
+                          '${item.specialtyName ?? 'Consulta'} · ${DateFormat('dd MMM yyyy', 'es_ES').format(item.scheduledAt)}'),
+                      Text('Dr. ${item.vetName ?? 'Veterinario'}'),
+                    ],
                   ),
-                  const VcWordmark(),
-                  Container(
-                    width: 38, height: 38,
-                    decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
-                    child: const Icon(Icons.more_horiz, size: 18, color: Colors.black),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(height: 26),
+            _Section(
+                title: 'Diagnóstico', content: item.diagnosis ?? 'Pendiente'),
+            _Section(
+                title: 'Tratamiento prescrito',
+                content: item.treatment ?? 'Pendiente'),
+            if (item.notes?.isNotEmpty == true)
+              _Section(title: 'Observaciones', content: item.notes!),
+            if (item.vitals.isNotEmpty) ...[
+              Text('Signos vitales',
+                  style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                children: item.vitals.entries
+                    .map((entry) =>
+                        Chip(label: Text('${entry.key}: ${entry.value}')))
+                    .toList(),
+              ),
+              const SizedBox(height: 20),
+            ],
+            Text('Documentos', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 10),
+            if (documents.isEmpty)
+              const Text('Sin documentos adjuntos.')
+            else
+              ...documents.map((document) => Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.description,
+                          color: AppColors.primary),
+                      title: Text(document.fileName),
+                      subtitle: Text(document.docType),
+                    ),
+                  )),
+            const SizedBox(height: 20),
+            if (item.integrityHash != null)
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: verified
+                      ? AppColors.primaryContainer
+                      : const Color(0xFFFFDAD6),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Row(
                   children: [
-                    // ── Appointment eyebrow ─────────────────────
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(22, 12, 22, 0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            c != null
-                                ? 'APPOINTMENT · ${c.scheduledAt.day.toString().padLeft(2, '0')} ${_monthName(c.scheduledAt.month).toUpperCase()} ${c.scheduledAt.year} · ${c.status.toUpperCase()}'
-                                : 'APPOINTMENT · 14 MAY 2026 · COMPLETED',
-                            style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
-                                color: Colors.black.withValues(alpha: 0.55)),
-                          ),
-                          const SizedBox(height: 12),
-                          RichText(
-                            text: TextSpan(children: [
-                              TextSpan(
-                                text: c?.diagnosis != null ? _firstWord(c!.diagnosis!) : 'Atopic\ndermatitis.',
-                                style: GoogleFonts.spaceGrotesk(fontSize: 38, fontWeight: FontWeight.w700,
-                                    letterSpacing: -0.04 * 38, height: 0.95, color: Colors.black),
-                              ),
-                              TextSpan(
-                                text: c?.diagnosis != null && c!.diagnosis!.split(' ').length > 1
-                                    ? ' ${c.diagnosis!.split(' ').skip(1).join(' ')}.'
-                                    : ' flare-up.',
-                                style: GoogleFonts.instrumentSerif(fontSize: 32, fontStyle: FontStyle.italic,
-                                    fontWeight: FontWeight.w400, letterSpacing: -0.02 * 32, color: Colors.black),
-                              ),
-                            ]),
-                          ),
-
-                          // Tag chips
-                          const SizedBox(height: 18),
-                          Wrap(
-                            spacing: 6,
-                            runSpacing: 6,
-                            children: [
-                              if (c?.petName != null) _Chip(c!.petName!.toUpperCase()),
-                              const _Chip('CHRONIC'),
-                              const _Chip('GRADE II'),
-                              const _Chip('FOLLOW-UP · 14 D'),
-                            ],
-                          ),
-                        ],
-                      ),
+                    Icon(verified ? Icons.verified_user : Icons.gpp_bad,
+                        color: verified ? AppColors.primary : AppColors.error),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(verified
+                          ? 'Registro íntegro · firma SHA-256 verificada'
+                          : 'La firma de este registro no coincide.'),
                     ),
-
-                    // ── Doctor card ────────────────────────────────
-                    Container(
-                      margin: const EdgeInsets.fromLTRB(22, 22, 22, 0),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      padding: const EdgeInsets.all(18),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 52, height: 52,
-                            decoration: const BoxDecoration(color: Colors.black, shape: BoxShape.circle),
-                            child: Center(
-                              child: Text(
-                                c?.vetName != null ? c!.vetName![0].toUpperCase() : 'RP',
-                                style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w600, fontSize: 18, color: Colors.white),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(c?.vetName != null ? 'Dr. ${c!.vetName}' : 'Dr. Rodrigo Paz',
-                                    style: GoogleFonts.spaceGrotesk(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black)),
-                                const SizedBox(height: 4),
-                                Text('Exotics & Small Animals · Lic. BO-08214',
-                                    style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.08,
-                                        color: Colors.black.withValues(alpha: 0.55))),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                            decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
-                            child: Text('SIGNED', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16, color: Colors.black)),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // ── Diagnosis text ──────────────────────────────
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(22, 22, 22, 0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('DIAGNOSIS', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
-                          const SizedBox(height: 8),
-                          Text(
-                            c?.diagnosis ??
-                                'Bilateral pododermatitis with secondary Malassezia infection. Score 4/10 on the canine atopic dermatitis extent index. Triggered by new environmental allergen exposure during March–April.',
-                            style: GoogleFonts.spaceGrotesk(fontSize: 13, height: 1.55, color: Colors.black),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // Hair line
-                    Container(height: 1, color: Colors.black, margin: const EdgeInsets.fromLTRB(22, 22, 22, 22)),
-
-                    // ── Treatment list ──────────────────────────────
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(22, 0, 22, 0),
-                      child: Text('PRESCRIBED TREATMENT · 06 ITEMS',
-                          style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: Colors.black)),
-                    ),
-                    const SizedBox(height: 12),
-
-                    _RxRow(code: 'RX 01', name: 'Apoquel 16 mg', regime: '1 tab / 24 h · 14 days', isFirst: true),
-                    _RxRow(code: 'RX 02', name: 'Malaseb shampoo', regime: 'Bathe / 72 h · 4 weeks', isFirst: false),
-                    _RxRow(code: 'RX 03', name: 'Omega-3 (EPA/DHA)', regime: '1 ml / 24 h · ongoing', isFirst: false),
-                    _RxRow(code: 'RX 04', name: 'Hypoallergenic diet', regime: 'Replace kibble · 60 days', isFirst: false),
-                    Container(height: 1, color: Colors.black, margin: const EdgeInsets.symmetric(horizontal: 22)),
-                    const SizedBox(height: 40),
                   ],
                 ),
               ),
-            ),
+            if (reviewStateLoaded && reviewExists) ...[
+              const SizedBox(height: 20),
+              const Chip(
+                avatar: Icon(Icons.check_circle, size: 18),
+                label: Text('Esta atención ya fue evaluada'),
+              ),
+            ],
           ],
         ),
       ),
-    );
-  }
-
-  String _monthName(int m) {
-    const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return months[m];
-  }
-
-  String _firstWord(String s) => s.split(' ').first;
-}
-
-class _Chip extends StatelessWidget {
-  final String label;
-  const _Chip(this.label);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(border: Border.all(color: Colors.black), borderRadius: BorderRadius.circular(999)),
-      child: Text(label, style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16, color: Colors.black)),
+      bottomNavigationBar: reviewStateLoaded && canReview
+          ? SafeArea(
+              minimum: const EdgeInsets.fromLTRB(30, 10, 30, 18),
+              child: ElevatedButton.icon(
+                onPressed: () => openReview(item),
+                icon: const Icon(Icons.star),
+                label: const Text('Evaluar atención'),
+              ),
+            )
+          : null,
     );
   }
 }
 
-class _RxRow extends StatelessWidget {
-  final String code, name, regime;
-  final bool isFirst;
-  const _RxRow({required this.code, required this.name, required this.regime, required this.isFirst});
+class _Section extends StatelessWidget {
+  final String title;
+  final String content;
+  const _Section({required this.title, required this.content});
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(22, 14, 22, 14),
-      decoration: const BoxDecoration(border: Border(top: BorderSide(color: Colors.black))),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 54,
-            child: Text(code, style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.16, color: Colors.black)),
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name, style: GoogleFonts.spaceGrotesk(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black)),
-                const SizedBox(height: 3),
-                Text(regime, style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.04,
-                    color: Colors.black.withValues(alpha: 0.55))),
-              ],
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(bottom: 22),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceContainer,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Text(content),
             ),
-          ),
-          const Icon(Icons.chevron_right, size: 16, color: Colors.black),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
 }

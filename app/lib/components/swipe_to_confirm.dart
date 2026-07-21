@@ -37,7 +37,7 @@ class _SwipeToConfirmState extends State<SwipeToConfirm> {
 
   void _onPointerMove(PointerMoveEvent details, double maxDrag) {
     if (_isConfirmed) return;
-    
+
     final newPosition = (_dragPosition + details.delta.dx).clamp(0.0, maxDrag);
     final progress = newPosition / maxDrag;
 
@@ -50,7 +50,7 @@ class _SwipeToConfirmState extends State<SwipeToConfirm> {
 
   void _onPointerUp(PointerUpEvent details) {
     if (_isConfirmed) return;
-    
+
     if (_dragPosition < 200) {
       setState(() => _dragPosition = 0);
     }
@@ -58,7 +58,7 @@ class _SwipeToConfirmState extends State<SwipeToConfirm> {
 
   void _confirmDose() {
     HapticFeedback.heavyImpact();
-    
+
     setState(() {
       _isConfirmed = true;
       _confirmedTime = DateFormat('HH:mm').format(DateTime.now());

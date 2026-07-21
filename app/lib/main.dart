@@ -26,6 +26,9 @@ import 'pages/register_medical/register_medical_page.dart';
 import 'pages/profile/profile_page.dart';
 import 'pages/settings/settings_page.dart';
 import 'pages/verify_email/verify_email_page.dart';
+import 'pages/pre_consultation/pre_consultation_page.dart';
+import 'pages/consultation_documents/consultation_documents_page.dart';
+import 'pages/review_consultation/review_consultation_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,75 +38,91 @@ Future<void> main() async {
     anonKey: SupabaseConfig.anonKey,
   );
 
-  runApp(const VetCareApp());
-  // Force GetX locale so translations resolve correctly after hot reload
-  WidgetsBinding.instance.addPostFrameCallback(
-      (_) => Get.updateLocale(const Locale('es', 'ES')));
+  final appController = Get.put(AppController());
+  await appController.loadPreferences();
+  runApp(VetCareApp(appController: appController));
 }
 
 class VetCareApp extends StatelessWidget {
-  const VetCareApp({super.key});
+  final AppController appController;
+  const VetCareApp({super.key, required this.appController});
 
   @override
-  Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'VetCare',
+  Widget build(BuildContext context) => Obx(() => GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'VetCare',
 
-      // Theme
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
-      themeMode: ThemeMode.light,
+        // Theme
+        theme: AppTheme.light(),
+        darkTheme: AppTheme.dark(),
+        themeMode: appController.selectedThemeMode,
 
-      // Translations
-      translations: AppTranslations(),
-      locale: const Locale('es', 'ES'),
-      fallbackLocale: const Locale('es', 'ES'),
+        // Translations
+        translations: AppTranslations(),
+        locale: appController.selectedLocale,
+        fallbackLocale: const Locale('es', 'ES'),
 
-      // Flutter localizations (for date/time pickers)
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('en', 'US'),
-        Locale('es', 'ES'),
-      ],
+        // Flutter localizations (for date/time pickers)
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('en', 'US'),
+          Locale('es', 'ES'),
+        ],
 
-      // Global controller
-      initialBinding: BindingsBuilder(() {
-        Get.put(AppController());
-      }),
-
-      // Routes
-      initialRoute: AppRoutes.splash,
-      getPages: [
-        GetPage(name: AppRoutes.splash, page: () => const SplashPage()),
-        GetPage(name: AppRoutes.signIn, page: () => SignInPage()),
-        GetPage(name: AppRoutes.signUp, page: () => SignUpPage()),
-        GetPage(name: AppRoutes.verifyEmail, page: () => const VerifyEmailPage()),
-        GetPage(name: AppRoutes.homeClient, page: () => HomePage()),
-        GetPage(name: AppRoutes.addPet, page: () => AddPetPage()),
-        GetPage(name: AppRoutes.petProfile, page: () => PetProfilePage()),
-        GetPage(
-          name: AppRoutes.bookAppointment,
-          page: () => const BookAppointmentPage(),
-          binding: BindingsBuilder(
-            () => Get.lazyPut<BookAppointmentController>(
-              () => BookAppointmentController(),
-              fenix: true,
+        // Routes
+        initialRoute: AppRoutes.splash,
+        getPages: [
+          GetPage(name: AppRoutes.splash, page: () => const SplashPage()),
+          GetPage(name: AppRoutes.signIn, page: () => SignInPage()),
+          GetPage(name: AppRoutes.signUp, page: () => SignUpPage()),
+          GetPage(
+              name: AppRoutes.verifyEmail, page: () => const VerifyEmailPage()),
+          GetPage(name: AppRoutes.homeClient, page: () => const HomePage()),
+          GetPage(name: AppRoutes.addPet, page: () => AddPetPage()),
+          GetPage(name: AppRoutes.petProfile, page: () => PetProfilePage()),
+          GetPage(
+            name: AppRoutes.bookAppointment,
+            page: () => const BookAppointmentPage(),
+            binding: BindingsBuilder(
+              () => Get.lazyPut<BookAppointmentController>(
+                () => BookAppointmentController(),
+                fenix: true,
+              ),
             ),
           ),
-        ),
-        GetPage(name: AppRoutes.clinicalHistory, page: () => ClinicalHistoryPage()),
-        GetPage(name: AppRoutes.medicationAdherence, page: () => MedicationAdherencePage()),
-        GetPage(name: AppRoutes.epidemiologicalMap, page: () => EpidemiologicalMapPage()),
-        GetPage(name: AppRoutes.vetDashboard, page: () => VetDashboardPage()),
-        GetPage(name: AppRoutes.registerMedical, page: () => RegisterMedicalPage()),
-        GetPage(name: AppRoutes.profile, page: () => ProfilePage()),
-        GetPage(name: AppRoutes.settings, page: () => SettingsPage()),
-      ],
-    );
-  }
+          GetPage(
+              name: AppRoutes.clinicalHistory,
+              page: () => const ClinicalHistoryPage()),
+          GetPage(
+              name: AppRoutes.medicationAdherence,
+              page: () => MedicationAdherencePage()),
+          GetPage(
+              name: AppRoutes.epidemiologicalMap,
+              page: () => EpidemiologicalMapPage()),
+          GetPage(
+              name: AppRoutes.vetDashboard,
+              page: () => const VetDashboardPage()),
+          // Backwards-compatible alias kept in AppRoutes.
+          GetPage(
+              name: AppRoutes.homeVet, page: () => const VetDashboardPage()),
+          GetPage(
+              name: AppRoutes.registerMedical,
+              page: () => RegisterMedicalPage()),
+          GetPage(name: AppRoutes.profile, page: () => ProfilePage()),
+          GetPage(name: AppRoutes.settings, page: () => SettingsPage()),
+          GetPage(
+              name: AppRoutes.preConsultation,
+              page: () => const PreConsultationPage()),
+          GetPage(
+              name: AppRoutes.consultationDocuments,
+              page: () => ConsultationDocumentsPage()),
+          GetPage(
+              name: AppRoutes.reviewConsultation,
+              page: () => ReviewConsultationPage()),
+        ],
+      ));
 }

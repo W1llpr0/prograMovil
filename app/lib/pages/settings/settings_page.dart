@@ -25,12 +25,17 @@ class SettingsPage extends StatelessWidget {
                   GestureDetector(
                     onTap: () => Get.back(),
                     child: Container(
-                      width: 38, height: 38,
-                      decoration: BoxDecoration(border: Border.all(color: fg), borderRadius: BorderRadius.circular(999)),
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: fg),
+                          borderRadius: BorderRadius.circular(999)),
                       child: Icon(Icons.chevron_left, size: 18, color: fg),
                     ),
                   ),
-                  Text('settings'.tr.toUpperCase(), style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg)),
+                  Text('settings'.tr.toUpperCase(),
+                      style: GoogleFonts.jetBrainsMono(
+                          fontSize: 10, letterSpacing: 0.18, color: fg)),
                   const SizedBox(width: 38),
                 ],
               ),
@@ -43,17 +48,35 @@ class SettingsPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Language section
-                    Text('language'.tr, style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
-                        color: fg.withValues(alpha: 0.55))),
+                    Text('language'.tr,
+                        style: GoogleFonts.jetBrainsMono(
+                            fontSize: 10,
+                            letterSpacing: 0.18,
+                            color: fg.withValues(alpha: 0.55))),
                     const SizedBox(height: 12),
                     RichText(
                       text: TextSpan(children: [
-                        TextSpan(text: 'Selecciona tu',
-                            style: GoogleFonts.spaceGrotesk(fontSize: 24, fontWeight: FontWeight.w700,
-                                letterSpacing: -0.04 * 24, height: 0.92, color: fg)),
-                        TextSpan(text: ' idioma.',
-                            style: GoogleFonts.instrumentSerif(fontSize: 22, fontStyle: FontStyle.italic,
-                                fontWeight: FontWeight.w400, letterSpacing: -0.02 * 22, height: 1.0, color: fg)),
+                        TextSpan(
+                            text: ctrl.appCtrl.locale.value == 'en'
+                                ? 'Choose your'
+                                : 'Selecciona tu',
+                            style: GoogleFonts.spaceGrotesk(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -0.04 * 24,
+                                height: 0.92,
+                                color: fg)),
+                        TextSpan(
+                            text: ctrl.appCtrl.locale.value == 'en'
+                                ? ' language.'
+                                : ' idioma.',
+                            style: GoogleFonts.instrumentSerif(
+                                fontSize: 22,
+                                fontStyle: FontStyle.italic,
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: -0.02 * 22,
+                                height: 1.0,
+                                color: fg)),
                       ]),
                     ),
 
@@ -61,65 +84,83 @@ class SettingsPage extends StatelessWidget {
 
                     // Language options
                     Obx(() => Column(
-                      children: [
-                        _LanguageOption(
-                          label: 'Español',
-                          selected: ctrl.appCtrl.locale.value == 'es',
-                          onTap: () => ctrl.changeLanguage('es'),
-                        ),
-                        const SizedBox(height: 12),
-                        _LanguageOption(
-                          label: 'English',
-                          selected: ctrl.appCtrl.locale.value == 'en',
-                          onTap: () => ctrl.changeLanguage('en'),
-                        ),
-                      ],
-                    )),
+                          children: [
+                            _LanguageOption(
+                              label: 'Español',
+                              selected: ctrl.appCtrl.locale.value == 'es',
+                              onTap: () => ctrl.changeLanguage('es'),
+                            ),
+                            const SizedBox(height: 12),
+                            _LanguageOption(
+                              label: 'English',
+                              selected: ctrl.appCtrl.locale.value == 'en',
+                              onTap: () => ctrl.changeLanguage('en'),
+                            ),
+                          ],
+                        )),
 
                     const SizedBox(height: 32),
 
                     // Theme section
-                    Text('appearance'.tr, style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
-                        color: fg.withValues(alpha: 0.55))),
+                    Text('appearance'.tr,
+                        style: GoogleFonts.jetBrainsMono(
+                            fontSize: 10,
+                            letterSpacing: 0.18,
+                            color: fg.withValues(alpha: 0.55))),
                     const SizedBox(height: 12),
-                    
+
                     Obx(() => GestureDetector(
-                      onTap: () => ctrl.appCtrl.toggleTheme(),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: fg),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(ctrl.appCtrl.isDark.value ? 'dark_mode'.tr : 'light_mode'.tr,
-                                style: GoogleFonts.spaceGrotesk(fontSize: 14, fontWeight: FontWeight.w500, color: fg)),
-                            Container(
-                              width: 50, height: 28,
-                              decoration: BoxDecoration(
-                                color: ctrl.appCtrl.isDark.value ? fg : Colors.grey.shade300,
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: Align(
-                                alignment: ctrl.appCtrl.isDark.value ? Alignment.centerRight : Alignment.centerLeft,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                                  child: Container(
-                                    width: 22, height: 22,
-                                    decoration: BoxDecoration(
-                                      color: bg,
-                                      borderRadius: BorderRadius.circular(11),
+                          onTap: ctrl.toggleTheme,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 14),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: fg),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                    ctrl.appCtrl.isDark.value
+                                        ? 'dark_mode'.tr
+                                        : 'light_mode'.tr,
+                                    style: GoogleFonts.spaceGrotesk(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: fg)),
+                                Container(
+                                  width: 50,
+                                  height: 28,
+                                  decoration: BoxDecoration(
+                                    color: ctrl.appCtrl.isDark.value
+                                        ? fg
+                                        : Colors.grey.shade300,
+                                    borderRadius: BorderRadius.circular(14),
+                                  ),
+                                  child: Align(
+                                    alignment: ctrl.appCtrl.isDark.value
+                                        ? Alignment.centerRight
+                                        : Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 4),
+                                      child: Container(
+                                        width: 22,
+                                        height: 22,
+                                        decoration: BoxDecoration(
+                                          color: bg,
+                                          borderRadius:
+                                              BorderRadius.circular(11),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                    )),
+                          ),
+                        )),
                   ],
                 ),
               ),
@@ -160,10 +201,11 @@ class _LanguageOption extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(label,
-                  style: GoogleFonts.spaceGrotesk(fontSize: 14, fontWeight: FontWeight.w500,
+                  style: GoogleFonts.spaceGrotesk(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                       color: selected ? bg : fg)),
-              if (selected)
-                Icon(Icons.check, color: bg, size: 20),
+              if (selected) Icon(Icons.check, color: bg, size: 20),
             ],
           ),
         );

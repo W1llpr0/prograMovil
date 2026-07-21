@@ -1,17 +1,27 @@
-# vetcare_app
+# VetCare Flutter
 
-A new Flutter project.
+Cliente móvil de VetCare. La aplicación usa Supabase directamente para Auth,
+PostgreSQL, funciones RPC y Storage; no requiere un backend intermedio.
 
-## Getting Started
+## Ejecución
 
-This project is a starting point for a Flutter application.
+```bash
+flutter pub get
+flutter run \
+  --dart-define=SUPABASE_URL=https://TU_PROJECT_REF.supabase.co \
+  --dart-define=SUPABASE_ANON_KEY=TU_CLAVE_PUBLICABLE
+```
 
-A few resources to get you started if this is your first Flutter project:
+En PowerShell, usa acentos graves en vez de barras invertidas para continuar el
+comando. La clave `service_role` no debe usarse en esta aplicación.
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Calidad
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```bash
+flutter analyze
+flutter test
+flutter build web
+```
+
+El contrato del backend y las instrucciones de despliegue están en
+`../supabase/README.md`.

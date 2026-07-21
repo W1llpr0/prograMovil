@@ -16,4 +16,7 @@ class AppRoutes {
   static const epidemiologicalMap = '/epidemiological-map';
   static const vetDashboard = '/vet-dashboard';
   static const registerMedical = '/register-medical';
+  static const preConsultation = '/pre-consultation';
+  static const consultationDocuments = '/consultation-documents';
+  static const reviewConsultation = '/review-consultation';
 }

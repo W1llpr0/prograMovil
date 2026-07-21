@@ -1,0 +1,9 @@
+.env.local
+.tools/
+
+# Local emulator diagnostics
+app/emulator_*.png
+app/review_*.png
+app/review_*.xml
+app/*_after_fix.xml
+app/stable.xml

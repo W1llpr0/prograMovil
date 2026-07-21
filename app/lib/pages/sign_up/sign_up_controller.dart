@@ -12,6 +12,7 @@ class SignUpController extends GetxController {
   final documentCtrl = TextEditingController();
   final emailCtrl = TextEditingController();
   final phoneCtrl = TextEditingController();
+  final addressCtrl = TextEditingController();
   final passwordCtrl = TextEditingController();
   final confirmCtrl = TextEditingController();
 
@@ -29,7 +30,11 @@ class SignUpController extends GetxController {
     final password = passwordCtrl.text;
     final confirm = confirmCtrl.text;
 
-    if (firstName.isEmpty || lastName.isEmpty || document.isEmpty || email.isEmpty || password.isEmpty) {
+    if (firstName.isEmpty ||
+        lastName.isEmpty ||
+        document.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty) {
       message.value = 'error_empty_fields'.tr;
       return;
     }
@@ -48,6 +53,7 @@ class SignUpController extends GetxController {
       lastName: lastName,
       document: document,
       phone: phoneCtrl.text.trim(),
+      address: addressCtrl.text.trim(),
       role: selectedRole.value,
     );
 
@@ -56,7 +62,11 @@ class SignUpController extends GetxController {
     if (res.success && res.data != null) {
       // Delete stale SignInController so the page gets a fresh instance
       Get.delete<SignInController>(force: true);
-      Get.offAllNamed(AppRoutes.signIn);
+      if (res.code == 'EMAIL_CONFIRMATION_REQUIRED') {
+        Get.offAllNamed(AppRoutes.verifyEmail, arguments: email);
+      } else {
+        Get.offAllNamed(AppRoutes.signIn);
+      }
     } else {
       message.value = res.message;
     }
@@ -69,8 +79,14 @@ class SignUpController extends GetxController {
     // Defer disposal so in-flight page-exit animations finish before the
     // controllers are released (prevents "used after disposed" errors).
     final controllers = [
-      firstNameCtrl, lastNameCtrl, documentCtrl,
-      emailCtrl, phoneCtrl, passwordCtrl, confirmCtrl,
+      firstNameCtrl,
+      lastNameCtrl,
+      documentCtrl,
+      emailCtrl,
+      phoneCtrl,
+      addressCtrl,
+      passwordCtrl,
+      confirmCtrl,
     ];
     Future.microtask(() {
       for (final c in controllers) {

@@ -12,7 +12,10 @@ class SignInController extends GetxController {
   final RxString message = ''.obs;
   final RxBool isLoading = false.obs;
 
-  final AuthService _authService = AuthService();
+  final AuthService _authService;
+
+  SignInController({AuthService? authService})
+      : _authService = authService ?? AuthService();
 
   void login() async {
     final email = emailCtrl.text.trim();
@@ -30,7 +33,9 @@ class SignInController extends GetxController {
     if (res.success && res.data != null) {
       Get.find<AppController>().setUser(res.data!);
       Get.offAllNamed(
-        res.data!.role == 'veterinarian' ? AppRoutes.vetDashboard : AppRoutes.homeClient,
+        res.data!.role == 'veterinarian'
+            ? AppRoutes.vetDashboard
+            : AppRoutes.homeClient,
       );
     } else {
       message.value = res.message;

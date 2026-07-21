@@ -47,7 +47,8 @@ class _DatePickerState extends State<DatePicker> {
               ),
               child: _buildDateTile(
                 selectedDate.add(Duration(days: i)),
-                isSelected: selectedDate.day == selectedDate.add(Duration(days: i)).day,
+                isSelected:
+                    selectedDate.day == selectedDate.add(Duration(days: i)).day,
               ),
             ),
         ],
@@ -56,8 +57,9 @@ class _DatePickerState extends State<DatePicker> {
   }
 
   Widget _buildDateTile(DateTime date, {required bool isSelected}) {
-    final dayName = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'][date.weekday - 1];
-    
+    final dayName =
+        ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'][date.weekday - 1];
+
     return GestureDetector(
       onTap: () {
         setState(() => selectedDate = date);
@@ -79,7 +81,9 @@ class _DatePickerState extends State<DatePicker> {
               style: GoogleFonts.jetBrainsMono(
                 fontSize: 8,
                 letterSpacing: 0.12,
-                color: isSelected ? Colors.white : Colors.black.withValues(alpha: 0.55),
+                color: isSelected
+                    ? Colors.white
+                    : Colors.black.withValues(alpha: 0.55),
                 fontWeight: FontWeight.w500,
               ),
             ),
