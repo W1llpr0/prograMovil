@@ -31,6 +31,34 @@ class AppUser {
 
   String get fullName => '$firstName $lastName';
 
+  AppUser copyWith({
+    String? firstName,
+    String? lastName,
+    String? phone,
+    String? document,
+    String? address,
+    String? profilePicture,
+    double? latitude,
+    double? longitude,
+    String? licenseNumber,
+    int? yearsExperience,
+  }) =>
+      AppUser(
+        id: id,
+        email: email,
+        firstName: firstName ?? this.firstName,
+        lastName: lastName ?? this.lastName,
+        phone: phone ?? this.phone,
+        document: document ?? this.document,
+        address: address ?? this.address,
+        profilePicture: profilePicture ?? this.profilePicture,
+        latitude: latitude ?? this.latitude,
+        longitude: longitude ?? this.longitude,
+        role: role,
+        licenseNumber: licenseNumber ?? this.licenseNumber,
+        yearsExperience: yearsExperience ?? this.yearsExperience,
+      );
+
   factory AppUser.fromJson(Map<String, dynamic> json) {
     // veterinarians join can be List (one-to-many) or Map (object), handle both
     String? licenseNum;

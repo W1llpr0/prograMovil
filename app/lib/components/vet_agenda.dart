@@ -119,7 +119,8 @@ class _VetAgendaState extends State<VetAgenda> {
                     Column(
                       children: [
                         for (int i = 0; i < appointments.length; i++)
-                          _buildTimelineItem(appointments[i], i == appointments.length - 1),
+                          _buildTimelineItem(
+                              appointments[i], i == appointments.length - 1),
                       ],
                     ),
                   ],

@@ -7,7 +7,8 @@ class VcT {
   VcT._();
 
   // ── Space Grotesk — main display font ──────────────────────────────
-  static TextStyle display({double size = 50, Color? color}) => GoogleFonts.spaceGrotesk(
+  static TextStyle display({double size = 50, Color? color}) =>
+      GoogleFonts.spaceGrotesk(
         fontSize: size,
         fontWeight: FontWeight.w700,
         letterSpacing: -0.04 * size,
@@ -15,7 +16,8 @@ class VcT {
         color: color,
       );
 
-  static TextStyle hed({double size = 26, Color? color}) => GoogleFonts.spaceGrotesk(
+  static TextStyle hed({double size = 26, Color? color}) =>
+      GoogleFonts.spaceGrotesk(
         fontSize: size,
         fontWeight: FontWeight.w600,
         letterSpacing: -0.03 * size,
@@ -23,7 +25,8 @@ class VcT {
         color: color,
       );
 
-  static TextStyle body({double size = 13, Color? color}) => GoogleFonts.spaceGrotesk(
+  static TextStyle body({double size = 13, Color? color}) =>
+      GoogleFonts.spaceGrotesk(
         fontSize: size,
         fontWeight: FontWeight.w400,
         letterSpacing: -0.01 * size,
@@ -49,7 +52,8 @@ class VcT {
       );
 
   // ── JetBrains Mono — eyebrows, labels, badges ──────────────────────
-  static TextStyle eyebrow({double size = 10, Color? color}) => GoogleFonts.jetBrainsMono(
+  static TextStyle eyebrow({double size = 10, Color? color}) =>
+      GoogleFonts.jetBrainsMono(
         fontSize: size,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.18,
@@ -72,7 +76,8 @@ class VcT {
       );
 
   // ── Instrument Serif — italic humanist accents ─────────────────────
-  static TextStyle serif({double size = 38, Color? color}) => GoogleFonts.instrumentSerif(
+  static TextStyle serif({double size = 38, Color? color}) =>
+      GoogleFonts.instrumentSerif(
         fontSize: size,
         fontStyle: FontStyle.italic,
         fontWeight: FontWeight.w400,

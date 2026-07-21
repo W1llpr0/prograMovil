@@ -1,5 +1,11 @@
--- VetCare Complete Database Schema
--- Run this in Supabase SQL Editor to set up the complete schema
+-- ARCHIVO HISTORICO: NO USAR PARA INSTALACIONES NUEVAS.
+--
+-- El esquema vigente se encuentra en supabase/migrations y debe aplicarse en
+-- orden alfabetico. Consulta supabase/README.md para el despliegue y el contrato
+-- de entradas/salidas. Este archivo se conserva solo para rastrear la version
+-- antigua del proyecto.
+
+-- VetCare Complete Database Schema (legacy)
 
 -- 1. Add missing 'document' column to users table
 ALTER TABLE IF EXISTS users ADD COLUMN IF NOT EXISTS document text;

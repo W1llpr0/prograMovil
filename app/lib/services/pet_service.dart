@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../configs/generic_response.dart';
 import '../configs/supabase_config.dart';
@@ -18,7 +19,9 @@ class PetService {
       final pets = (data as List).map((e) => Pet.fromJson(e)).toList();
       return GenericResponse(success: true, data: pets, message: '');
     } catch (e) {
-      return GenericResponse(success: false, message: 'Could not load pets.', error: e.toString());
+      debugPrint('fetchPets failed: ${e.runtimeType}');
+      return const GenericResponse(
+          success: false, message: 'No se pudieron cargar las mascotas.');
     }
   }
 
@@ -33,22 +36,35 @@ class PetService {
         if (photoUrl != null) 'photo_url': photoUrl,
       };
       final res = await _sb.from('pets').insert(insertData).select().single();
-      return GenericResponse(success: true, data: Pet.fromJson(res), message: 'Pet added.');
+      return GenericResponse(
+          success: true, data: Pet.fromJson(res), message: 'Pet added.');
     } catch (e) {
-      return GenericResponse(success: false, message: 'No se pudo agregar: ${e.toString()}', error: e.toString());
+      debugPrint('addPet failed: ${e.runtimeType}');
+      return const GenericResponse(
+          success: false, message: 'No se pudo registrar la mascota.');
     }
   }
 
-  Future<GenericResponse<Pet>> updatePet(int petId, Map<String, dynamic> updates, {File? photo}) async {
+  Future<GenericResponse<Pet>> updatePet(
+      int petId, Map<String, dynamic> updates,
+      {File? photo}) async {
     try {
       if (photo != null) {
         final uid = Supabase.instance.client.auth.currentUser!.id;
         updates['photo_url'] = await _uploadPhoto(photo, uid);
       }
-      final res = await _sb.from('pets').update(updates).eq('id', petId).select().single();
-      return GenericResponse(success: true, data: Pet.fromJson(res), message: 'Pet updated.');
+      final res = await _sb
+          .from('pets')
+          .update(updates)
+          .eq('id', petId)
+          .select()
+          .single();
+      return GenericResponse(
+          success: true, data: Pet.fromJson(res), message: 'Pet updated.');
     } catch (e) {
-      return GenericResponse(success: false, message: 'Could not update pet.', error: e.toString());
+      debugPrint('updatePet failed: ${e.runtimeType}');
+      return const GenericResponse(
+          success: false, message: 'No se pudo actualizar la mascota.');
     }
   }
 
@@ -57,7 +73,9 @@ class PetService {
       await _sb.from('pets').delete().eq('id', petId);
       return const GenericResponse(success: true, message: 'Pet deleted.');
     } catch (e) {
-      return GenericResponse(success: false, message: 'No se pudo eliminar la mascota.', error: e.toString());
+      debugPrint('deletePet failed: ${e.runtimeType}');
+      return const GenericResponse(
+          success: false, message: 'No se pudo eliminar la mascota.');
     }
   }
 
@@ -67,17 +85,26 @@ class PetService {
       final list = (data as List).map((e) => Species.fromJson(e)).toList();
       return GenericResponse(success: true, data: list);
     } catch (e) {
-      return GenericResponse(success: false, message: 'Error cargando especies: ${e.toString()}', error: e.toString());
+      debugPrint('fetchSpecies failed: ${e.runtimeType}');
+      return const GenericResponse(
+          success: false, message: 'No se pudieron cargar las especies.');
     }
   }
 
-  Future<GenericResponse<List<Breed>>> fetchBreedsBySpecies(int speciesId) async {
+  Future<GenericResponse<List<Breed>>> fetchBreedsBySpecies(
+      int speciesId) async {
     try {
-      final data = await _sb.from('breeds').select().eq('species_id', speciesId).order('name');
+      final data = await _sb
+          .from('breeds')
+          .select()
+          .eq('species_id', speciesId)
+          .order('name');
       final list = (data as List).map((e) => Breed.fromJson(e)).toList();
       return GenericResponse(success: true, data: list);
     } catch (e) {
-      return GenericResponse(success: false, message: 'Error cargando razas: ${e.toString()}', error: e.toString());
+      debugPrint('fetchBreedsBySpecies failed: ${e.runtimeType}');
+      return const GenericResponse(
+          success: false, message: 'No se pudieron cargar las razas.');
     }
   }
 
@@ -85,12 +112,16 @@ class PetService {
     try {
       final data = await _sb
           .from('breeds')
-          .upsert({'name': name, 'species_id': speciesId}, onConflict: 'name,species_id')
+          .upsert({'name': name, 'species_id': speciesId},
+              onConflict: 'name,species_id')
           .select()
           .single();
-      return GenericResponse(success: true, data: Breed.fromJson(data), message: '');
+      return GenericResponse(
+          success: true, data: Breed.fromJson(data), message: '');
     } catch (e) {
-      return GenericResponse(success: false, message: 'Could not create breed.', error: e.toString());
+      debugPrint('createBreed failed: ${e.runtimeType}');
+      return const GenericResponse(
+          success: false, message: 'No se pudo registrar la raza.');
     }
   }
 

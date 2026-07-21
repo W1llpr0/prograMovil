@@ -15,7 +15,9 @@ class MedicationAdherenceController extends GetxController {
   final Rx<Pet?> selectedPet = Rx<Pet?>(null);
   final RxList<MedicationSchedule> schedules = <MedicationSchedule>[].obs;
   final RxBool isLoading = false.obs;
-  final RxSet<int> loggedToday = <int>{}.obs;
+  final RxSet<int> marking = <int>{}.obs;
+  final RxMap<int, String> scheduleMessages = <int, String>{}.obs;
+  final RxString pageMessage = ''.obs;
 
   @override
   void onInit() {
@@ -35,25 +37,48 @@ class MedicationAdherenceController extends GetxController {
 
   void selectPet(Pet pet) {
     selectedPet.value = pet;
+    pageMessage.value = '';
+    scheduleMessages.clear();
     loadSchedules();
   }
 
   Future<void> loadSchedules() async {
-    if (selectedPet.value?.id == null) return;
+    final petId = selectedPet.value?.id;
+    if (petId == null) return;
     isLoading.value = true;
     final GenericResponse<List<MedicationSchedule>> res =
-        await _medService.fetchSchedules(selectedPet.value!.id!);
+        await _medService.fetchSchedules(petId);
+    if (selectedPet.value?.id != petId) return;
     isLoading.value = false;
     if (res.success && res.data != null) {
       schedules.assignAll(res.data!);
+    } else {
+      schedules.clear();
+      pageMessage.value = res.message;
     }
   }
 
   Future<void> markTaken(int scheduleId) async {
-    if (loggedToday.contains(scheduleId)) return;
+    if (marking.contains(scheduleId)) return;
+    marking.add(scheduleId);
+    scheduleMessages.remove(scheduleId);
     final res = await _medService.markTaken(scheduleId: scheduleId);
     if (res.success) {
-      loggedToday.add(scheduleId);
+      scheduleMessages[scheduleId] = 'Dosis registrada';
+      await loadSchedules();
+      Get.snackbar(
+        'Medicamento',
+        'Dosis registrada correctamente.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } else {
+      scheduleMessages[scheduleId] = res.message;
+      Get.snackbar(
+        'No se registró la dosis',
+        res.message,
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
+    marking.remove(scheduleId);
   }
 }

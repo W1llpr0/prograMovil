@@ -56,7 +56,7 @@ class AddPetController extends GetxController {
       speciesList.assignAll(res.data!);
     } else {
       message.value = res.message;
-      print('loadSpecies error: ${res.error}');
+      debugPrint('loadSpecies error: ${res.error}');
     }
   }
 
@@ -92,7 +92,8 @@ class AddPetController extends GetxController {
 
   Future<void> pickPhoto() async {
     final picker = ImagePicker();
-    final xFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+    final xFile =
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
     if (xFile != null) imageFile.value = File(xFile.path);
   }
 
@@ -134,7 +135,8 @@ class AddPetController extends GetxController {
         selectedSpecies.value!.id,
       );
       breedId = breedRes.success ? breedRes.data?.id : null;
-    } else if (showCustomBreed.value && customBreedCtrl.text.trim().isNotEmpty) {
+    } else if (showCustomBreed.value &&
+        customBreedCtrl.text.trim().isNotEmpty) {
       final breedRes = await _petService.createBreed(
         customBreedCtrl.text.trim(),
         selectedSpecies.value!.id,
@@ -156,18 +158,21 @@ class AddPetController extends GetxController {
               : null,
       birthDate: birthDate.value,
       weightKg: double.tryParse(weightCtrl.text),
-      microchip: microchipCtrl.text.trim().isEmpty ? null : microchipCtrl.text.trim(),
+      microchip:
+          microchipCtrl.text.trim().isEmpty ? null : microchipCtrl.text.trim(),
       isExotic: isExotic.value || (selectedSpecies.value?.isExotic ?? false),
     );
 
-    final GenericResponse<Pet> res = await _petService.addPet(pet, photo: imageFile.value);
+    final GenericResponse<Pet> res =
+        await _petService.addPet(pet, photo: imageFile.value);
     isLoading.value = false;
 
     if (res.success) {
       Get.back(result: true);
     } else {
-      message.value = res.message.isNotEmpty ? res.message : 'Error al registrar mascota.';
-      print('addPet error: ${res.error}');
+      message.value =
+          res.message.isNotEmpty ? res.message : 'Error al registrar mascota.';
+      debugPrint('addPet error: ${res.error}');
     }
   }
 

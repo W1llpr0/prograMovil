@@ -1,144 +1,137 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Strictly monochrome theme — inspired by the VetCare design system.
-/// Light: white background, black text/borders.
-/// Dark : black background, white text/borders.
+abstract final class AppColors {
+  static const primary = Color(0xFF006D32);
+  static const onPrimary = Colors.white;
+  static const primaryContainer = Color(0xFF8CF8A6);
+  static const onPrimaryContainer = Color(0xFF00210B);
+  static const surface = Color(0xFFFBFDF8);
+  static const surfaceContainer = Color(0xFFDDE5DB);
+  static const surfaceContainerHigh = Color(0xFFD2DCD0);
+  static const onSurface = Color(0xFF191C19);
+  static const onSurfaceVariant = Color(0xFF414941);
+  static const outline = Color(0xFF717971);
+  static const warning = Color(0xFFFFA000);
+  static const error = Color(0xFFBA1A1A);
+}
+
 class AppTheme {
-  // Keep this for any legacy,references
-  static const _fontFamily = 'SpaceGrotesk';
-
-  static ThemeData light() => _build(
-        brightness: Brightness.light,
-        background: Colors.white,
-        surface: Colors.white,
-        onBackground: Colors.black,
-      );
-
-  static ThemeData dark() => _build(
-        brightness: Brightness.dark,
-        background: Colors.black,
-        surface: Colors.black,
-        onBackground: Colors.white,
-      );
-
-  static ThemeData _build({
-    required Brightness brightness,
-    required Color background,
-    required Color surface,
-    required Color onBackground,
-  }) {
-    final border = BorderSide(color: onBackground, width: 1);
-
+  static ThemeData light() {
+    const scheme = ColorScheme(
+      brightness: Brightness.light,
+      primary: AppColors.primary,
+      onPrimary: AppColors.onPrimary,
+      secondary: Color(0xFF506352),
+      onSecondary: Colors.white,
+      error: AppColors.error,
+      onError: Colors.white,
+      surface: AppColors.surface,
+      onSurface: AppColors.onSurface,
+      primaryContainer: AppColors.primaryContainer,
+      onPrimaryContainer: AppColors.onPrimaryContainer,
+      surfaceContainer: AppColors.surfaceContainer,
+      surfaceContainerHigh: AppColors.surfaceContainerHigh,
+      onSurfaceVariant: AppColors.onSurfaceVariant,
+      outline: AppColors.outline,
+    );
+    final textTheme = GoogleFonts.robotoTextTheme().apply(
+      bodyColor: AppColors.onSurface,
+      displayColor: AppColors.onSurface,
+    );
     return ThemeData(
-      brightness: brightness,
-      fontFamily: _fontFamily,
-      scaffoldBackgroundColor: background,
-      colorScheme: ColorScheme(
-        brightness: brightness,
-        primary: onBackground,
-        onPrimary: background,
-        secondary: onBackground,
-        onSecondary: background,
-        error: onBackground,
-        onError: background,
-        surface: surface,
-        onSurface: onBackground,
+      useMaterial3: true,
+      brightness: Brightness.light,
+      colorScheme: scheme,
+      scaffoldBackgroundColor: AppColors.surface,
+      textTheme: textTheme.copyWith(
+        headlineLarge: textTheme.headlineLarge?.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
+        headlineSmall: textTheme.headlineSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
+        titleLarge: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+        titleMedium:
+            textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
       ),
-      appBarTheme: AppBarTheme(
-        backgroundColor: background,
-        foregroundColor: onBackground,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.onSurface,
         elevation: 0,
         scrolledUnderElevation: 0,
-        titleTextStyle: GoogleFonts.spaceGrotesk(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-          letterSpacing: -0.03 * 15,
-          color: onBackground,
-        ),
-        iconTheme: IconThemeData(color: onBackground),
+        centerTitle: false,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: onBackground,
-          foregroundColor: background,
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.onPrimary,
+          minimumSize: const Size(double.infinity, 50),
           elevation: 0,
-          minimumSize: const Size(double.infinity, 62),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
           shape: const StadiumBorder(),
-          textStyle: GoogleFonts.jetBrainsMono(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 0.26,
-          ),
+          textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: onBackground,
-          side: border,
-          elevation: 0,
-          minimumSize: const Size(double.infinity, 56),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: const StadiumBorder(),
-          textStyle: GoogleFonts.jetBrainsMono(
+          foregroundColor: AppColors.onSurface,
+          minimumSize: const Size(double.infinity, 50),
+          side: const BorderSide(color: AppColors.outline),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+      ),
+      inputDecorationTheme: const InputDecorationTheme(
+        filled: true,
+        fillColor: AppColors.surfaceContainer,
+        contentPadding: EdgeInsets.fromLTRB(16, 16, 16, 12),
+        labelStyle: TextStyle(color: AppColors.primary, fontSize: 13),
+        floatingLabelStyle:
+            TextStyle(color: AppColors.primary, fontWeight: FontWeight.w500),
+        border: UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.onSurface),
+        ),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.onSurface),
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: AppColors.primary, width: 2),
+        ),
+      ),
+      cardTheme: CardThemeData(
+        color: AppColors.surface,
+        elevation: 1,
+        shadowColor: Colors.black.withValues(alpha: 0.08),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: AppColors.surfaceContainer,
+        indicatorColor: AppColors.primaryContainer,
+        labelTextStyle: WidgetStateProperty.resolveWith(
+          (states) => TextStyle(
             fontSize: 12,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 0.22,
+            color: states.contains(WidgetState.selected)
+                ? AppColors.onSurface
+                : AppColors.onSurfaceVariant,
           ),
         ),
       ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: false,
-        border: UnderlineInputBorder(borderSide: border),
-        enabledBorder: UnderlineInputBorder(borderSide: border),
-        focusedBorder: UnderlineInputBorder(borderSide: border),
-        labelStyle: GoogleFonts.jetBrainsMono(
-          fontSize: 9,
-          letterSpacing: 0.22,
-          color: onBackground.withValues(alpha: 0.55),
-        ),
-        hintStyle: GoogleFonts.spaceGrotesk(
-          fontSize: 16,
-          color: onBackground.withValues(alpha: 0.35),
-        ),
-      ),
-      textTheme: GoogleFonts.spaceGroteskTextTheme(TextTheme(
-        displayLarge: TextStyle(fontWeight: FontWeight.w700, letterSpacing: -0.04 * 50, color: onBackground),
-        titleLarge: TextStyle(fontWeight: FontWeight.w600, letterSpacing: -0.03 * 22, color: onBackground),
-        bodyLarge: TextStyle(color: onBackground),
-        bodyMedium: TextStyle(color: onBackground),
-        labelSmall: TextStyle(fontSize: 10, letterSpacing: 0.22, color: onBackground.withValues(alpha: 0.55)),
-      )),
-      dividerTheme: DividerThemeData(color: onBackground.withValues(alpha: 0.12), thickness: 1, space: 0),
-      cardTheme: CardThemeData(
-        color: background,
-        elevation: 0,
-        margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.zero,
-          side: BorderSide(color: onBackground.withValues(alpha: 0.12), width: 1),
-        ),
-      ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: background,
-        selectedItemColor: onBackground,
-        unselectedItemColor: onBackground.withValues(alpha: 0.35),
-        elevation: 0,
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: AppColors.surfaceContainer,
+        selectedItemColor: AppColors.onSurface,
+        unselectedItemColor: AppColors.onSurfaceVariant,
         type: BottomNavigationBarType.fixed,
-        selectedLabelStyle: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.22, fontWeight: FontWeight.w700),
-        unselectedLabelStyle: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.22),
+        elevation: 0,
       ),
-      switchTheme: SwitchThemeData(
-        thumbColor: WidgetStateProperty.resolveWith((s) => s.contains(WidgetState.selected) ? background : onBackground),
-        trackColor: WidgetStateProperty.resolveWith((s) => s.contains(WidgetState.selected) ? onBackground : onBackground.withValues(alpha: 0.2)),
-      ),
-      checkboxTheme: CheckboxThemeData(
-        fillColor: WidgetStateProperty.resolveWith((s) => s.contains(WidgetState.selected) ? onBackground : Colors.transparent),
-        checkColor: WidgetStateProperty.all(background),
-        side: BorderSide(color: onBackground, width: 1),
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+      progressIndicatorTheme:
+          const ProgressIndicatorThemeData(color: AppColors.primary),
+      snackBarTheme: const SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: AppColors.onSurface,
+        contentTextStyle: TextStyle(color: Colors.white),
       ),
     );
   }
+
+  static ThemeData dark() => light();
 }

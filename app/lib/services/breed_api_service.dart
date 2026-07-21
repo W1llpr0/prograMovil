@@ -17,11 +17,11 @@ class BreedApiService {
     return _fetchFrom(_catApiUrl, speciesId);
   }
 
-  Future<GenericResponse<List<Breed>>> _fetchFrom(String url, int speciesId) async {
+  Future<GenericResponse<List<Breed>>> _fetchFrom(
+      String url, int speciesId) async {
     try {
-      final response = await http
-          .get(Uri.parse(url))
-          .timeout(const Duration(seconds: 10));
+      final response =
+          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
 
       if (response.statusCode != 200) {
         return GenericResponse(

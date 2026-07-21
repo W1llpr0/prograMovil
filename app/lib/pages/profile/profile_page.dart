@@ -1,367 +1,344 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+
 import '../../configs/app_routes.dart';
+import '../../configs/theme.dart';
+import '../../models/review.dart';
+import '../../services/review_service.dart';
 import 'profile_controller.dart';
 
 class ProfilePage extends StatelessWidget {
   ProfilePage({super.key});
 
-  final ProfileController ctrl = Get.put(ProfileController());
+  final ProfileController ctrl = Get.isRegistered<ProfileController>()
+      ? Get.find<ProfileController>()
+      : Get.put(ProfileController());
 
   @override
-  Widget build(BuildContext context) {
-    final fg = Theme.of(context).colorScheme.onSurface;
-    final bg = Theme.of(context).colorScheme.surface;
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            // ── Top bar ────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.fromLTRB(22, 8, 22, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('profile_label'.tr, style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg)),
-                  GestureDetector(
-                    onTap: () => Get.toNamed(AppRoutes.settings),
-                    child: Container(
-                      width: 38, height: 38,
-                      decoration: BoxDecoration(border: Border.all(color: fg), borderRadius: BorderRadius.circular(999)),
-                      child: Icon(Icons.settings, size: 18, color: fg),
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: Obx(() => Text(
+              ctrl.appCtrl.currentUser.value?.role == 'veterinarian'
+                  ? 'Mi perfil médico'
+                  : 'Mi cuenta')),
+        ),
+        body: Obx(() {
+          final user = ctrl.appCtrl.currentUser.value;
+          if (user == null) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final isVet = user.role == 'veterinarian';
+          return ListView(
+            padding: const EdgeInsets.fromLTRB(28, 14, 28, 36),
+            children: [
+              Center(
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 52,
+                      backgroundColor: isVet
+                          ? AppColors.primary
+                          : AppColors.primaryContainer,
+                      foregroundColor: isVet ? Colors.white : AppColors.primary,
+                      backgroundImage: user.profilePicture == null
+                          ? null
+                          : NetworkImage(user.profilePicture!),
+                      child: user.profilePicture == null
+                          ? Text(_initials(user.fullName),
+                              style: const TextStyle(fontSize: 34))
+                          : null,
                     ),
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: IconButton.filledTonal(
+                        onPressed: ctrl.pickPhoto,
+                        icon: const Icon(Icons.camera_alt, size: 18),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                isVet ? 'Dr. ${user.fullName}' : user.fullName,
+                style: Theme.of(context).textTheme.headlineSmall,
+                textAlign: TextAlign.center,
+              ),
+              Text(user.email, textAlign: TextAlign.center),
+              if (isVet) ...[
+                const SizedBox(height: 12),
+                const Center(
+                  child: Chip(
+                    avatar: Icon(Icons.verified, size: 18),
+                    label: Text('Colegiado activo'),
+                    backgroundColor: AppColors.primaryContainer,
                   ),
-                ],
-              ),
-            ),
-
-            Expanded(
-              child: SingleChildScrollView(
-                child: Obx(() {
-                  final u = ctrl.appCtrl.currentUser.value;
-                  final firstName = u?.firstName ?? 'User';
-                  final fn = u?.firstName ?? '';
-                  final ln = u?.lastName ?? '';
-                  final initials = fn.isNotEmpty && ln.isNotEmpty
-                      ? '${fn[0]}${ln[0]}'.toUpperCase()
-                      : fn.isNotEmpty ? fn[0].toUpperCase() : 'U';
-                  final isVet = u?.role == 'veterinarian';
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // ── Avatar + name header ─────────────────
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(22, 20, 22, 18),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Stack(
-                              children: [
-                                Container(
-                                  width: 96, height: 96,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: fg),
-                                    borderRadius: BorderRadius.circular(999),
-                                    color: fg.withValues(alpha: 0.06),
-                                  ),
-                                  child: u?.profilePicture != null && u!.profilePicture!.isNotEmpty
-                                      ? ClipRRect(
-                                          borderRadius: BorderRadius.circular(999),
-                                          child: Image.network(u.profilePicture!, fit: BoxFit.cover),
-                                        )
-                                      : Center(
-                                          child: Text(initials,
-                                              style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w700, fontSize: 38,
-                                                  letterSpacing: -0.04 * 38, color: fg)),
-                                        ),
-                                ),
-                                Positioned(
-                                  bottom: 2, right: 2,
-                                  child: GestureDetector(
-                                    onTap: ctrl.pickPhoto,
-                                    child: Container(
-                                      width: 26, height: 26,
-                                      decoration: BoxDecoration(
-                                        color: bg,
-                                        border: Border.all(color: fg),
-                                        borderRadius: BorderRadius.circular(999),
-                                      ),
-                                      child: Icon(Icons.add, size: 14, color: fg),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(width: 18),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    isVet ? 'vet_role'.tr : 'client_role'.tr,
-                                    style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
-                                        color: fg.withValues(alpha: 0.55))),
-                                  const SizedBox(height: 6),
-                                  Text('$firstName.',
-                                      style: GoogleFonts.spaceGrotesk(fontSize: 30, fontWeight: FontWeight.w700,
-                                          letterSpacing: -0.04 * 30, color: fg)),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-
-
-                      // ── Contact info ───────────────────────────
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(22, 22, 22, 8),
-                        child: Text('contact_info'.tr,
-                            style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg)),
-                      ),
-                      _InfoRow(
-                        label: 'full_name'.tr,
-                        fieldName: 'firstName',
-                        value: '${u?.firstName ?? ''} ${u?.lastName ?? ''}',
-                        onEdit: (val) {
-                          if (val.contains(' ')) {
-                            final parts = val.split(' ');
-                            ctrl.updateUserField('firstName', parts[0]);
-                            if (parts.length > 1) {
-                              ctrl.updateUserField('lastName', parts.skip(1).join(' '));
-                            }
-                          } else {
-                            ctrl.updateUserField('firstName', val);
-                          }
-                        },
-                      ),
-                      _InfoRow(
-                        label: 'email'.tr,
-                        fieldName: 'email',
-                        value: u?.email ?? '',
-                        onEdit: (val) => Get.snackbar('Info', 'Email cannot be changed here', snackPosition: SnackPosition.BOTTOM),
-                      ),
-                      _InfoRow(
-                        label: 'phone'.tr,
-                        fieldName: 'phone',
-                        value: u?.phone ?? '',
-                        onEdit: (val) => ctrl.updateUserField('phone', val),
-                      ),
-                      if (isVet) ...[
-                        _InfoRow(
-                          label: 'license_number'.tr,
-                          fieldName: 'document',
-                          value: u?.licenseNumber ?? u?.document ?? '',
-                          onEdit: (val) => ctrl.updateUserField('document', val),
-                          isLast: true,
-                        ),
-                      ] else ...[
-                        _InfoRow(
-                          label: 'document_id'.tr,
-                          fieldName: 'document',
-                          value: u?.document ?? '',
-                          onEdit: (val) => ctrl.updateUserField('document', val),
-                        ),
-                        _InfoRow(
-                          label: 'address'.tr,
-                          fieldName: 'address',
-                          value: u?.address ?? '',
-                          onEdit: (val) => ctrl.updateUserField('address', val),
-                          isLast: true,
-                        ),
-                      ],
-
-                      // ── Preferences ───────────────────────────
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(22, 22, 22, 8),
-                        child: Text('preferences'.tr,
-                            style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg)),
-                      ),
-                      Obx(() => _ToggleRow(title: 'push_notifications'.tr, value: ctrl.pushNotifs.value, onTap: () => ctrl.pushNotifs.toggle())),
-                      Obx(() => _ToggleRow(title: 'geofence_alerts'.tr, value: ctrl.geofenceAlerts.value, onTap: () => ctrl.geofenceAlerts.toggle())),
-                      Obx(() => _ToggleRow(title: 'ledger_broadcasts'.tr, value: ctrl.ledgerBroadcasts.value, onTap: () => ctrl.ledgerBroadcasts.toggle(), isLast: true)),
-
-                      // ── Sign out ──────────────────────────────
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(22, 24, 22, 40),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: ctrl.signOut,
-                            child: Text('sign_out'.tr, style: GoogleFonts.jetBrainsMono(fontSize: 11, letterSpacing: 0.26)),
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                }),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _InfoRow extends StatefulWidget {
-  final String label, fieldName, value;
-  final bool isLast;
-  final Function(String) onEdit;
-
-  const _InfoRow({
-    required this.label,
-    required this.fieldName,
-    required this.value,
-    required this.onEdit,
-    this.isLast = false,
-  });
-
-  @override
-  State<_InfoRow> createState() => _InfoRowState();
-}
-
-class _InfoRowState extends State<_InfoRow> {
-  late TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.value);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _showEditDialog() {
-    showDialog(
-      context: context,
-      builder: (ctx) {
-        final fg = Theme.of(ctx).colorScheme.onSurface;
-        final bg = Theme.of(ctx).colorScheme.surface;
-        return AlertDialog(
-          backgroundColor: bg,
-          title: Text('Edit ${widget.label}', style: GoogleFonts.spaceGrotesk(fontWeight: FontWeight.w600, color: fg)),
-          content: TextField(
-            controller: _controller,
-            style: TextStyle(color: fg),
-            decoration: InputDecoration(
-              border: OutlineInputBorder(borderSide: BorderSide(color: fg)),
-              hintText: 'Add ${widget.label.toLowerCase()}',
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text('CANCEL', style: GoogleFonts.jetBrainsMono(fontSize: 10, color: fg)),
-            ),
-            TextButton(
-              onPressed: () {
-                widget.onEdit(_controller.text);
-                Navigator.pop(ctx);
-              },
-              child: Text('SAVE', style: GoogleFonts.jetBrainsMono(fontSize: 10, color: fg)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final fg = Theme.of(context).colorScheme.onSurface;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(color: fg),
-          bottom: widget.isLast ? BorderSide(color: fg) : BorderSide.none,
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(widget.label,
-                    style: GoogleFonts.jetBrainsMono(
-                        fontSize: 9, letterSpacing: 0.16, color: fg.withValues(alpha: 0.55))),
-                const SizedBox(height: 4),
-                Text(widget.value,
-                    style: GoogleFonts.spaceGrotesk(fontSize: 15, fontWeight: FontWeight.w500, color: fg)),
+                ),
               ],
+              const SizedBox(height: 30),
+              if (isVet) ...[
+                _EditableRow(
+                  icon: Icons.badge,
+                  label: 'CMPV (colegiatura)',
+                  value: user.licenseNumber ?? user.document ?? 'Sin registrar',
+                  onEdit: ctrl.updateLicenseNumber,
+                ),
+                _EditableRow(
+                  icon: Icons.history,
+                  label: 'Años de experiencia',
+                  value: '${user.yearsExperience ?? 0}',
+                  numeric: true,
+                  onEdit: (value) =>
+                      ctrl.updateYearsExperience(int.tryParse(value) ?? 0),
+                ),
+                const SizedBox(height: 20),
+                Text('Especialidades',
+                    style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    ...ctrl.specialties
+                        .map((item) => Chip(label: Text(item.name))),
+                    ActionChip(
+                      avatar: const Icon(Icons.add, size: 18),
+                      label: const Text('Añadir'),
+                      onPressed: () => _selectSpecialty(context),
+                    ),
+                  ],
+                ),
+              ] else ...[
+                _MenuTile(
+                  icon: Icons.person,
+                  label: 'Datos personales',
+                  onTap: () => _showPersonalData(context),
+                ),
+                _MenuTile(
+                  icon: Icons.star,
+                  label: 'Mis reseñas',
+                  onTap: () => _showReviews(context),
+                ),
+                _MenuTile(
+                  icon: Icons.settings,
+                  label: 'Configuración',
+                  onTap: () => Get.toNamed(AppRoutes.settings),
+                ),
+              ],
+              const SizedBox(height: 30),
+              TextButton.icon(
+                onPressed: ctrl.signOut,
+                icon: const Icon(Icons.logout, color: AppColors.error),
+                label: const Text('Cerrar sesión',
+                    style: TextStyle(color: AppColors.error)),
+              ),
+            ],
+          );
+        }),
+      );
+
+  void _showPersonalData(BuildContext context) {
+    final user = ctrl.appCtrl.currentUser.value!;
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (context) => Padding(
+        padding: EdgeInsets.fromLTRB(
+            24, 8, 24, MediaQuery.viewInsetsOf(context).bottom + 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Datos personales',
+                style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 16),
+            _EditableRow(
+              icon: Icons.phone,
+              label: 'Teléfono',
+              value: user.phone ?? 'Sin registrar',
+              onEdit: (value) => ctrl.updateUserField('phone', value),
             ),
-          ),
-          GestureDetector(
-            onTap: _showEditDialog,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-              decoration: BoxDecoration(border: Border.all(color: fg), borderRadius: BorderRadius.circular(999)),
-              child: Text('edit'.tr, style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.16, color: fg)),
+            _EditableRow(
+              icon: Icons.assignment_ind,
+              label: 'Documento',
+              value: user.document ?? 'Sin registrar',
+              onEdit: (value) => ctrl.updateUserField('document', value),
             ),
-          ),
+            _EditableRow(
+              icon: Icons.location_on,
+              label: 'Dirección',
+              value: user.address ?? 'Sin registrar',
+              onEdit: (value) => ctrl.updateUserField('address', value),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showReviews(BuildContext context) async {
+    final result = await ReviewService().fetchMine();
+    if (!context.mounted) return;
+    final reviews = result.data ?? const <Review>[];
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Mis reseñas', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 14),
+            if (reviews.isEmpty)
+              const Padding(
+                padding: EdgeInsets.all(20),
+                child: Text('Todavía no enviaste reseñas.'),
+              )
+            else
+              ...reviews.map((review) => Card(
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        child: Text('${review.rating}★'),
+                      ),
+                      title: Text(
+                        review.petName == null
+                            ? 'Consulta #${review.consultationId}'
+                            : '${review.petName} · ${review.specialtyName ?? 'Consulta'}',
+                      ),
+                      subtitle: Text([
+                        if (review.consultationDate != null)
+                          DateFormat('dd MMM yyyy', 'es_ES')
+                              .format(review.consultationDate!),
+                        if (review.diagnosis?.isNotEmpty == true)
+                          'Diagnóstico: ${review.diagnosis}',
+                        review.comment ?? 'Sin comentario',
+                      ].join('\n')),
+                      isThreeLine: true,
+                    ),
+                  )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _selectSpecialty(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+        children: [
+          Text('Añadir especialidad',
+              style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 10),
+          ...ctrl.allSpecialties.map((item) => ListTile(
+                title: Text(item.name),
+                trailing:
+                    ctrl.specialties.any((current) => current.id == item.id)
+                        ? const Icon(Icons.check, color: AppColors.primary)
+                        : const Icon(Icons.add),
+                onTap: () async {
+                  await ctrl.addSpecialty(item);
+                  if (context.mounted) Navigator.pop(context);
+                },
+              )),
         ],
       ),
     );
   }
+
+  String _initials(String name) => name
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((part) => part.isNotEmpty)
+      .take(2)
+      .map((part) => part[0].toUpperCase())
+      .join();
 }
 
-class _ToggleRow extends StatelessWidget {
-  final String title;
-  final bool value;
+class _MenuTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
   final VoidCallback onTap;
-  final bool isLast;
-  const _ToggleRow({required this.title, required this.value, required this.onTap, this.isLast = false});
+  const _MenuTile(
+      {required this.icon, required this.label, required this.onTap});
 
   @override
-  Widget build(BuildContext context) {
-    final fg = Theme.of(context).colorScheme.onSurface;
-    final bg = Theme.of(context).colorScheme.surface;
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 16),
-        decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(color: fg),
-            bottom: isLast ? BorderSide(color: fg) : BorderSide.none,
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: OutlinedButton(
+          onPressed: onTap,
+          style: OutlinedButton.styleFrom(alignment: Alignment.centerLeft),
+          child: Row(
+            children: [
+              Icon(icon, color: AppColors.outline),
+              const SizedBox(width: 14),
+              Expanded(child: Text(label)),
+              const Icon(Icons.chevron_right),
+            ],
           ),
         ),
-        child: Row(
-          children: [
-            Expanded(child: Text(title, style: GoogleFonts.spaceGrotesk(fontSize: 15, fontWeight: FontWeight.w500, color: fg))),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 240),
-              width: 50, height: 28,
-              padding: const EdgeInsets.all(3),
-              decoration: BoxDecoration(
-                color: value ? fg : bg,
-                border: Border.all(color: fg),
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: AnimatedAlign(
-                duration: const Duration(milliseconds: 280),
-                curve: Curves.easeInOut,
-                alignment: value ? Alignment.centerRight : Alignment.centerLeft,
-                child: Container(
-                  width: 20, height: 20,
-                  decoration: BoxDecoration(
-                    color: value ? bg : fg,
-                    shape: BoxShape.circle,
-                  ),
+      );
+}
+
+class _EditableRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final bool numeric;
+  final ValueChanged<String> onEdit;
+  const _EditableRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.onEdit,
+    this.numeric = false,
+  });
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: ListTile(
+          tileColor: AppColors.surfaceContainer,
+          leading: Icon(icon),
+          title: Text(label, style: const TextStyle(color: AppColors.primary)),
+          subtitle: Text(value),
+          trailing: const Icon(Icons.edit, size: 18),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          onTap: () async {
+            final controller = TextEditingController(
+                text: value == 'Sin registrar' ? '' : value);
+            final result = await showDialog<String>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text('Editar $label'),
+                content: TextField(
+                  controller: controller,
+                  autofocus: true,
+                  keyboardType:
+                      numeric ? TextInputType.number : TextInputType.text,
+                  decoration: InputDecoration(labelText: label),
                 ),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancelar')),
+                  FilledButton(
+                      onPressed: () => Navigator.pop(context, controller.text),
+                      child: const Text('Guardar')),
+                ],
               ),
-            ),
-          ],
+            );
+            controller.dispose();
+            if (result?.trim().isNotEmpty == true) onEdit(result!);
+          },
         ),
-      ),
-    );
-  }
+      );
 }

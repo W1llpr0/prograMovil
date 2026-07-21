@@ -11,7 +11,8 @@ class Species {
         isExotic: json['is_exotic'] as bool? ?? false,
       );
 
-  Map<String, dynamic> toJson() => {'id': id, 'name': name, 'is_exotic': isExotic};
+  Map<String, dynamic> toJson() =>
+      {'id': id, 'name': name, 'is_exotic': isExotic};
 }
 
 class Breed {

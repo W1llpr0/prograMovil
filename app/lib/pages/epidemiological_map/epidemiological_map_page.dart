@@ -7,7 +7,11 @@ import 'epidemiological_map_controller.dart';
 class EpidemiologicalMapPage extends StatelessWidget {
   EpidemiologicalMapPage({super.key});
 
-  final EpidemiologicalMapController ctrl = Get.put(EpidemiologicalMapController());
+  static const bool mapsEnabled =
+      bool.fromEnvironment('GOOGLE_MAPS_ENABLED', defaultValue: false);
+
+  final EpidemiologicalMapController ctrl =
+      Get.put(EpidemiologicalMapController());
 
   @override
   Widget build(BuildContext context) {
@@ -26,12 +30,17 @@ class EpidemiologicalMapPage extends StatelessWidget {
                   GestureDetector(
                     onTap: () => Get.back(),
                     child: Container(
-                      width: 38, height: 38,
-                      decoration: BoxDecoration(border: Border.all(color: fg), borderRadius: BorderRadius.circular(999)),
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: fg),
+                          borderRadius: BorderRadius.circular(999)),
                       child: Icon(Icons.chevron_left, size: 18, color: fg),
                     ),
                   ),
-                  Text('MAPA EPIDEMIOLÓGICO', style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18, color: fg)),
+                  Text('MAPA EPIDEMIOLÓGICO',
+                      style: GoogleFonts.jetBrainsMono(
+                          fontSize: 10, letterSpacing: 0.18, color: fg)),
                   const SizedBox(width: 38),
                 ],
               ),
@@ -47,17 +56,30 @@ class EpidemiologicalMapPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('GEOFENCE · LIMA METRO',
-                            style: GoogleFonts.jetBrainsMono(fontSize: 10, letterSpacing: 0.18,
+                            style: GoogleFonts.jetBrainsMono(
+                                fontSize: 10,
+                                letterSpacing: 0.18,
                                 color: fg.withValues(alpha: 0.55))),
                         const SizedBox(height: 10),
                         RichText(
                           text: TextSpan(children: [
-                            TextSpan(text: 'Alertas\n',
-                                style: GoogleFonts.spaceGrotesk(fontSize: 38, fontWeight: FontWeight.w700,
-                                    letterSpacing: -0.04 * 38, height: 0.92, color: fg)),
-                            TextSpan(text: 'de enfermedades.',
-                                style: GoogleFonts.instrumentSerif(fontSize: 28, fontStyle: FontStyle.italic,
-                                    fontWeight: FontWeight.w400, letterSpacing: -0.02 * 28, height: 1.0, color: fg)),
+                            TextSpan(
+                                text: 'Alertas\n',
+                                style: GoogleFonts.spaceGrotesk(
+                                    fontSize: 38,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: -0.04 * 38,
+                                    height: 0.92,
+                                    color: fg)),
+                            TextSpan(
+                                text: 'de enfermedades.',
+                                style: GoogleFonts.instrumentSerif(
+                                    fontSize: 28,
+                                    fontStyle: FontStyle.italic,
+                                    fontWeight: FontWeight.w400,
+                                    letterSpacing: -0.02 * 28,
+                                    height: 1.0,
+                                    color: fg)),
                           ]),
                         ),
                       ],
@@ -79,28 +101,37 @@ class EpidemiologicalMapPage extends StatelessWidget {
                               border: Border.all(color: fg),
                               borderRadius: BorderRadius.circular(20),
                             ),
-                            child: Obx(() => GoogleMap(
-                              initialCameraPosition: CameraPosition(
-                                target: const LatLng(-12.0464, -77.0428), // Lima, Peru
-                                zoom: 12,
-                              ),
-                              onMapCreated: ctrl.onMapCreated,
-                              markers: ctrl.markers.value,
-                              circles: ctrl.circles.value,
-                              myLocationEnabled: true,
-                              myLocationButtonEnabled: false,
-                              zoomControlsEnabled: false,
-                              scrollGesturesEnabled: true,
-                              rotateGesturesEnabled: false,
-                            )),
+                            child: mapsEnabled
+                                ? Obx(() => GoogleMap(
+                                      initialCameraPosition:
+                                          const CameraPosition(
+                                        target: LatLng(-12.0464, -77.0428),
+                                        zoom: 12,
+                                      ),
+                                      onMapCreated: ctrl.onMapCreated,
+                                      markers: ctrl.markers.value,
+                                      circles: ctrl.circles.value,
+                                      myLocationEnabled: true,
+                                      myLocationButtonEnabled: false,
+                                      zoomControlsEnabled: false,
+                                      scrollGesturesEnabled: true,
+                                      rotateGesturesEnabled: false,
+                                    ))
+                                : Obx(() => _MapUnavailable(
+                                      alertCount: ctrl.alerts.length,
+                                    )),
                           ),
                         ),
 
                         // ── Alert sheet ───────────────────────
                         Positioned(
-                          left: 22, right: 22, bottom: 22,
+                          left: 22,
+                          right: 22,
+                          bottom: 22,
                           child: Obx(() {
-                            if (ctrl.alerts.isEmpty) return const SizedBox.shrink();
+                            if (ctrl.alerts.isEmpty) {
+                              return const SizedBox.shrink();
+                            }
                             final alert = ctrl.alerts.first;
                             return Container(
                               padding: const EdgeInsets.all(18),
@@ -111,32 +142,50 @@ class EpidemiologicalMapPage extends StatelessWidget {
                               child: Row(
                                 children: [
                                   Container(
-                                    width: 40, height: 40,
+                                    width: 40,
+                                    height: 40,
                                     decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                                      border: Border.all(
+                                          color: Colors.white
+                                              .withValues(alpha: 0.3)),
                                       borderRadius: BorderRadius.circular(999),
                                     ),
-                                    child: const Icon(Icons.warning_amber_outlined, size: 20, color: Colors.white),
+                                    child: const Icon(
+                                        Icons.warning_amber_outlined,
+                                        size: 20,
+                                        color: Colors.white),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text('GEOFENCE ALERT', style: GoogleFonts.jetBrainsMono(fontSize: 9, letterSpacing: 0.18,
-                                            color: Colors.white.withValues(alpha: 0.6))),
+                                        Text('GEOFENCE ALERT',
+                                            style: GoogleFonts.jetBrainsMono(
+                                                fontSize: 9,
+                                                letterSpacing: 0.18,
+                                                color: Colors.white
+                                                    .withValues(alpha: 0.6))),
                                         const SizedBox(height: 4),
                                         Text(alert.disease,
-                                            style: GoogleFonts.spaceGrotesk(fontSize: 15, fontWeight: FontWeight.w600,
-                                                letterSpacing: -0.03 * 15, color: Colors.white)),
+                                            style: GoogleFonts.spaceGrotesk(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w600,
+                                                letterSpacing: -0.03 * 15,
+                                                color: Colors.white)),
                                         const SizedBox(height: 2),
-                                        Text('Limit walks · ${alert.radiusKm.toStringAsFixed(0)} km radius',
-                                            style: GoogleFonts.spaceGrotesk(fontSize: 11,
-                                                color: Colors.white.withValues(alpha: 0.7))),
+                                        Text(
+                                            'Limit walks · ${alert.radiusKm.toStringAsFixed(0)} km radius',
+                                            style: GoogleFonts.spaceGrotesk(
+                                                fontSize: 11,
+                                                color: Colors.white
+                                                    .withValues(alpha: 0.7))),
                                       ],
                                     ),
                                   ),
-                                  const Icon(Icons.chevron_right, color: Colors.white, size: 20),
+                                  const Icon(Icons.chevron_right,
+                                      color: Colors.white, size: 20),
                                 ],
                               ),
                             );
@@ -144,38 +193,43 @@ class EpidemiologicalMapPage extends StatelessWidget {
                         ),
 
                         // ── Zoom buttons ──────────────────────
-                        Positioned(
-                          right: 32, bottom: 100,
-                          child: Column(
-                            children: [
-                              GestureDetector(
-                                onTap: ctrl.zoomIn,
-                                child: Container(
-                                  width: 40, height: 40,
-                                  decoration: BoxDecoration(
-                                    color: bg,
-                                    border: Border.all(color: fg),
-                                    borderRadius: BorderRadius.circular(8),
+                        if (mapsEnabled)
+                          Positioned(
+                            right: 32,
+                            bottom: 100,
+                            child: Column(
+                              children: [
+                                GestureDetector(
+                                  onTap: ctrl.zoomIn,
+                                  child: Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: bg,
+                                      border: Border.all(color: fg),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Icon(Icons.add, color: fg, size: 20),
                                   ),
-                                  child: Icon(Icons.add, color: fg, size: 20),
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-                              GestureDetector(
-                                onTap: ctrl.zoomOut,
-                                child: Container(
-                                  width: 40, height: 40,
-                                  decoration: BoxDecoration(
-                                    color: bg,
-                                    border: Border.all(color: fg),
-                                    borderRadius: BorderRadius.circular(8),
+                                const SizedBox(height: 8),
+                                GestureDetector(
+                                  onTap: ctrl.zoomOut,
+                                  child: Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: bg,
+                                      border: Border.all(color: fg),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child:
+                                        Icon(Icons.remove, color: fg, size: 20),
                                   ),
-                                  child: Icon(Icons.remove, color: fg, size: 20),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),
@@ -189,22 +243,58 @@ class EpidemiologicalMapPage extends StatelessWidget {
   }
 }
 
+class _MapUnavailable extends StatelessWidget {
+  final int alertCount;
+  const _MapUnavailable({required this.alertCount});
+
+  @override
+  Widget build(BuildContext context) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.map_outlined, size: 56),
+              const SizedBox(height: 14),
+              const Text(
+                'Google Maps aún no está configurado',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Las $alertCount alertas de Supabase sí están cargadas. '
+                'Agrega GOOGLE_MAPS_KEY y compila con '
+                'GOOGLE_MAPS_ENABLED=true para mostrar el mapa base.',
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+}
+
 // ── Animated pulse ring ───────────────────────────────────────────
 class _PulseRing extends StatefulWidget {
   @override
   State<_PulseRing> createState() => _PulseRingState();
 }
 
-class _PulseRingState extends State<_PulseRing> with SingleTickerProviderStateMixin {
+class _PulseRingState extends State<_PulseRing>
+    with SingleTickerProviderStateMixin {
   late AnimationController _anim;
   late Animation<double> _scale, _opacity;
 
   @override
   void initState() {
     super.initState();
-    _anim = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat();
-    _scale = Tween<double>(begin: 0.5, end: 1.5).animate(CurvedAnimation(parent: _anim, curve: Curves.easeOut));
-    _opacity = Tween<double>(begin: 0.6, end: 0.0).animate(CurvedAnimation(parent: _anim, curve: Curves.easeOut));
+    _anim =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2))
+          ..repeat();
+    _scale = Tween<double>(begin: 0.5, end: 1.5)
+        .animate(CurvedAnimation(parent: _anim, curve: Curves.easeOut));
+    _opacity = Tween<double>(begin: 0.6, end: 0.0)
+        .animate(CurvedAnimation(parent: _anim, curve: Curves.easeOut));
   }
 
   @override
@@ -216,7 +306,8 @@ class _PulseRingState extends State<_PulseRing> with SingleTickerProviderStateMi
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 80, height: 80,
+      width: 80,
+      height: 80,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -227,7 +318,8 @@ class _PulseRingState extends State<_PulseRing> with SingleTickerProviderStateMi
               child: Transform.scale(
                 scale: _scale.value,
                 child: Container(
-                  width: 60, height: 60,
+                  width: 60,
+                  height: 60,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.black, width: 2),
                     borderRadius: BorderRadius.circular(999),
@@ -237,8 +329,10 @@ class _PulseRingState extends State<_PulseRing> with SingleTickerProviderStateMi
             ),
           ),
           Container(
-            width: 24, height: 24,
-            decoration: const BoxDecoration(color: Colors.black, shape: BoxShape.circle),
+            width: 24,
+            height: 24,
+            decoration: const BoxDecoration(
+                color: Colors.black, shape: BoxShape.circle),
           ),
         ],
       ),

@@ -29,7 +29,8 @@ class SectionHeader extends StatelessWidget {
               children: [
                 Text(
                   eyebrow.toUpperCase(),
-                  style: GoogleFonts.spaceGrotesk(fontSize: 9,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 9,
                     letterSpacing: 0.32,
                     fontWeight: FontWeight.w700,
                     color: cs.onSurface.withValues(alpha: 0.45),
@@ -38,7 +39,8 @@ class SectionHeader extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   title,
-                  style: GoogleFonts.spaceGrotesk(fontSize: 28,
+                  style: GoogleFonts.spaceGrotesk(
+                    fontSize: 28,
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.04,
                     height: 0.95,
@@ -78,7 +80,8 @@ class BorderTile extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
         padding: padding,
         decoration: BoxDecoration(
-          border: Border.all(color: cs.onSurface.withValues(alpha: 0.15), width: 1),
+          border:
+              Border.all(color: cs.onSurface.withValues(alpha: 0.15), width: 1),
         ),
         child: child,
       ),
@@ -103,14 +106,16 @@ class VcDataRow extends StatelessWidget {
         children: [
           Text(
             label.toUpperCase(),
-            style: GoogleFonts.spaceGrotesk(fontSize: 9,
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: 9,
               letterSpacing: 0.22,
               color: cs.onSurface.withValues(alpha: 0.45),
             ),
           ),
           Text(
             value,
-            style: GoogleFonts.spaceGrotesk(fontSize: 13,
+            style: GoogleFonts.spaceGrotesk(
+              fontSize: 13,
               fontWeight: FontWeight.w600,
               letterSpacing: -0.02,
               color: cs.onSurface,
@@ -137,7 +142,8 @@ class MonoBadge extends StatelessWidget {
       ),
       child: Text(
         label.toUpperCase(),
-        style: GoogleFonts.spaceGrotesk(fontSize: 9,
+        style: GoogleFonts.spaceGrotesk(
+          fontSize: 9,
           letterSpacing: 0.22,
           fontWeight: FontWeight.w700,
           color: cs.onSurface,

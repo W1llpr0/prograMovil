@@ -45,8 +45,7 @@ app.*.map.json
 /android/app/release
 
 # Sensitive native config files — keep locally, never commit real API keys
-ios/Runner/Info.plist
-android/app/src/main/AndroidManifest.xml
-# API key config files (each dev creates these locally from .example)
+# API key config files (each dev creates these locally from .example).
+# AndroidManifest.xml and Info.plist are versioned with placeholders only.
 ios/Flutter/GoogleMapsKey.xcconfig
 android/local.properties

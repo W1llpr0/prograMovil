@@ -30,7 +30,8 @@ class VerifyEmailPage extends StatelessWidget {
                   border: Border.all(color: cs.onSurface, width: 1),
                   borderRadius: BorderRadius.circular(999),
                 ),
-                child: Icon(Icons.mail_outline_rounded, size: 24, color: cs.onSurface),
+                child: Icon(Icons.mail_outline_rounded,
+                    size: 24, color: cs.onSurface),
               ),
 
               const SizedBox(height: 28),
@@ -72,7 +73,8 @@ class VerifyEmailPage extends StatelessWidget {
               const SizedBox(height: 6),
               if (email.isNotEmpty)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
                     border: Border.all(color: cs.onSurface, width: 1),
                     borderRadius: BorderRadius.circular(8),
