@@ -50,18 +50,28 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File supabase\configure_smtp.
 El archivo `.env.smtp.local` esta ignorado por Git y nunca debe compartirse ni
 confirmarse en el repositorio. La confirmacion de correo permanece activada.
 
+Para pruebas con correos ficticios y sin SMTP, ejecuta:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File supabase\configure_auth_testing.ps1
+```
+
+En este modo no se envia un correo ni se muestra la pantalla de confirmacion:
+Supabase confirma la cuenta automaticamente. No debe utilizarse en produccion.
+
 ## 3. Casos de uso
 
 ### CU-01: registrar un cliente
 
-Requisito: SMTP configurado.
+Requisito: SMTP configurado o modo de pruebas sin SMTP activado.
 
 1. Abre **Registrate**.
 2. Selecciona **Dueno**.
-3. Usa un correo real y unico.
+3. Usa un correo real y unico con SMTP, o uno ficticio y unico en modo de pruebas.
 4. Completa nombres, documento, telefono y una contrasena segura.
 5. Pulsa **Completar registro**.
-6. Confirma el correo recibido y luego inicia sesion.
+6. Con SMTP, confirma el correo recibido. En modo de pruebas, inicia sesion
+   directamente.
 
 Resultado esperado: aparecen filas relacionadas en `auth.users`,
 `public.users` y `public.clients`. La aplicacion no inicia sesion antes de la

@@ -43,15 +43,4 @@ class SignInController extends GetxController {
   }
 
   void goToSignUp() => Get.toNamed(AppRoutes.signUp);
-
-  @override
-  void onClose() {
-    final controllers = [emailCtrl, passwordCtrl];
-    Future.microtask(() {
-      for (final c in controllers) {
-        c.dispose();
-      }
-    });
-    super.onClose();
-  }
 }

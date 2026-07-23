@@ -7,9 +7,10 @@ import '../../configs/theme.dart';
 import 'sign_up_controller.dart';
 
 class SignUpPage extends StatelessWidget {
-  SignUpPage({super.key});
+  SignUpPage({super.key, SignUpController? controller})
+      : ctrl = controller ?? Get.put(SignUpController());
 
-  final SignUpController ctrl = Get.put(SignUpController());
+  final SignUpController ctrl;
 
   @override
   Widget build(BuildContext context) => Scaffold(

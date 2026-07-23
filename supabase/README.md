@@ -58,6 +58,23 @@ VetCare devuelve `INVALID_CREDENTIALS` con el mismo texto para correo inexistent
 contraseña incorrecta o formato inválido. Los errores internos de Supabase y
 PostgreSQL se conservan fuera de las respuestas visibles al usuario.
 
+### Registro de demostración sin SMTP
+
+Si el proyecto se usa únicamente para desarrollo y el servidor SMTP todavía no
+funciona, activa la confirmación automática:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File supabase\configure_auth_testing.ps1
+```
+
+Este modo mantiene habilitado Email/Password, permite correos ficticios y no
+envía un enlace de confirmación. Requiere `SUPABASE_ACCESS_TOKEN` en el archivo
+local `.env.local`, que está ignorado por Git.
+
+No uses este modo en producción: no comprueba que el usuario controle la
+dirección registrada. Al configurar un SMTP válido, ejecuta
+`supabase\configure_smtp.ps1`, que vuelve a exigir confirmación de correo.
+
 ## Tablas y relaciones
 
 | Tabla | Propósito | Relación principal |

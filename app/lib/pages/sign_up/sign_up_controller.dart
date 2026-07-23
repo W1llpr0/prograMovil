@@ -20,7 +20,10 @@ class SignUpController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxString selectedRole = 'client'.obs;
 
-  final AuthService _authService = AuthService();
+  final AuthService _authService;
+
+  SignUpController({AuthService? authService})
+      : _authService = authService ?? AuthService();
 
   void register() async {
     final firstName = firstNameCtrl.text.trim();
@@ -36,6 +39,14 @@ class SignUpController extends GetxController {
         email.isEmpty ||
         password.isEmpty) {
       message.value = 'error_empty_fields'.tr;
+      return;
+    }
+    if (!RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)) {
+      message.value = 'error_invalid_email'.tr;
+      return;
+    }
+    if (password.length < 6) {
+      message.value = 'error_password_too_short'.tr;
       return;
     }
     if (password != confirm) {
@@ -60,10 +71,16 @@ class SignUpController extends GetxController {
     isLoading.value = false;
 
     if (res.success && res.data != null) {
-      // Delete stale SignInController so the page gets a fresh instance
-      Get.delete<SignInController>(force: true);
       if (res.code == 'EMAIL_CONFIRMATION_REQUIRED') {
         Get.offAllNamed(AppRoutes.verifyEmail, arguments: email);
+      } else if (Get.isRegistered<SignInController>()) {
+        // Registration is normally opened over the login route. Return to the
+        // existing page so its fields are not destroyed mid-transition.
+        final signIn = Get.find<SignInController>();
+        signIn.emailCtrl.text = email;
+        signIn.passwordCtrl.clear();
+        signIn.message.value = '';
+        Get.back();
       } else {
         Get.offAllNamed(AppRoutes.signIn);
       }
@@ -73,26 +90,4 @@ class SignUpController extends GetxController {
   }
 
   void goToSignIn() => Get.toNamed(AppRoutes.signIn);
-
-  @override
-  void onClose() {
-    // Defer disposal so in-flight page-exit animations finish before the
-    // controllers are released (prevents "used after disposed" errors).
-    final controllers = [
-      firstNameCtrl,
-      lastNameCtrl,
-      documentCtrl,
-      emailCtrl,
-      phoneCtrl,
-      addressCtrl,
-      passwordCtrl,
-      confirmCtrl,
-    ];
-    Future.microtask(() {
-      for (final c in controllers) {
-        c.dispose();
-      }
-    });
-    super.onClose();
-  }
 }

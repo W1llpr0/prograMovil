@@ -82,6 +82,9 @@ class AppTranslations extends Translations {
           'logout': 'LOG OUT',
           // Messages
           'error_empty_fields': 'Please fill in all required fields.',
+          'error_invalid_email': 'Enter a valid email address.',
+          'error_password_too_short':
+              'Password must contain at least 6 characters.',
           'error_passwords_mismatch': 'Passwords do not match.',
           'success_registered': 'Account created successfully.',
           'success_pet_added': 'Pet added successfully.',
@@ -241,6 +244,9 @@ class AppTranslations extends Translations {
           'logout': 'CERRAR SESIÓN',
           // Messages
           'error_empty_fields': 'Por favor completa todos los campos.',
+          'error_invalid_email': 'Ingresa un correo electrónico válido.',
+          'error_password_too_short':
+              'La contraseña debe tener al menos 6 caracteres.',
           'error_passwords_mismatch': 'Las contraseñas no coinciden.',
           'success_registered': 'Cuenta creada exitosamente.',
           'success_pet_added': 'Mascota agregada exitosamente.',
