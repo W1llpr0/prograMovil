@@ -21,8 +21,8 @@ class RegisterMedicalController extends GetxController {
   final rrCtrl = TextEditingController();
   final medicationNameCtrl = TextEditingController();
   final dosageCtrl = TextEditingController();
-  final frequencyHoursCtrl = TextEditingController(text: '8');
-  final durationDaysCtrl = TextEditingController(text: '7');
+  final frequencyHoursCtrl = TextEditingController();
+  final durationDaysCtrl = TextEditingController();
 
   final isContagious = false.obs;
   final isLoading = false.obs;
@@ -57,15 +57,15 @@ class RegisterMedicalController extends GetxController {
   List<Map<String, dynamic>> get medications {
     final name = medicationNameCtrl.text.trim();
     if (name.isEmpty) return const [];
-    final hours = int.tryParse(frequencyHoursCtrl.text.trim());
-    final days = int.tryParse(durationDaysCtrl.text.trim()) ?? 1;
+    final hours = int.parse(frequencyHoursCtrl.text.trim());
+    final days = int.parse(durationDaysCtrl.text.trim());
     final start = DateTime.now();
     final end = start.add(Duration(days: days));
     return [
       {
         'name': name,
         'dosage': dosageCtrl.text.trim(),
-        'frequency': hours == null ? null : 'Cada $hours horas',
+        'frequency': 'Cada $hours horas',
         'frequency_hours': hours,
         'start_date': start.toIso8601String().split('T').first,
         'end_date': end.toIso8601String().split('T').first,
@@ -94,6 +94,19 @@ class RegisterMedicalController extends GetxController {
         treatmentCtrl.text.trim().isEmpty) {
       message.value = 'Diagnóstico y tratamiento son obligatorios.';
       return;
+    }
+    if (medicationNameCtrl.text.trim().isNotEmpty) {
+      final frequency = int.tryParse(frequencyHoursCtrl.text.trim());
+      final duration = int.tryParse(durationDaysCtrl.text.trim());
+      if (dosageCtrl.text.trim().isEmpty ||
+          frequency == null ||
+          frequency <= 0 ||
+          duration == null ||
+          duration <= 0) {
+        message.value =
+            'Completa dosis, frecuencia y duración válidas del medicamento.';
+        return;
+      }
     }
     isLoading.value = true;
     message.value = '';

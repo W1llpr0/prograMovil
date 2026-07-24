@@ -33,8 +33,19 @@ class _HomePageState extends State<HomePage> {
         ),
         bottomNavigationBar: NavigationBar(
           selectedIndex: selectedIndex,
-          onDestinationSelected: (index) =>
-              setState(() => selectedIndex = index),
+          onDestinationSelected: (index) {
+            setState(() => selectedIndex = index);
+            if (index == 0) {
+              Future.wait([
+                ctrl.loadPets(),
+                ctrl.loadUpcomingAppointments(),
+              ]);
+            } else if (index == 1) {
+              ctrl.loadPets();
+            } else if (index == 2) {
+              ctrl.loadUpcomingAppointments();
+            }
+          },
           destinations: const [
             NavigationDestination(icon: Icon(Icons.home), label: 'Inicio'),
             NavigationDestination(icon: Icon(Icons.pets), label: 'Mascotas'),
@@ -55,7 +66,6 @@ class _Dashboard extends StatelessWidget {
         onRefresh: () async => Future.wait([
           controller.loadPets(),
           controller.loadUpcomingAppointments(),
-          controller.loadNextDose(),
         ]),
         child: ListView(
           padding: const EdgeInsets.fromLTRB(30, 20, 30, 32),
@@ -217,26 +227,37 @@ class _Appointments extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(title: const Text('Mis citas')),
-        body: Obx(() => controller.upcomingAppointments.isEmpty
-            ? const Center(child: Text('No tienes citas próximas.'))
-            : ListView.separated(
-                padding: const EdgeInsets.all(24),
-                itemCount: controller.upcomingAppointments.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (_, index) {
-                  final item = controller.upcomingAppointments[index];
-                  return Card(
-                    child: ListTile(
-                      leading: const Icon(Icons.calendar_month,
-                          color: AppColors.primary),
-                      title: Text('${item['title']} · ${item['petName']}'),
-                      subtitle: Text(
-                          '${item['date']} · ${item['time']}\n${item['vetName']}'),
-                      isThreeLine: true,
+        body: Obx(() => RefreshIndicator(
+              onRefresh: controller.loadUpcomingAppointments,
+              child: controller.upcomingAppointments.isEmpty
+                  ? ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: const [
+                        SizedBox(height: 220),
+                        Center(child: Text('No tienes citas próximas.')),
+                      ],
+                    )
+                  : ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(24),
+                      itemCount: controller.upcomingAppointments.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      itemBuilder: (_, index) {
+                        final item = controller.upcomingAppointments[index];
+                        return Card(
+                          child: ListTile(
+                            leading: const Icon(Icons.calendar_month,
+                                color: AppColors.primary),
+                            title:
+                                Text('${item['title']} · ${item['petName']}'),
+                            subtitle: Text(
+                                '${item['date']} · ${item['time']}\n${item['vetName']}'),
+                            isThreeLine: true,
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              )),
+            )),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => Get.toNamed(AppRoutes.bookAppointment)
               ?.then((_) => controller.loadUpcomingAppointments()),

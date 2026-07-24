@@ -31,7 +31,9 @@ class SignInController extends GetxController {
     isLoading.value = false;
 
     if (res.success && res.data != null) {
-      Get.find<AppController>().setUser(res.data!);
+      final appController = Get.find<AppController>();
+      appController.setUser(res.data!);
+      await appController.loadRemotePreferences(res.data!.id);
       Get.offAllNamed(
         res.data!.role == 'veterinarian'
             ? AppRoutes.vetDashboard

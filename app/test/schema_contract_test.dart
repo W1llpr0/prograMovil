@@ -11,6 +11,9 @@ void main() {
     final workflows = File(
       '$root/supabase/migrations/20260720000000_complete_workflows.sql',
     ).readAsStringSync();
+    final preferences = File(
+      '$root/supabase/migrations/20260723000000_user_preferences.sql',
+    ).readAsStringSync();
 
     for (final table in [
       'users',
@@ -44,6 +47,10 @@ void main() {
       expect(workflows, contains('function public.$rpc'),
           reason: 'missing $rpc');
     }
+
+    expect(preferences, contains('public.user_preferences'));
+    expect(preferences, contains('user_preferences_select_own'));
+    expect(preferences, contains('user_id = auth.uid()'));
   });
 
   test('Supabase contract hides internal errors and restricts privileged RPCs',

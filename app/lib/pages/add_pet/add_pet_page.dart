@@ -120,7 +120,7 @@ class AddPetPage extends StatelessWidget {
                     // Name
                     LineInput(
                         label: 'pet_name'.tr,
-                        hint: 'e.g. Luna',
+                        hint: 'Nombre de la mascota',
                         controller: ctrl.nameCtrl),
                     const SizedBox(height: 22),
 

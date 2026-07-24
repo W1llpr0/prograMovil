@@ -80,6 +80,7 @@ dirección registrada. Al configurar un SMTP válido, ejecuta
 | Tabla | Propósito | Relación principal |
 |---|---|---|
 | `users` | Perfil compartido y rol | `id -> auth.users.id` |
+| `user_preferences` | Idioma y apariencia por cuenta | `user_id -> users.id` |
 | `clients` | Datos geográficos del cliente | `user_id -> users.id` |
 | `veterinarians` | Colegiatura, experiencia y estado | `user_id -> users.id` |
 | `specialties` | Catálogo de especialidades | catálogo |

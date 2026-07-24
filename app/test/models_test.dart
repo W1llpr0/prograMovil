@@ -4,6 +4,7 @@ import 'package:vetcare_app/models/consultation.dart';
 import 'package:vetcare_app/models/medication.dart';
 import 'package:vetcare_app/models/pet.dart';
 import 'package:vetcare_app/models/review.dart';
+import 'package:vetcare_app/pages/vet_dashboard/vet_dashboard_controller.dart';
 
 void main() {
   test('AppUser keeps veterinarian joined fields', () {
@@ -105,5 +106,66 @@ void main() {
     expect(review.specialtyName, 'Medicina general');
     expect(review.diagnosis, 'Otitis externa');
     expect(review.consultationDate, DateTime.utc(2026, 7, 21, 15));
+  });
+
+  test('veterinarian pending summary includes today and future appointments',
+      () {
+    final now = DateTime(2026, 7, 23, 15);
+    final consultations = [
+      Consultation(
+        petId: 1,
+        veterinarianId: 'vet-1',
+        scheduledAt: DateTime(2026, 7, 22, 15),
+        status: 'pending',
+      ),
+      Consultation(
+        petId: 2,
+        veterinarianId: 'vet-1',
+        scheduledAt: DateTime(2026, 7, 23, 9),
+        status: 'scheduled',
+      ),
+      Consultation(
+        petId: 3,
+        veterinarianId: 'vet-1',
+        scheduledAt: DateTime(2026, 7, 25, 10),
+        status: 'confirmed',
+      ),
+      Consultation(
+        petId: 4,
+        veterinarianId: 'vet-1',
+        scheduledAt: DateTime(2026, 7, 26, 10),
+        status: 'completed',
+      ),
+    ];
+
+    expect(countUpcomingPendingConsultations(consultations, now), 2);
+  });
+
+  test('veterinarian completed-today summary uses actual completion time', () {
+    final now = DateTime(2026, 7, 23, 15);
+    final consultations = [
+      Consultation(
+        petId: 1,
+        veterinarianId: 'vet-1',
+        scheduledAt: DateTime(2026, 7, 26, 10),
+        status: 'completed',
+        completedAt: DateTime(2026, 7, 23, 14),
+      ),
+      Consultation(
+        petId: 2,
+        veterinarianId: 'vet-1',
+        scheduledAt: DateTime(2026, 7, 23, 10),
+        status: 'completed',
+        completedAt: DateTime(2026, 7, 22, 14),
+      ),
+      Consultation(
+        petId: 3,
+        veterinarianId: 'vet-1',
+        scheduledAt: DateTime(2026, 7, 23, 11),
+        status: 'pending',
+      ),
+    ];
+
+    expect(countConsultationsCompletedOnDate(consultations, now), 1);
   });
 }

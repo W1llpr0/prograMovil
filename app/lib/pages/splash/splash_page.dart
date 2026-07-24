@@ -49,6 +49,9 @@ class _SplashPageState extends State<SplashPage>
         user = null;
       }
       appCtrl.setUser(user);
+      if (user != null) {
+        await appCtrl.loadRemotePreferences(user.id);
+      }
 
       final session = Supabase.instance.client.auth.currentSession;
       if (session != null && user != null) {

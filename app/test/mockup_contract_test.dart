@@ -46,7 +46,9 @@ void main() {
         'Especialidades'
       ],
       'lib/pages/vet_dashboard/vet_dashboard_page.dart': [
-        'Resumen diario',
+        'Resumen de agenda',
+        'Atendidas hoy',
+        'Próximas pendientes',
         'Paciente en sala',
         'Mi agenda médica'
       ],

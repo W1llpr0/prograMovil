@@ -35,8 +35,15 @@ class _VetDashboardPageState extends State<VetDashboardPage> {
         ),
         bottomNavigationBar: NavigationBar(
           selectedIndex: selectedIndex,
-          onDestinationSelected: (index) =>
-              setState(() => selectedIndex = index),
+          onDestinationSelected: (index) {
+            setState(() => selectedIndex = index);
+            if (index <= 2) {
+              ctrl.loadAgenda();
+            }
+            if (index == 1) {
+              ctrl.loadAvailability();
+            }
+          },
           destinations: const [
             NavigationDestination(icon: Icon(Icons.home), label: 'Inicio'),
             NavigationDestination(
@@ -82,7 +89,7 @@ class _VetHome extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Resumen diario',
+                Text('Resumen de agenda',
                     style: Theme.of(context).textTheme.titleMedium),
                 Chip(
                   avatar: const Icon(Icons.calendar_month, size: 18),
@@ -98,8 +105,8 @@ class _VetHome extends StatelessWidget {
                     Expanded(
                       child: _SummaryCard(
                         icon: Icons.groups,
-                        value: controller.todayTotal,
-                        label: 'Citas totales',
+                        value: controller.completedTodayCount,
+                        label: 'Atendidas hoy',
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -107,7 +114,7 @@ class _VetHome extends StatelessWidget {
                       child: _SummaryCard(
                         icon: Icons.pending_actions,
                         value: controller.pendingCount,
-                        label: 'Pendientes',
+                        label: 'Próximas pendientes',
                         danger: true,
                       ),
                     ),
@@ -227,17 +234,18 @@ class _VetAgenda extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (context) => Padding(
-        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-        child: Obx(() => Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) => SizedBox(
+        height: MediaQuery.sizeOf(context).height * 0.72,
+        child: Obx(() => ListView(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
               children: [
                 Text('Disponibilidad semanal',
                     style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 12),
                 if (controller.availability.isEmpty)
-                  const Text('Usando horario predeterminado de 09:00 a 18:00.')
+                  const Text('No hay disponibilidad configurada.')
                 else
                   ...controller.availability.map((slot) => ListTile(
                         contentPadding: EdgeInsets.zero,

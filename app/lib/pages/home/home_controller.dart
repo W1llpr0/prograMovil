@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../components/app_controller.dart';
 import '../../configs/app_routes.dart';
@@ -17,14 +18,7 @@ class HomeController extends GetxController {
   final RxList<Pet> pets = <Pet>[].obs;
   final RxList<Veterinarian> vets = <Veterinarian>[].obs;
   final RxBool isLoading = false.obs;
-  final RxBool doseDone = false.obs;
   final RxString errorMessage = ''.obs;
-
-  // Next dose data
-  final RxString nextDoseMedication = 'No active medications'.obs;
-  final RxString nextDoseTime = '—'.obs;
-  final RxString nextDoseDetails = '—'.obs;
-  final RxInt nextDoseId = 0.obs;
 
   // Appointments data
   final RxList<Map<String, dynamic>> upcomingAppointments =
@@ -49,7 +43,6 @@ class HomeController extends GetxController {
       debugPrint('✅ HomeController: Session active, uid=${session.user.id}');
       await Future.wait([
         loadPets(),
-        loadNextDose(),
         loadUpcomingAppointments(),
         loadVets(),
       ]);
@@ -85,70 +78,6 @@ class HomeController extends GetxController {
     }
   }
 
-  Future<void> loadNextDose() async {
-    try {
-      final uid = appCtrl.currentUser.value?.id;
-      if (uid == null) return;
-
-      // Get user's pets first
-      final petsRes = await Supabase.instance.client
-          .from('pets')
-          .select('id')
-          .eq('client_id', uid);
-
-      if (petsRes.isEmpty) {
-        nextDoseMedication.value = 'No pets registered yet';
-        return;
-      }
-
-      final petIds =
-          (petsRes as List).map((p) => (p['id'] as num).toInt()).toList();
-      final consultationRows = await Supabase.instance.client
-          .from('consultations')
-          .select('id')
-          .inFilter('pet_id', petIds);
-      final consultationIds = (consultationRows as List)
-          .map((row) => (row['id'] as num).toInt())
-          .toList();
-      if (consultationIds.isEmpty) {
-        nextDoseMedication.value = 'No active medications';
-        return;
-      }
-
-      final medRes = await Supabase.instance.client
-          .from('medication_schedules')
-          .select('*, consultations(pets(name))')
-          .eq('is_active', true)
-          .inFilter('consultation_id', consultationIds)
-          .order('next_dose_at')
-          .limit(1);
-
-      if ((medRes as List).isEmpty) {
-        nextDoseMedication.value = 'No active medications';
-        return;
-      }
-
-      // Use the first active medication
-      final med = medRes.first;
-      final petName = med['consultations']['pets']['name'] ?? 'Pet';
-      nextDoseId.value = med['id'] as int;
-      nextDoseMedication.value = med['medication_name'] ?? 'Medication';
-      nextDoseDetails.value = '${med['dosage'] ?? '1 dose'} · $petName';
-      nextDoseTime.value = 'IN ${_timeUntilNext(med['frequency'] as String?)}';
-
-      debugPrint('✅ Loaded next dose: ${nextDoseMedication.value}');
-    } catch (e) {
-      debugPrint('❌ Error loading next dose: $e');
-    }
-  }
-
-  String _timeUntilNext(String? frequency) {
-    if (frequency == null) return '04:12';
-    if (frequency.contains('8')) return '03:45';
-    if (frequency.contains('12')) return '06:30';
-    return '04:12';
-  }
-
   Future<void> loadUpcomingAppointments() async {
     try {
       final uid = appCtrl.currentUser.value?.id;
@@ -160,20 +89,22 @@ class HomeController extends GetxController {
           .select('id')
           .eq('client_id', uid);
 
-      if (petsRes.isEmpty) return;
+      if (petsRes.isEmpty) {
+        upcomingAppointments.clear();
+        return;
+      }
 
       final petIds = (petsRes as List).map((p) => p['id']).toList();
 
       // Get upcoming consultations
-      final now = DateTime.now();
+      final now = DateTime.now().toUtc();
       final apptRes = await Supabase.instance.client
           .from('consultations')
           .select('*, pets(name), veterinarians(users(first_name, last_name))')
           .inFilter('pet_id', List<int>.from(petIds))
           .inFilter('status', ['pending', 'scheduled', 'confirmed'])
           .gte('scheduled_at', now.toIso8601String())
-          .order('scheduled_at', ascending: true)
-          .limit(3);
+          .order('scheduled_at', ascending: true);
 
       final appointments = (apptRes as List).map((appt) {
         final scheduled = DateTime.parse(appt['scheduled_at'] as String);
@@ -196,29 +127,15 @@ class HomeController extends GetxController {
   }
 
   String _formatDate(DateTime date) {
-    return '${date.day} ${[
-      'JAN',
-      'FEB',
-      'MAR',
-      'APR',
-      'MAY',
-      'JUN',
-      'JUL',
-      'AUG',
-      'SEP',
-      'OCT',
-      'NOV',
-      'DEC'
-    ][date.month - 1]}';
+    return DateFormat('dd MMM', 'es_ES').format(date.toLocal()).toUpperCase();
   }
 
   String _formatTime(DateTime date) {
-    return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+    return DateFormat('HH:mm', 'es_ES').format(date.toLocal());
   }
 
   void goToAddPet() => Get.toNamed(AppRoutes.addPet)?.then((_) async {
-        await Future.wait(
-            [loadPets(), loadNextDose(), loadUpcomingAppointments()]);
+        await Future.wait([loadPets(), loadUpcomingAppointments()]);
       });
 
   void goToPetProfile(Pet pet) =>

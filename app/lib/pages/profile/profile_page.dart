@@ -185,42 +185,54 @@ class ProfilePage extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (context) => Padding(
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Mis reseñas', style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 14),
-            if (reviews.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(20),
-                child: Text('Todavía no enviaste reseñas.'),
-              )
-            else
-              ...reviews.map((review) => Card(
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        child: Text('${review.rating}★'),
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) => FractionallySizedBox(
+        heightFactor: 0.75,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Mis reseñas',
+                  style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 14),
+              Expanded(
+                child: reviews.isEmpty
+                    ? const Center(
+                        child: Text('Todavía no enviaste reseñas.'),
+                      )
+                    : ListView.separated(
+                        itemCount: reviews.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 4),
+                        itemBuilder: (context, index) {
+                          final review = reviews[index];
+                          return Card(
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                child: Text('${review.rating}★'),
+                              ),
+                              title: Text(
+                                review.petName == null
+                                    ? 'Consulta #${review.consultationId}'
+                                    : '${review.petName} · ${review.specialtyName ?? 'Consulta'}',
+                              ),
+                              subtitle: Text([
+                                if (review.consultationDate != null)
+                                  DateFormat('dd MMM yyyy', 'es_ES')
+                                      .format(review.consultationDate!),
+                                if (review.diagnosis?.isNotEmpty == true)
+                                  'Diagnóstico: ${review.diagnosis}',
+                                review.comment ?? 'Sin comentario',
+                              ].join('\n')),
+                              isThreeLine: true,
+                            ),
+                          );
+                        },
                       ),
-                      title: Text(
-                        review.petName == null
-                            ? 'Consulta #${review.consultationId}'
-                            : '${review.petName} · ${review.specialtyName ?? 'Consulta'}',
-                      ),
-                      subtitle: Text([
-                        if (review.consultationDate != null)
-                          DateFormat('dd MMM yyyy', 'es_ES')
-                              .format(review.consultationDate!),
-                        if (review.diagnosis?.isNotEmpty == true)
-                          'Diagnóstico: ${review.diagnosis}',
-                        review.comment ?? 'Sin comentario',
-                      ].join('\n')),
-                      isThreeLine: true,
-                    ),
-                  )),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -313,32 +325,70 @@ class _EditableRow extends StatelessWidget {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           onTap: () async {
-            final controller = TextEditingController(
-                text: value == 'Sin registrar' ? '' : value);
             final result = await showDialog<String>(
               context: context,
-              builder: (context) => AlertDialog(
-                title: Text('Editar $label'),
-                content: TextField(
-                  controller: controller,
-                  autofocus: true,
-                  keyboardType:
-                      numeric ? TextInputType.number : TextInputType.text,
-                  decoration: InputDecoration(labelText: label),
-                ),
-                actions: [
-                  TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancelar')),
-                  FilledButton(
-                      onPressed: () => Navigator.pop(context, controller.text),
-                      child: const Text('Guardar')),
-                ],
+              builder: (_) => _EditProfileValueDialog(
+                label: label,
+                initialValue: value == 'Sin registrar' ? '' : value,
+                numeric: numeric,
               ),
             );
-            controller.dispose();
-            if (result?.trim().isNotEmpty == true) onEdit(result!);
+            if (result?.trim().isNotEmpty == true) onEdit(result!.trim());
           },
         ),
+      );
+}
+
+class _EditProfileValueDialog extends StatefulWidget {
+  final String label;
+  final String initialValue;
+  final bool numeric;
+
+  const _EditProfileValueDialog({
+    required this.label,
+    required this.initialValue,
+    required this.numeric,
+  });
+
+  @override
+  State<_EditProfileValueDialog> createState() =>
+      _EditProfileValueDialogState();
+}
+
+class _EditProfileValueDialogState extends State<_EditProfileValueDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialValue);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+        title: Text('Editar ${widget.label}'),
+        content: TextField(
+          controller: _controller,
+          autofocus: true,
+          keyboardType:
+              widget.numeric ? TextInputType.number : TextInputType.text,
+          decoration: InputDecoration(labelText: widget.label),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, _controller.text),
+            child: const Text('Guardar'),
+          ),
+        ],
       );
 }

@@ -139,7 +139,8 @@ segunda fila. Si aun no corresponde, el boton muestra **Aun no**.
 
 Resultado esperado: el perfil se actualiza sin permitir cambiar el rol; la
 resena se crea una sola vez en `reviews` y deja de mostrarse el boton para esa
-consulta. Idioma y apariencia se conservan al cerrar y volver a abrir la app.
+consulta. Idioma y apariencia se guardan en `user_preferences`, se conservan al
+cerrar la app y se sincronizan al iniciar la misma cuenta en otro dispositivo.
 
 ### CU-08: panel veterinario
 
@@ -149,8 +150,11 @@ consulta. Idioma y apariencia se conservan al cerrar y volver a abrir la app.
 4. Toca una tarjeta de **Pacientes**.
 
 Resultado esperado: solo aparecen consultas asignadas al veterinario y sus
-pacientes autorizados. Cada tarjeta muestra cuantas consultas fueron atendidas
-y cuantas estan pendientes; al tocarla abre la siguiente accion disponible.
+pacientes autorizados. **Atendidas hoy** cuenta las consultas finalizadas hoy
+segun `completed_at`, aunque se hayan programado para otra fecha. **Proximas
+pendientes** incluye citas pendientes, programadas o confirmadas de hoy y fechas
+posteriores. Cada tarjeta muestra cuantas consultas fueron atendidas y cuantas
+estan pendientes; al tocarla abre la siguiente accion disponible.
 
 ### CU-09: iniciar consulta
 

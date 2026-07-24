@@ -157,6 +157,21 @@ try {
   $vetHeaders = New-AppHeaders $vetSession.access_token $true
   $outsiderHeaders = New-AppHeaders $outsiderSession.access_token $true
 
+  $clientPreferences = @(Response-Rows (Invoke-RestMethod -Method Get -Uri "$baseUrl/rest/v1/user_preferences?user_id=eq.$($client.id)&select=user_id,locale,dark_mode" -Headers $clientHeaders))
+  Assert-Test 'user_preferences_created_from_database_trigger' (
+    $clientPreferences.Count -eq 1 -and
+    $clientPreferences[0].locale -eq 'es' -and
+    $clientPreferences[0].dark_mode -eq $false
+  )
+  $updatedPreferences = @(Response-Rows (Invoke-RestMethod -Method Patch -Uri "$baseUrl/rest/v1/user_preferences?user_id=eq.$($client.id)&select=locale,dark_mode" -Headers $clientHeaders -Body (@{locale='en'; dark_mode=$true}|ConvertTo-Json)))
+  Assert-Test 'owner_can_sync_preferences' (
+    $updatedPreferences.Count -eq 1 -and
+    $updatedPreferences[0].locale -eq 'en' -and
+    $updatedPreferences[0].dark_mode -eq $true
+  )
+  $outsiderPreferences = @(Response-Rows (Invoke-RestMethod -Method Get -Uri "$baseUrl/rest/v1/user_preferences?user_id=eq.$($client.id)&select=user_id" -Headers $outsiderHeaders))
+  Assert-Test 'outsider_cannot_read_preferences' ($outsiderPreferences.Count -eq 0)
+
   $profiles = @()
   foreach ($testUser in @($client, $vet, $outsider)) {
     $profiles += @(Response-Rows (Invoke-RestMethod -Method Get -Uri "$baseUrl/rest/v1/users?id=eq.$($testUser.id)&select=id,role" -Headers $adminHeaders))

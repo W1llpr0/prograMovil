@@ -40,10 +40,7 @@ class BookAppointmentController extends GetxController {
   List<Veterinarian> get matchingVets {
     final id = specialty.value?.id;
     if (id == null) return vets;
-    return vets
-        .where(
-            (vet) => vet.specialtyIds.isEmpty || vet.specialtyIds.contains(id))
-        .toList();
+    return vets.where((vet) => vet.specialtyIds.contains(id)).toList();
   }
 
   @override

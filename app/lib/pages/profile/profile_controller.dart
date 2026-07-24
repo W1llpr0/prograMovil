@@ -14,8 +14,6 @@ class ProfileController extends GetxController {
   final AuthService _authService = AuthService();
   final SupabaseClient _sb = Supabase.instance.client;
 
-  final pushNotifs = true.obs;
-  final geofenceAlerts = true.obs;
   final isSaving = false.obs;
   final specialties = <Specialty>[].obs;
   final allSpecialties = <Specialty>[].obs;

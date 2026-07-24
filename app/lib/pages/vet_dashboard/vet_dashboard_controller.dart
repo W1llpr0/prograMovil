@@ -46,14 +46,14 @@ class VetDashboardController extends GetxController {
         .toList();
   }
 
-  int get todayTotal => todayConsultations.length;
+  int get completedTodayCount =>
+      countConsultationsCompletedOnDate(agenda, DateTime.now());
   int get completedCount =>
       todayConsultations.where((c) => c.status == 'completed').length;
   int get inProgressCount =>
       todayConsultations.where((c) => c.status == 'in_progress').length;
-  int get pendingCount => todayConsultations
-      .where((c) => c.status == 'scheduled' || c.status == 'pending')
-      .length;
+  int get pendingCount =>
+      countUpcomingPendingConsultations(agenda, DateTime.now());
 
   // ── All-time stats ───────────────────────────────────────────────
 
@@ -251,4 +251,35 @@ class VetDashboardController extends GetxController {
     Get.delete<SignInController>(force: true);
     Get.offAllNamed(AppRoutes.signIn);
   }
+}
+
+@visibleForTesting
+int countUpcomingPendingConsultations(
+  Iterable<Consultation> consultations,
+  DateTime now,
+) {
+  final startOfToday = DateTime(now.year, now.month, now.day);
+  const pendingStatuses = {'pending', 'scheduled', 'confirmed'};
+  return consultations
+      .where((consultation) =>
+          !consultation.scheduledAt.isBefore(startOfToday) &&
+          pendingStatuses.contains(consultation.status))
+      .length;
+}
+
+@visibleForTesting
+int countConsultationsCompletedOnDate(
+  Iterable<Consultation> consultations,
+  DateTime date,
+) {
+  return consultations.where((consultation) {
+    if (consultation.status != 'completed' ||
+        consultation.completedAt == null) {
+      return false;
+    }
+    final completedAt = consultation.completedAt!.toLocal();
+    return completedAt.year == date.year &&
+        completedAt.month == date.month &&
+        completedAt.day == date.day;
+  }).length;
 }
